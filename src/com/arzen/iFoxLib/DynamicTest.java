@@ -14,7 +14,8 @@ public class DynamicTest implements IDynamic {
 	
 	public void init(Activity act) {
 		this.act = act;
-		MsgUtil.msg(DeviceUtil.getUUID(act), act);
+		MsgUtil.msg("test", act);
+//		MsgUtil.msg(DeviceUtil.getUUID(act), act);
 	}
 
 }
