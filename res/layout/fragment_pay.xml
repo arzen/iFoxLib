@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:layout_gravity="center_horizontal"
+        android:text="选择支付方式" />
+
+    <Button
+        android:id="@+id/btnWiipay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="微派支付" />
+
+    <Button
+        android:id="@+id/btnAlipay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="支付宝支付" />
+
+    <Button
+        android:id="@+id/btnUnionpay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="银联支付" />
+
+</LinearLayout>

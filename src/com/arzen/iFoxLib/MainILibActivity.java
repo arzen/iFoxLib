@@ -10,6 +10,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.arzen.iFoxLib.fragment.HomeFragment;
+import com.arzen.iFoxLib.fragment.PayFragment;
 
 public class MainILibActivity extends Activity
 {
@@ -24,7 +25,7 @@ public class MainILibActivity extends Activity
 		setContentView(rootView);
         
         try {
-        	Fragment f = new HomeFragment();
+        	Fragment f = new PayFragment();
 			FragmentManager fm = getFragmentManager();
 			FragmentTransaction ft = fm.beginTransaction();
 			ft.add(android.R.id.primary, f);
