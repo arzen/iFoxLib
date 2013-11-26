@@ -1,15 +1,20 @@
 package com.arzen.iFoxLib.fragment;
 
-import com.arzen.iFoxLib.R;
-import com.arzen.iFoxLib.pay.WayPay;
+import java.util.Map;
 
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
+
+import com.arzen.iFoxLib.R;
+import com.arzen.iFoxLib.pay.WayPay;
+import com.bx.pay.ApkUpdate;
+import com.bx.pay.ApkUpdate.ApkUpdateCallback;
+import com.encore.libs.utils.Log;
 
 public class PayFragment extends Fragment {
 
@@ -54,10 +59,7 @@ public class PayFragment extends Fragment {
 			// TODO Auto-generated method stub
 			switch (view.getId()) {
 			case R.id.btnWiipay:
-				if(mWayPay == null){
-					mWayPay = new WayPay(mBundle);
-				}
-				mWayPay.toPay(getActivity(), "0001");
+				toWayPay();
 				break;
 			case R.id.btnAlipay:
 
@@ -68,5 +70,23 @@ public class PayFragment extends Fragment {
 			}
 		}
 	};
+	
+	/**
+	 * 跳转微派支付
+	 */
+	public void toWayPay()
+	{
+		ApkUpdate apkUpdate = new ApkUpdate(getActivity(), new ApkUpdateCallback() {
+  			@Override
+			public void launch(Map<String, String> arg0) {
+				// TODO Auto-generated method stub
+				if(mWayPay == null){
+					mWayPay = new WayPay(mBundle);
+				}
+				Log.d("PayFragment", getActivity().toString());
+				mWayPay.toPay(getActivity(), "0001");
+			}
+		});
+	}
 	
 }
