@@ -76,7 +76,8 @@ public class PayFragment extends Fragment {
 	 */
 	public void toWayPay()
 	{
-		ApkUpdate apkUpdate = new ApkUpdate(getActivity(), new ApkUpdateCallback() {
+		//检测微派支付有没更新
+		new ApkUpdate(getActivity(), new ApkUpdateCallback() {
   			@Override
 			public void launch(Map<String, String> arg0) {
 				// TODO Auto-generated method stub
