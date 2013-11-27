@@ -23,6 +23,12 @@ public class PayActivity extends Activity {
 
 		try {
 			Fragment f = new PayFragment();
+			
+			Bundle mBundle = getIntent().getExtras();
+			if(mBundle != null){
+				f.setArguments(mBundle);
+			}
+			
 			FragmentManager fm = getFragmentManager();
 			FragmentTransaction ft = fm.beginTransaction();
 			ft.add(android.R.id.primary, f);

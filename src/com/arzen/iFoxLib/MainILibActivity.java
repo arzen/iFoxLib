@@ -1,18 +1,11 @@
 package com.arzen.iFoxLib;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.arzen.iFoxLib.activity.PayActivity;
-import com.arzen.iFoxLib.fragment.HomeFragment;
-import com.arzen.iFoxLib.fragment.PayFragment;
+import com.arzen.iFoxLib.setting.KeyConstants;
 
 public class MainILibActivity extends Activity {
 	/** Called when the activity is first created. */
@@ -22,6 +15,11 @@ public class MainILibActivity extends Activity {
 		setContentView(R.layout.main);
 
 		Intent intent = new Intent(this, PayActivity.class);
+		Bundle bundle = new Bundle();
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, "222"); // 游戏id
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, "11111"); // 渠道id
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, "token"); // token
+		intent.putExtras(bundle);
 		startActivity(intent);
 	}
 }

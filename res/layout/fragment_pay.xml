@@ -7,26 +7,43 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
         android:layout_gravity="center_horizontal"
-        android:text="选择支付方式" />
+        android:text="选择支付方式"
+        android:textSize="20sp" />
 
-    <Button
-        android:id="@+id/btnWiipay"
+    <LinearLayout
+        android:id="@+id/viewContent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="微派支付" />
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/btnAlipay"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="支付宝支付" />
+        <Button
+            android:id="@+id/btnWiipay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="微派支付" />
 
-    <Button
-        android:id="@+id/btnUnionpay"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="银联支付" />
+        <Button
+            android:id="@+id/btnAlipay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="支付宝支付" />
+
+        <Button
+            android:id="@+id/btnUnionpay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="银联支付" />
+    </LinearLayout>
+
+    <include
+        android:id="@+id/notNetWork"
+        layout="@layout/common_not_network"
+        android:visibility="gone" />
+
+    <include
+        android:id="@+id/loadingView"
+        layout="@layout/common_loading_layout"
+        android:visibility="gone" />
 
 </LinearLayout>

@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">MainILibActivity</string>
+    <string name="not_network">没有网络,请检查网络设置</string>
+    <string name="time_out">请求超时,请重试!</string>
+    <string name="request_fail">请求失败,请重试!</string>
+    <string name="loading">正在加载...</string>
+
 </resources>
