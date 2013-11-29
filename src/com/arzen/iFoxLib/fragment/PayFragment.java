@@ -2,6 +2,11 @@ package com.arzen.iFoxLib.fragment;
 
 import java.util.Map;
 
+import android.R.string;
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.graphics.Path;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -10,9 +15,11 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.arzen.iFoxLib.MsgUtil;
 import com.arzen.iFoxLib.R;
 import com.arzen.iFoxLib.api.HttpIfoxApi;
 import com.arzen.iFoxLib.api.HttpSetting;
+import com.arzen.iFoxLib.bean.Order;
 import com.arzen.iFoxLib.bean.PayList;
 import com.arzen.iFoxLib.bean.PayList.Data;
 import com.arzen.iFoxLib.pay.WayPay;
@@ -24,6 +31,8 @@ import com.encore.libs.http.OnRequestListener;
 import com.encore.libs.utils.Log;
 
 public class PayFragment extends BaseFragment {
+
+	public static final String TAG = "PayFragment";
 
 	private Button mBtnWiipay;
 	private Button mBtnAlipay;
@@ -37,6 +46,12 @@ public class PayFragment extends BaseFragment {
 	private PayList mPayList;
 	// 主内容view
 	private View mViewContent;
+	// 进度dialog
+	private ProgressDialog mProgressDialog;
+	// 是否正在创建订单
+	private boolean mIsCreateingOrder = false;
+	// 订单请求出错后重试次数
+	public int mReTryCreateOrderCount = 4;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -51,7 +66,7 @@ public class PayFragment extends BaseFragment {
 		// TODO Auto-generated method stub
 		super.onActivityCreated(savedInstanceState);
 		mBundle = getArguments();
-		
+
 		initData(null);
 	}
 
@@ -73,10 +88,10 @@ public class PayFragment extends BaseFragment {
 		mBtnWiipay.setOnClickListener(mOnClickListener);
 		mBtnAlipay.setOnClickListener(mOnClickListener);
 		mBtnUnionpay.setOnClickListener(mOnClickListener);
-		
+
 		setOnRefreshClickListener(mOnRefreshClickListener);
 	}
-	
+
 	/**
 	 * 刷新按钮
 	 */
@@ -102,7 +117,7 @@ public class PayFragment extends BaseFragment {
 			if (setErrorVisibility(getView(), mViewContent, null)) {
 				// 显示loading view
 				setLoadingViewVisibility(true, getView(), mViewContent);
-				//请求
+				// 请求
 				requestPayList();
 			}
 		}
@@ -119,8 +134,8 @@ public class PayFragment extends BaseFragment {
 		mBtnUnionpay.setVisibility(View.GONE);
 		// 微派
 		Data data = payList.getData();
-		if(data != null){
-			String wiipay =  data.getList().getWiipay();
+		if (data != null) {
+			String wiipay = data.getList().getWiipay();
 			if (wiipay != null && !wiipay.equals("")) {
 				mBtnWiipay.setVisibility(View.VISIBLE);
 			}
@@ -137,7 +152,6 @@ public class PayFragment extends BaseFragment {
 			}
 		}
 
-		
 	}
 
 	/**
@@ -220,13 +234,157 @@ public class PayFragment extends BaseFragment {
 			@Override
 			public void launch(Map<String, String> arg0) {
 				// TODO Auto-generated method stub
+				mReTryCreateOrderCount = 4;
 				if (mWayPay == null) {
 					mWayPay = new WayPay(mBundle);
 				}
 				Log.d("PayFragment", getActivity().toString());
-				mWayPay.toPay(getActivity(), "0001");
+				mWayPay.toPay(PayFragment.this, getActivity(), "0001");
 			}
 		});
 	}
 
+	/**
+	 * 支付成功后,创建订单
+	 * 
+	 * @param payType
+	 *            支付方式 (微派:KeyConstants.PAY_TYPE_WIIPAY) (支付宝:
+	 *            KeyConstants.PAY_TYPE_ALIPAY)(银联:
+	 *            KeyConstants.PAY_TYPE_UNIONPAY )
+	 * @param result
+	 *            支付结果
+	 * @param msg
+	 *            支付提示
+	 */
+	public void createOrder(final int payType, final String result, final String msg) {
+		if (mIsCreateingOrder) {
+			return;
+		}
+
+		mHandler.post(new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				if (mReTryCreateOrderCount == 0) {
+					MsgUtil.msg("创建订单失败,请检查网络或联系我们!", getActivity());
+					return;
+				}
+				// 改变重试次数
+				mReTryCreateOrderCount--;
+
+				if (mBundle == null) {
+					MsgUtil.msg("支付数据为空!", getActivity());
+					return;
+				}
+				mIsCreateingOrder = true;
+				String gid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_GID);
+				String cid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_CID);
+				String token = mBundle.getString(KeyConstants.INTENT_DATA_KEY_TOKEN);
+				int pid = mBundle.getInt(KeyConstants.INTENT_DATA_KEY_PID);
+				float amount = mBundle.getFloat(KeyConstants.INTENT_DATA_KEY_AMOUNT);
+				String extra = mBundle.getString(KeyConstants.INTENT_DATA_KEY_EXTRA);
+				//创建订单
+				Log.d(TAG, "createOrder -> gid:" + gid + " cid:" + cid + " token:" + token + " pid:" + pid + " amount:" + amount + " extra:" + extra + " payType:" + payType);
+				
+				if(mProgressDialog == null || !mProgressDialog.isShowing()){
+					mProgressDialog = ProgressDialog.show(getActivity(), "正在处理订单", "正在处理订单,请不要退出当前操作!", true, true);
+//					mProgressDialog.show();
+				}
+
+				HttpIfoxApi.createOrder(getActivity(), gid, cid, token, pid, amount, payType, extra, new OnCreateOrderListener(payType, result, msg));
+			}
+		});
+	}
+
+	/**
+	 * 创建订单回调
+	 */
+	public class OnCreateOrderListener implements OnRequestListener {
+
+		private int mPayType;
+		private String mResult;
+		private String mMsg;
+
+		public OnCreateOrderListener(final int payType, String result, String msg) {
+			mPayType = payType;
+			mResult = result;
+			mMsg = msg;
+		}
+
+		@Override
+		public void onResponse(final String url, final int state, final Object result, final int typem) {
+			// TODO Auto-generated method stub
+			mIsCreateingOrder = false;
+			mHandler.post(new Runnable() {
+
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					if (!isAdded()) { // fragment 已退出
+						return;
+					}
+					if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof Order) {
+						Order order = (Order) result;
+						if (order.getCode() == HttpSetting.RESULT_CODE_OK) { // 请求成功
+							if (mProgressDialog != null && mProgressDialog.isShowing()) {
+								mProgressDialog.dismiss();
+							}
+							
+							int pid = mBundle.getInt(KeyConstants.INTENT_DATA_KEY_PID);
+							float amount = mBundle.getFloat(KeyConstants.INTENT_DATA_KEY_AMOUNT);
+							//回调成功状态
+							sendPayResultReceiver(getActivity(), order.getData().getOrderid(), pid, amount, mResult, mMsg);
+							
+						} else {
+							MsgUtil.msg("创建订单失败:" + order.getMsg() + ",正在重试请稍后...", getActivity());
+							// 重试创建订单
+							createOrder(mPayType, mResult, mMsg);
+						}
+					} else if (state == HttpConnectManager.STATE_TIME_OUT) { // 请求超时
+						MsgUtil.msg("请求超时,正在重试请稍后...", getActivity());
+						// 重试创建订单
+						createOrder(mPayType, mResult, mMsg);
+					} else { // 请求失败
+						MsgUtil.msg("创建订单失败,正在重试请稍后...", getActivity());
+						// 重试创建订单
+						createOrder(mPayType, mResult, mMsg);
+					}
+				}
+			});
+		}
+	};
+	
+	
+	/**
+	 * 发送支付回调
+	 */
+	public void sendPayResultReceiver(Activity activity, String result, String msg) {
+		
+		Bundle bundle = new Bundle();
+		bundle.putString(KeyConstants.INTENT_KEY_PAY_RESULT, result);
+		bundle.putString(KeyConstants.INTENT_KEY_PAY_MSG, msg);
+	
+		
+		Intent intent = new Intent(KeyConstants.PAY_RESULT_RECEIVER_ACTION);
+		intent.putExtras(bundle);
+		activity.sendBroadcast(intent);
+	}
+	
+	/**
+	 * 发送成功支付支付回调
+	 */
+	public void sendPayResultReceiver(Activity activity,String orderId, int pid,float amount,String result, String msg) {
+		
+		Bundle bundle = new Bundle();
+		bundle.putString(KeyConstants.INTENT_KEY_PAY_RESULT, result);
+		bundle.putString(KeyConstants.INTENT_KEY_PAY_MSG, msg);
+		bundle.putInt(KeyConstants.INTENT_DATA_KEY_PID, pid);
+		bundle.putFloat(KeyConstants.INTENT_DATA_KEY_AMOUNT, amount);
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_ORDERID, orderId);
+		
+		Intent intent = new Intent(KeyConstants.PAY_RESULT_RECEIVER_ACTION);
+		intent.putExtras(bundle);
+		activity.sendBroadcast(intent);
+	}
 }

@@ -1,10 +1,14 @@
 package com.arzen.iFoxLib.api;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
 import android.app.Activity;
+import android.content.Context;
 
+import com.arzen.iFoxLib.bean.Order;
 import com.arzen.iFoxLib.bean.PayList;
 import com.encore.libs.http.HttpConnectManager;
 import com.encore.libs.http.OnRequestListener;
@@ -49,6 +53,31 @@ public class HttpIfoxApi {
 	public static final String PARAM_PACKAGE = "package";
 
 	/**
+	 * 参数pid 道具id
+	 */
+	public static final String PARAM_PID = "pid";
+
+	/**
+	 * 参数amount 价格
+	 */
+	public static final String PARAM_AMOUNT = "amount";
+
+	/**
+	 * 参数type 支付类型
+	 */
+	public static final String PARAM_TYPE = "type";
+
+	/**
+	 * 参数created 创建订单时间
+	 */
+	public static final String PARAM_CREATED = "created";
+
+	/**
+	 * 游戏需要上传的信息
+	 */
+	public static final String PARAM_EXTRA = "extra";
+
+	/**
 	 * 请求支付列表
 	 * 
 	 * @param gid
@@ -74,6 +103,50 @@ public class HttpIfoxApi {
 		request.setParser(new JsonParser(PayList.class));
 		request.setOnRequestListener(onRequestListener);
 		HttpConnectManager.getInstance(activity.getApplicationContext()).doPost(request, postParam);
+	}
+
+	/**
+	 * 创建订单
+	 * 
+	 * @param gid
+	 *            游戏id
+	 * @param cid
+	 *            渠道id
+	 * @param token
+	 *            登陆后的token
+	 * @param pid
+	 *            道具id
+	 * @param amount
+	 *            价格
+	 * @param payType
+	 *            支付类型
+	 * @param extra
+	 *            游戏上传的自定义信息
+	 */
+	public static void createOrder(Context context, String gid, String cid, String token, int pid, float amount, int payType, String extra, OnRequestListener onRequestListener) {
+		String url = HttpSetting.IOFX_CREATE_ORDER;
+
+		Map<String, Object> maps = new HashMap<String, Object>();
+		maps.put(PARAM_GID, gid);
+		maps.put(PARAM_CID, cid);
+		maps.put(PARAM_TOKEN, token);
+		maps.put(PARAM_PID, gid);
+		maps.put(PARAM_AMOUNT, cid);
+		maps.put(PARAM_TYPE, payType);
+		try {
+			maps.put(PARAM_EXTRA, URLEncoder.encode(extra, "utf-8"));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		String postParam = createParams(maps);
+
+		Request request = new Request();
+		request.setUrl(url);
+		request.setParser(new JsonParser(Order.class));
+		request.setOnRequestListener(onRequestListener);
+		HttpConnectManager.getInstance(context.getApplicationContext()).doPost(request, postParam);
 	}
 
 	/**

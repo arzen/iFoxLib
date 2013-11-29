@@ -25,6 +25,11 @@ public class HttpSetting {
 	 * 支付列表url
 	 */
 	public static final String IFOX_PAYLIST = IFOX_SERVER_URL + "/payment/list.php";
+	
+	/**
+	 * 创建订单url
+	 */
+	public static final String IOFX_CREATE_ORDER =  IFOX_SERVER_URL + "/payment/create.php";
 
 
 	/**
