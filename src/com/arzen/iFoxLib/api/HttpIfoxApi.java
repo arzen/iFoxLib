@@ -124,7 +124,7 @@ public class HttpIfoxApi {
 	 *            游戏上传的自定义信息
 	 */
 	public static void createOrder(Context context, String gid, String cid, String token, int pid, float amount, int payType, String extra, OnRequestListener onRequestListener) {
-		String url = HttpSetting.IOFX_CREATE_ORDER;
+		String url = HttpSetting.IFOX_CREATE_ORDER;
 
 		Map<String, Object> maps = new HashMap<String, Object>();
 		maps.put(PARAM_GID, gid);

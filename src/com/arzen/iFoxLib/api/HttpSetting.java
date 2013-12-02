@@ -29,8 +29,12 @@ public class HttpSetting {
 	/**
 	 * 创建订单url
 	 */
-	public static final String IOFX_CREATE_ORDER =  IFOX_SERVER_URL + "/payment/create.php";
-
+	public static final String IFOX_CREATE_ORDER =  IFOX_SERVER_URL + "/payment/create.php";
+	
+	/**
+	 * 检查是否有更新url
+	 */
+	public static final String IFOX_UPDATE_DYNAMICLIB = IFOX_SERVER_URL + "/app/bizz.php";
 
 	/**
 	 * 获取服务器url
@@ -57,5 +61,13 @@ public class HttpSetting {
 	 */
 	public static String getPayListUrl() {
 		return IFOX_PAYLIST;
+	}
+	/**
+	 * 获取动态库更新url
+	 * @return
+	 */
+	public static String getDynamicUpdateUrl()
+	{
+		return IFOX_UPDATE_DYNAMICLIB;
 	}
 }

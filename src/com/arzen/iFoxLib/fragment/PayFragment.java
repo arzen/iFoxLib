@@ -43,7 +43,7 @@ public class PayFragment extends BaseFragment {
 	// 主程序传递过来的数据
 	private Bundle mBundle;
 	// 支付列表对象
-	private PayList mPayList;
+	private PayList mPayList = null;
 	// 主内容view
 	private View mViewContent;
 	// 进度dialog
@@ -67,7 +67,7 @@ public class PayFragment extends BaseFragment {
 		super.onActivityCreated(savedInstanceState);
 		mBundle = getArguments();
 
-		initData(null);
+		initData(mPayList);
 	}
 
 	private Handler mHandler = new Handler() {
