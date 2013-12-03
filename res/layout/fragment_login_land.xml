@@ -27,10 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:hint="@string/hint_input_password"
-            android:numeric="integer" 
-            android:password="true"
-            android:maxLength="8"
-            />
+            android:numeric="integer" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -40,26 +37,22 @@
             android:orientation="horizontal" >
 
             <Button
-                android:id="@+id/btnRegister"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="35dp"
                 android:layout_marginRight="3dp"
                 android:layout_weight="1"
                 android:background="@drawable/btn_register_selector"
-                android:text="@string/register"
-                android:textColor="#ffffff" />
+                android:text="@string/register" />
 
             <Button
-                android:id="@+id/btnLogin"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="3dp"
                 android:layout_marginRight="35dp"
                 android:layout_weight="1"
                 android:background="@drawable/btn_login_selector"
-                android:text="@string/login"
-                android:textColor="#ffffff" />
+                android:text="@string/login" />
         </LinearLayout>
 
         <TextView

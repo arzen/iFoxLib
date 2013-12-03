@@ -67,6 +67,10 @@ public class PayFragment extends BaseFragment {
 		super.onActivityCreated(savedInstanceState);
 		mBundle = getArguments();
 
+		Log.d(TAG, "onActivityCreated() savedInstanceState is null?:" + (savedInstanceState == null));
+		
+		Log.d(TAG, "mPayList is null?:" + (mPayList == null));
+		
 		initData(mPayList);
 	}
 
