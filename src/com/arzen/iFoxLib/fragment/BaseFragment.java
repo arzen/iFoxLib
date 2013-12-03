@@ -1,6 +1,8 @@
 package com.arzen.iFoxLib.fragment;
 
+import android.app.Activity;
 import android.app.Fragment;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -10,7 +12,7 @@ import android.widget.TextView;
 import com.arzen.iFoxLib.R;
 import com.encore.libs.utils.NetWorkUtils;
 
-public class BaseFragment extends Fragment {
+public abstract class BaseFragment extends Fragment {
 
 	// 出错刷新按钮
 	private OnRefreshClickListener mOnRefreshClickListener;
@@ -153,4 +155,10 @@ public class BaseFragment extends Fragment {
 		}
 	};
 
+	/**
+	 * 后退点击事件
+	 * 
+	 * @return
+	 */
+	public abstract boolean onKeyDown(Activity activity,int keyCode, KeyEvent event);
 }

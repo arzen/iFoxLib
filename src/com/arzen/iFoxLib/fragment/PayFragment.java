@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Path;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -370,7 +371,7 @@ public class PayFragment extends BaseFragment {
 		bundle.putString(KeyConstants.INTENT_KEY_PAY_MSG, msg);
 	
 		
-		Intent intent = new Intent(KeyConstants.PAY_RESULT_RECEIVER_ACTION);
+		Intent intent = new Intent(KeyConstants.RECEIVER_RESULT_ACTION);
 		intent.putExtras(bundle);
 		activity.sendBroadcast(intent);
 	}
@@ -387,8 +388,23 @@ public class PayFragment extends BaseFragment {
 		bundle.putFloat(KeyConstants.INTENT_DATA_KEY_AMOUNT, amount);
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_ORDERID, orderId);
 		
-		Intent intent = new Intent(KeyConstants.PAY_RESULT_RECEIVER_ACTION);
+		Intent intent = new Intent(KeyConstants.RECEIVER_RESULT_ACTION);
 		intent.putExtras(bundle);
 		activity.sendBroadcast(intent);
+	}
+
+	@Override
+	public boolean onKeyDown(Activity activity, int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			Intent intent = new Intent(KeyConstants.RECEIVER_RESULT_ACTION);
+			Bundle bundle = new Bundle();
+			bundle.putString(KeyConstants.INTENT_KEY_PAY_RESULT, KeyConstants.INTENT_KEY_PAY_CANCEL);
+			intent.putExtras(bundle);
+			getActivity().sendBroadcast(intent);
+			return false;
+		}
+		return false;
 	}
 }
