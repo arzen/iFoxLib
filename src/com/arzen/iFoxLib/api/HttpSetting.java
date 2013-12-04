@@ -19,17 +19,27 @@ public class HttpSetting {
 	/**
 	 * ifox init url
 	 */
-	public static final String IFOX_INIT = IFOX_SERVER_URL + "/app/init.php";
+	public static final String IFOX_INIT_URL = IFOX_SERVER_URL + "/app/init.php";
 
 	/**
 	 * 支付列表url
 	 */
-	public static final String IFOX_PAYLIST = IFOX_SERVER_URL + "/payment/list.php";
+	public static final String IFOX_PAYLIST_URL = IFOX_SERVER_URL + "/payment/list.php";
 	
 	/**
 	 * 创建订单url
 	 */
-	public static final String IFOX_CREATE_ORDER =  IFOX_SERVER_URL + "/payment/create.php";
+	public static final String IFOX_CREATE_ORDER_URL =  IFOX_SERVER_URL + "/payment/create.php";
+	
+	/**
+	 * 登录url
+	 */
+	public static final String IFOX_LOGIN_URL = IFOX_SERVER_URL+ "/account/login.php";
+	
+	/**
+	 * 注册url
+	 */
+	public static final String IFOX_REGISTER_URL = IFOX_SERVER_URL+ "/account/register.php";
 	
 	/**
 	 * 检查是否有更新url
@@ -51,7 +61,7 @@ public class HttpSetting {
 	 * @return
 	 */
 	public static String getIFoxInitUrl() {
-		return IFOX_INIT;
+		return IFOX_INIT_URL;
 	}
 
 	/**
@@ -60,7 +70,7 @@ public class HttpSetting {
 	 * @return
 	 */
 	public static String getPayListUrl() {
-		return IFOX_PAYLIST;
+		return IFOX_PAYLIST_URL;
 	}
 	/**
 	 * 获取动态库更新url

@@ -16,7 +16,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.arzen.iFoxLib.MsgUtil;
 import com.arzen.iFoxLib.R;
 import com.arzen.iFoxLib.api.HttpIfoxApi;
 import com.arzen.iFoxLib.api.HttpSetting;
@@ -25,6 +24,7 @@ import com.arzen.iFoxLib.bean.PayList;
 import com.arzen.iFoxLib.bean.PayList.Data;
 import com.arzen.iFoxLib.pay.WayPay;
 import com.arzen.iFoxLib.setting.KeyConstants;
+import com.arzen.iFoxLib.utils.MsgUtil;
 import com.bx.pay.ApkUpdate;
 import com.bx.pay.ApkUpdate.ApkUpdateCallback;
 import com.encore.libs.http.HttpConnectManager;
@@ -74,10 +74,7 @@ public class PayFragment extends BaseFragment {
 		
 		initData(mPayList);
 	}
-
-	private Handler mHandler = new Handler() {
-	};
-
+	
 	/**
 	 * 初始化ui
 	 * 
@@ -293,7 +290,7 @@ public class PayFragment extends BaseFragment {
 				Log.d(TAG, "createOrder -> gid:" + gid + " cid:" + cid + " token:" + token + " pid:" + pid + " amount:" + amount + " extra:" + extra + " payType:" + payType);
 				
 				if(mProgressDialog == null || !mProgressDialog.isShowing()){
-					mProgressDialog = ProgressDialog.show(getActivity(), "正在处理订单", "正在处理订单,请不要退出当前操作!", true, true);
+					mProgressDialog = ProgressDialog.show(getActivity(), "正在处理订单", "正在处理订单,请不要退出当前操作!", true, false);
 //					mProgressDialog.show();
 				}
 
@@ -355,6 +352,11 @@ public class PayFragment extends BaseFragment {
 						// 重试创建订单
 						createOrder(mPayType, mResult, mMsg);
 					}
+					
+					if(mReTryCreateOrderCount == 0 && mProgressDialog != null && mProgressDialog.isShowing()){
+						MsgUtil.msg("创建订单失败!", getActivity());
+						mProgressDialog.dismiss();
+					}
 				}
 			});
 		}
@@ -394,17 +396,16 @@ public class PayFragment extends BaseFragment {
 	}
 
 	@Override
-	public boolean onKeyDown(Activity activity, int keyCode, KeyEvent event) {
+	public boolean onKeyDown(Activity activity, Integer keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
-		
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			Intent intent = new Intent(KeyConstants.RECEIVER_RESULT_ACTION);
 			Bundle bundle = new Bundle();
 			bundle.putString(KeyConstants.INTENT_KEY_PAY_RESULT, KeyConstants.INTENT_KEY_PAY_CANCEL);
 			intent.putExtras(bundle);
-			getActivity().sendBroadcast(intent);
+			activity.sendBroadcast(intent);
 			return false;
 		}
-		return false;
+		return true;
 	}
 }

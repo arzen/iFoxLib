@@ -1,25 +1,20 @@
 package com.arzen.iFoxLib.fragment;
 
+import com.arzen.iFoxLib.R;
+import com.arzen.iFoxLib.utils.MsgUtil;
+
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.arzen.iFoxLib.R;
-import com.arzen.iFoxLib.setting.KeyConstants;
-import com.arzen.iFoxLib.utils.MsgUtil;
-import com.encore.libs.utils.Log;
-
-public class LoginFragment extends BaseFragment {
-
-	public static final String TAG = "LoginFragment";
+public class RegisterFragment extends BaseFragment {
 
 	// 文本框帐号
 	private EditText mEtPhone;
@@ -27,29 +22,20 @@ public class LoginFragment extends BaseFragment {
 	private EditText mEtPassword;
 	// 注册
 	private Button mBtnRegister;
-	// 登录
-	private Button mBtnLogin;
-	// 忘记密码
-	private TextView mTvForgetPassword;
-	// 主程序传递过来的数据
-	private Bundle mBundle;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-
-		mBundle = getArguments();
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-		View loginView = inflater.inflate(R.layout.fragment_login, null);
-		initUI(loginView);
-		return loginView;
+		View registerView = inflater.inflate(R.layout.fragment_register, null);
+		return registerView;
 	}
-
+	
 	/**
 	 * 初始化ui
 	 * 
@@ -59,12 +45,8 @@ public class LoginFragment extends BaseFragment {
 		mEtPhone = (EditText) view.findViewById(R.id.etPhone);
 		mEtPassword = (EditText) view.findViewById(R.id.etPassword);
 		mBtnRegister = (Button) view.findViewById(R.id.btnRegister);
-		mBtnLogin = (Button) view.findViewById(R.id.btnLogin);
-		mTvForgetPassword = (TextView) view.findViewById(R.id.tvForgetPassword);
 
 		mBtnRegister.setOnClickListener(mOnClickListener);
-		mBtnLogin.setOnClickListener(mOnClickListener);
-		mTvForgetPassword.setOnClickListener(mOnClickListener);
 	}
 
 	public OnClickListener mOnClickListener = new OnClickListener() {
@@ -76,46 +58,19 @@ public class LoginFragment extends BaseFragment {
 			case R.id.btnRegister:
 				register();
 				break;
-			case R.id.btnLogin:
-				login();
-				break;
-			case R.id.tvForgetPassword:
-				break;
 			}
 		}
 	};
-
-	/**
-	 * 跳转登录加载页面
-	 */
-	public void login() {
+	
+	public void register(){
 		String phone = mEtPhone.getText().toString().trim();
 		String password = mEtPassword.getText().toString().trim();
-
+		
 		if (check(phone, password)) {
-			Bundle bundle = new Bundle();
-			bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_LOGIN_LOADING_FRAGMENT);
-			bundle.putString(KeyConstants.INTENT_KEY_PHONE_NUMBER, phone);
-			bundle.putString(KeyConstants.INTENT_KEY_PHONE_PASSWORD, password);
 			
-			String gid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_GID);
-			String cid =  mBundle.getString(KeyConstants.INTENT_DATA_KEY_CID);
-			
-			bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, gid);
-			bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, cid); // 渠道id
-			startCommonActivity(bundle);
 		}
 	}
-
-	/**
-	 * 跳转注册
-	 */
-	public void register() {
-		Bundle bundle = new Bundle();
-		bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_REGISTER_FRAGMENT);
-		startCommonActivity(bundle);
-	}
-
+	
 	/**
 	 * 检查帐号密码是否正确
 	 * 
@@ -135,15 +90,9 @@ public class LoginFragment extends BaseFragment {
 	}
 
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
-		Log.d(TAG, "onActivityResult");
-		super.onActivityResult(requestCode, resultCode, data);
-	}
-
-	@Override
 	public boolean onKeyDown(Activity activity, Integer keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
 		return true;
 	}
+
 }

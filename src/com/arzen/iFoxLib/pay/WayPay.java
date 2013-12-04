@@ -8,9 +8,9 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.arzen.iFoxLib.MsgUtil;
 import com.arzen.iFoxLib.fragment.PayFragment;
 import com.arzen.iFoxLib.setting.KeyConstants;
+import com.arzen.iFoxLib.utils.MsgUtil;
 import com.bx.pay.BXPay;
 import com.encore.libs.utils.Log;
 
@@ -101,16 +101,16 @@ public class WayPay {
 	 * @param result
 	 */
 	public void disposePayResult(Activity activity, String result, String msg) {
-		// 如果支付成功
-//		if (result.equals(SUCCESS)) {
-//			if (mPayFragment != null) {
-//				mPayFragment.createOrder(KeyConstants.PAY_TYPE_WIIPAY, result, msg); // 创建订单
-//			}
-//			// sendPayResultReceiver(activity, result, msg);
-//		} else if (result.equals(FAIL)) { // 支付失败
-//			if (mPayFragment != null) 
-//				mPayFragment.sendPayResultReceiver(activity, result, msg);
-//		}
+		//如果支付成功
+		if (result.equals(SUCCESS)) {
+			if (mPayFragment != null) {
+				mPayFragment.createOrder(KeyConstants.PAY_TYPE_WIIPAY, result, msg); // 创建订单
+			}
+			// sendPayResultReceiver(activity, result, msg);
+		} else if (result.equals(FAIL)) { // 支付失败
+			if (mPayFragment != null) 
+				mPayFragment.sendPayResultReceiver(activity, result, msg);
+		}
 	}
 
 }

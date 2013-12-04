@@ -8,12 +8,14 @@ import java.util.Map;
 import android.app.Activity;
 import android.content.Context;
 
+import com.arzen.iFoxLib.bean.User;
 import com.arzen.iFoxLib.bean.Order;
 import com.arzen.iFoxLib.bean.PayList;
 import com.encore.libs.http.HttpConnectManager;
 import com.encore.libs.http.OnRequestListener;
 import com.encore.libs.http.Request;
 import com.encore.libs.json.JsonParser;
+import com.encore.libs.utils.Log;
 
 /**
  * 请求类
@@ -76,6 +78,14 @@ public class HttpIfoxApi {
 	 * 游戏需要上传的信息
 	 */
 	public static final String PARAM_EXTRA = "extra";
+	/**
+	 * 用户名key
+	 */
+	public static final String PARAM_USERNAME = "uname";
+	/**
+	 * 用户密码key
+	 */
+	public static final String PARAM_PASSWORD = "passwd";
 
 	/**
 	 * 请求支付列表
@@ -123,15 +133,16 @@ public class HttpIfoxApi {
 	 * @param extra
 	 *            游戏上传的自定义信息
 	 */
-	public static void createOrder(Context context, String gid, String cid, String token, int pid, float amount, int payType, String extra, OnRequestListener onRequestListener) {
-		String url = HttpSetting.IFOX_CREATE_ORDER;
+	public static void createOrder(Context context, String gid, String cid, String token, int pid, float amount, 
+			int payType, String extra, OnRequestListener onRequestListener) {
+		String url = HttpSetting.IFOX_CREATE_ORDER_URL;
 
 		Map<String, Object> maps = new HashMap<String, Object>();
 		maps.put(PARAM_GID, gid);
 		maps.put(PARAM_CID, cid);
 		maps.put(PARAM_TOKEN, token);
-		maps.put(PARAM_PID, gid);
-		maps.put(PARAM_AMOUNT, cid);
+		maps.put(PARAM_PID, pid);
+		maps.put(PARAM_AMOUNT, amount);
 		maps.put(PARAM_TYPE, payType);
 		try {
 			maps.put(PARAM_EXTRA, URLEncoder.encode(extra, "utf-8"));
@@ -145,6 +156,62 @@ public class HttpIfoxApi {
 		Request request = new Request();
 		request.setUrl(url);
 		request.setParser(new JsonParser(Order.class));
+		request.setOnRequestListener(onRequestListener);
+		HttpConnectManager.getInstance(context.getApplicationContext()).doPost(request, postParam);
+	}
+
+	/**
+	 * 登录帐号
+	 * @param context
+	 * @param gid 游戏id
+ 	 * @param cid 渠道id
+	 * @param userName 用户名
+	 * @param password 密码
+	 * @param onRequestListener
+	 */
+	public static void requestLogin(Context context,String gid, String cid, String userName, String password
+			, OnRequestListener onRequestListener) {
+		String url = HttpSetting.IFOX_LOGIN_URL;
+
+		Map<String, Object> maps = new HashMap<String, Object>();
+		maps.put(PARAM_GID, gid);
+		maps.put(PARAM_CID, cid);
+		maps.put(PARAM_USERNAME, userName);
+		maps.put(PARAM_PASSWORD, password);
+		
+		String postParam = createParams(maps);
+
+		Request request = new Request();
+		request.setUrl(url);
+		request.setParser(new JsonParser(User.class));
+		request.setOnRequestListener(onRequestListener);
+		HttpConnectManager.getInstance(context.getApplicationContext()).doPost(request, postParam);
+	}
+	
+	/**
+	 * 注册帐号
+	 * @param context
+	 * @param gid
+	 * @param cid
+	 * @param userName
+	 * @param password
+	 * @param onRequestListener
+	 */
+	public static void requestRegister(Context context,String gid, String cid, String userName, String password
+			, OnRequestListener onRequestListener){
+		String url = HttpSetting.IFOX_REGISTER_URL;
+		
+		Map<String, Object> maps = new HashMap<String, Object>();
+		maps.put(PARAM_GID, gid);
+		maps.put(PARAM_CID, cid);
+		maps.put(PARAM_USERNAME, userName);
+		maps.put(PARAM_PASSWORD, password);
+		
+		String postParam = createParams(maps);
+
+		Request request = new Request();
+		request.setUrl(url);
+		request.setParser(new JsonParser(User.class));
 		request.setOnRequestListener(onRequestListener);
 		HttpConnectManager.getInstance(context.getApplicationContext()).doPost(request, postParam);
 	}
@@ -170,6 +237,8 @@ public class HttpIfoxApi {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return paramString.toString();
+		String data = paramString.toString();
+		Log.i("WebUtils", "postData:" + data);
+		return data;
 	}
 }

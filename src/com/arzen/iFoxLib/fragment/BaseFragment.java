@@ -2,6 +2,9 @@ package com.arzen.iFoxLib.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -10,9 +13,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.arzen.iFoxLib.R;
+import com.arzen.iFoxLib.setting.KeyConstants;
 import com.encore.libs.utils.NetWorkUtils;
 
 public abstract class BaseFragment extends Fragment {
+
+	protected Handler mHandler = new Handler() {
+	};
 
 	// 出错刷新按钮
 	private OnRefreshClickListener mOnRefreshClickListener;
@@ -156,9 +163,24 @@ public abstract class BaseFragment extends Fragment {
 	};
 
 	/**
+	 * 跳转通用activity
+	 * 
+	 * @param bundle
+	 */
+	public void startCommonActivity(Bundle bundle) {
+		if (bundle == null) {
+			return;
+		}
+		Intent intent = new Intent(KeyConstants.ACTION_COMMON_ACTIVITY);
+		intent.putExtras(bundle);
+		startActivityForResult(intent, 100);
+	}
+	
+
+	/**
 	 * 后退点击事件
 	 * 
 	 * @return
 	 */
-	public abstract boolean onKeyDown(Activity activity,int keyCode, KeyEvent event);
+	public abstract boolean onKeyDown(Activity activity, Integer keyCode, KeyEvent event);
 }

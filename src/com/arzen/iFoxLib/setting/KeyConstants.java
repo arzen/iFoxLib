@@ -7,6 +7,35 @@ package com.arzen.iFoxLib.setting;
  * 
  */
 public class KeyConstants {
+
+	/**
+	 * 动态加载fragment key
+	 */
+	public static final String KEY_PACKAGE_NAME = "keyPackage";
+
+	/**
+	 * 登录loading页
+	 */
+	public static final String PKG_LOGIN_LOADING_FRAGMENT = "com.arzen.iFoxLib.fragment.LoginLoadingFragment";
+	
+	/**
+	 * 注册页面
+	 */
+	public static final String PKG_REGISTER_FRAGMENT = "com.arzen.iFoxLib.fragment.RegisterFragment";
+	
+	/**
+	 * 帐号
+	 */
+	public static final String INTENT_KEY_PHONE_NUMBER = "phone";
+	/**
+	 * 公用activty action
+	 */
+	public static final String ACTION_COMMON_ACTIVITY = "com.action.common.activty";
+	/**
+	 * 密码
+	 */
+	public static final String INTENT_KEY_PHONE_PASSWORD = "password";
+
 	/**
 	 * 支付方式 微派
 	 */
@@ -77,4 +106,18 @@ public class KeyConstants {
 	 * 支付取消。
 	 */
 	public static final String INTENT_KEY_PAY_CANCEL = "cancel";
+	
+	/**
+	 * 用户速数据shaed
+	 */
+	public static final String SHARED_NAME_USER = "user_setting";
+	/**
+	 * token
+	 */
+	public static final String SHARED_KEY_TOKEN = "token";
+	/**
+	 * 用户id
+	 */
+	public static final String SHARED_KEY_UID = "uid";
+	
 }
