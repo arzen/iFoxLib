@@ -16,7 +16,7 @@ public class KeyConstants {
 	/**
 	 * 登录loading页
 	 */
-	public static final String PKG_LOGIN_LOADING_FRAGMENT = "com.arzen.iFoxLib.fragment.LoginLoadingFragment";
+	public static final String PKG_LOGIN_LOADING_FRAGMENT = "com.arzen.iFoxLib.fragment.LoadingFragment";
 	
 	/**
 	 * 注册页面
@@ -26,7 +26,7 @@ public class KeyConstants {
 	/**
 	 * 帐号
 	 */
-	public static final String INTENT_KEY_PHONE_NUMBER = "phone";
+	public static final String INTENT_DATA_KEY_PHONE_NUMBER = "phone";
 	/**
 	 * 公用activty action
 	 */
@@ -34,7 +34,11 @@ public class KeyConstants {
 	/**
 	 * 密码
 	 */
-	public static final String INTENT_KEY_PHONE_PASSWORD = "password";
+	public static final String INTENT_DATA_KEY_PASSWORD = "password";
+	/**
+	 * 来自那里
+	 */
+	public static final String INTENT_DATA_KEY_FROM = "from";
 
 	/**
 	 * 支付方式 微派
@@ -85,27 +89,27 @@ public class KeyConstants {
 	 */
 	public static final String RECEIVER_RESULT_ACTION = "android.action.result.receiver";
 	/**
-	 * 支付结果key
+	 * 结果key
 	 */
-	public static final String INTENT_KEY_PAY_RESULT = "result";
+	public static final String INTENT_KEY_RESULT = "result";
 	/**
-	 * 支付提示key
+	 * 提示key
 	 */
-	public static final String INTENT_KEY_PAY_MSG = "showMsg";
+	public static final String INTENT_KEY_MSG = "showMsg";
 
 	/**
-	 * 支付成功
+	 * 结果成功key
 	 */
-	public static final String INTENT_KEY_PAY_SUCCESS = "success";
+	public static final String INTENT_KEY_SUCCESS = "success";
 
 	/**
-	 * 支付失败。
+	 * 结果失败。
 	 */
-	public static final String INTENT_KEY_PAY_FAIL = "fail";
+	public static final String INTENT_KEY_FAIL = "fail";
 	/**
-	 * 支付取消。
+	 * 结果取消。key
 	 */
-	public static final String INTENT_KEY_PAY_CANCEL = "cancel";
+	public static final String INTENT_KEY_CANCEL = "cancel";
 	
 	/**
 	 * 用户速数据shaed
@@ -119,5 +123,22 @@ public class KeyConstants {
 	 * 用户id
 	 */
 	public static final String SHARED_KEY_UID = "uid";
+	/**
+	 * 是否成功
+	 */
+	public static final String IS_SUCCESS = "isSuccess";
 	
+	/**
+	 * 结果回调action key
+	 */
+	public static final String RECEIVER_KEY_DISPOSE_ACTION = "disposeAction";
+	
+	/**
+	 * pay action
+	 */
+	public static final String RECEIVER_ACTION_PAY = "android.receiver.action.pay";
+	/**
+	 * login action
+	 */
+	public static final String RECEIVER_ACTION_LOGIN = "android.receiver.action.login";
 }

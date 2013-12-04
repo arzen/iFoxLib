@@ -366,16 +366,13 @@ public class PayFragment extends BaseFragment {
 	/**
 	 * 发送支付回调
 	 */
-	public void sendPayResultReceiver(Activity activity, String result, String msg) {
+	public void sendPayFailResultReceiver(Activity activity, String result, String msg) {
 		
 		Bundle bundle = new Bundle();
-		bundle.putString(KeyConstants.INTENT_KEY_PAY_RESULT, result);
-		bundle.putString(KeyConstants.INTENT_KEY_PAY_MSG, msg);
-	
-		
-		Intent intent = new Intent(KeyConstants.RECEIVER_RESULT_ACTION);
-		intent.putExtras(bundle);
-		activity.sendBroadcast(intent);
+		bundle.putString(KeyConstants.INTENT_KEY_RESULT, result);
+		bundle.putString(KeyConstants.INTENT_KEY_MSG, msg);
+		//回调广播
+		sendResultBroadcast(getActivity(), bundle, KeyConstants.RECEIVER_ACTION_PAY);
 	}
 	
 	/**
@@ -383,27 +380,26 @@ public class PayFragment extends BaseFragment {
 	 */
 	public void sendPayResultReceiver(Activity activity,String orderId, int pid,float amount,String result, String msg) {
 		
+		//回调内容
 		Bundle bundle = new Bundle();
-		bundle.putString(KeyConstants.INTENT_KEY_PAY_RESULT, result);
-		bundle.putString(KeyConstants.INTENT_KEY_PAY_MSG, msg);
+		bundle.putString(KeyConstants.INTENT_KEY_RESULT, result);
+		bundle.putString(KeyConstants.INTENT_KEY_MSG, msg);
 		bundle.putInt(KeyConstants.INTENT_DATA_KEY_PID, pid);
 		bundle.putFloat(KeyConstants.INTENT_DATA_KEY_AMOUNT, amount);
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_ORDERID, orderId);
 		
-		Intent intent = new Intent(KeyConstants.RECEIVER_RESULT_ACTION);
-		intent.putExtras(bundle);
-		activity.sendBroadcast(intent);
+		sendResultBroadcast(getActivity(), bundle, KeyConstants.RECEIVER_ACTION_PAY);
 	}
 
 	@Override
 	public boolean onKeyDown(Activity activity, Integer keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			Intent intent = new Intent(KeyConstants.RECEIVER_RESULT_ACTION);
 			Bundle bundle = new Bundle();
-			bundle.putString(KeyConstants.INTENT_KEY_PAY_RESULT, KeyConstants.INTENT_KEY_PAY_CANCEL);
-			intent.putExtras(bundle);
-			activity.sendBroadcast(intent);
+			bundle.putString(KeyConstants.INTENT_KEY_RESULT, KeyConstants.INTENT_KEY_CANCEL);
+			
+			//回调取消
+			sendResultBroadcast(activity, bundle, KeyConstants.RECEIVER_ACTION_PAY);
 			return false;
 		}
 		return true;

@@ -173,9 +173,37 @@ public abstract class BaseFragment extends Fragment {
 		}
 		Intent intent = new Intent(KeyConstants.ACTION_COMMON_ACTIVITY);
 		intent.putExtras(bundle);
-		startActivityForResult(intent, 100);
+		startActivity(intent);
 	}
 	
+	/**
+	 * 跳转通用activity
+	 * 
+	 * @param bundle
+	 */
+	public void startCommonActivityForResult(Bundle bundle,int requstCode) {
+		if (bundle == null) {
+			return;
+		}
+		Intent intent = new Intent(KeyConstants.ACTION_COMMON_ACTIVITY);
+		intent.putExtras(bundle);
+		startActivityForResult(intent, requstCode);
+	}
+	
+	/**
+	 * 发送结果回调广播
+	 * @param bundle 需要回调的内容
+	 * @param resultAction 需要回调处理的acion， KeyConstants.RECEIVER_ACTION_PAY or KeyConstants.RECEIVER_ACTION_LOGIN
+	 */
+	public void sendResultBroadcast(Activity activity,Bundle bundle,String resultAction){
+		if(activity != null && bundle != null && resultAction != null){
+			bundle.putString(KeyConstants.RECEIVER_KEY_DISPOSE_ACTION, resultAction);
+			
+			Intent intent = new Intent(KeyConstants.RECEIVER_RESULT_ACTION);
+			intent.putExtras(bundle);
+			activity.sendBroadcast(intent);
+		}
+	}
 
 	/**
 	 * 后退点击事件

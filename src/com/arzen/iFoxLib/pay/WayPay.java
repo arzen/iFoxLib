@@ -77,7 +77,7 @@ public class WayPay {
 
 			@Override
 			public void pay(Map<String, String> resultInfo) {
-				String result = resultInfo.get(KeyConstants.INTENT_KEY_PAY_RESULT); // 支付结果
+				String result = resultInfo.get(KeyConstants.INTENT_KEY_RESULT); // 支付结果
 				String payCode = resultInfo.get("payCode");// 计费点编号
 				String price = resultInfo.get("price");// 价格
 				String logCode = resultInfo.get("logCode");// 定得编号
@@ -109,7 +109,7 @@ public class WayPay {
 			// sendPayResultReceiver(activity, result, msg);
 		} else if (result.equals(FAIL)) { // 支付失败
 			if (mPayFragment != null) 
-				mPayFragment.sendPayResultReceiver(activity, result, msg);
+				mPayFragment.sendPayFailResultReceiver(activity, result, msg);
 		}
 	}
 

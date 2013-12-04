@@ -18,6 +18,12 @@ import com.arzen.iFoxLib.utils.MsgUtil;
 import com.encore.libs.utils.Log;
 
 public class LoginFragment extends BaseFragment {
+	/**
+	 * 登录requestCode
+	 */
+	public int mLoginRequestCode = 600;
+	// 注册requestCode
+	public int mRegisterRequestCode = 300;
 
 	public static final String TAG = "LoginFragment";
 
@@ -34,12 +40,18 @@ public class LoginFragment extends BaseFragment {
 	// 主程序传递过来的数据
 	private Bundle mBundle;
 
+	private String mGid;
+	private String mCid;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 
 		mBundle = getArguments();
+
+		mGid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_GID);
+		mCid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_CID);
 	}
 
 	@Override
@@ -95,15 +107,12 @@ public class LoginFragment extends BaseFragment {
 		if (check(phone, password)) {
 			Bundle bundle = new Bundle();
 			bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_LOGIN_LOADING_FRAGMENT);
-			bundle.putString(KeyConstants.INTENT_KEY_PHONE_NUMBER, phone);
-			bundle.putString(KeyConstants.INTENT_KEY_PHONE_PASSWORD, password);
-			
-			String gid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_GID);
-			String cid =  mBundle.getString(KeyConstants.INTENT_DATA_KEY_CID);
-			
-			bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, gid);
-			bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, cid); // 渠道id
-			startCommonActivity(bundle);
+			bundle.putString(KeyConstants.INTENT_DATA_KEY_PHONE_NUMBER, phone);
+			bundle.putString(KeyConstants.INTENT_DATA_KEY_PASSWORD, password);
+			bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, mGid);
+			bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, mCid); // 渠道id
+			bundle.putInt(KeyConstants.INTENT_DATA_KEY_FROM, 0);
+			startCommonActivityForResult(bundle, mLoginRequestCode);
 		}
 	}
 
@@ -113,7 +122,9 @@ public class LoginFragment extends BaseFragment {
 	public void register() {
 		Bundle bundle = new Bundle();
 		bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_REGISTER_FRAGMENT);
-		startCommonActivity(bundle);
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, mGid);
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, mCid); // 渠道id
+		startCommonActivityForResult(bundle, mRegisterRequestCode);
 	}
 
 	/**
@@ -137,13 +148,30 @@ public class LoginFragment extends BaseFragment {
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
+		if ((requestCode == mLoginRequestCode || requestCode == mRegisterRequestCode) && resultCode == Activity.RESULT_OK) {
+			boolean isSuccess = data.getBooleanExtra(KeyConstants.IS_SUCCESS,false);
+			if(isSuccess){ //如果注册成功,或登录成功返回登录信息
+				Bundle bundle = new Bundle();
+				bundle.putString(KeyConstants.INTENT_KEY_RESULT, KeyConstants.INTENT_KEY_SUCCESS); //回调成功
+				
+				sendResultBroadcast(getActivity(), bundle,  KeyConstants.RECEIVER_ACTION_LOGIN);
+			}
+		} 
 		Log.d(TAG, "onActivityResult");
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	@Override
 	public boolean onKeyDown(Activity activity, Integer keyCode, KeyEvent event) {
-		// TODO Auto-generated method stub
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			Bundle bundle = new Bundle();
+			bundle.putString(KeyConstants.INTENT_KEY_RESULT, KeyConstants.INTENT_KEY_CANCEL);
+			
+			sendResultBroadcast(activity, bundle,  KeyConstants.RECEIVER_ACTION_LOGIN);
+			return false;
+		}
 		return true;
 	}
+	
+	
 }

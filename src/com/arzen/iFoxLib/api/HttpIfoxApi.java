@@ -60,9 +60,10 @@ public class HttpIfoxApi {
 	public static final String PARAM_PID = "pid";
 
 	/**
-	 * 参数amount 价格
+	 * 参数price 价格
 	 */
-	public static final String PARAM_AMOUNT = "amount";
+	public static final String PARAM_PRICE = "price";
+	
 
 	/**
 	 * 参数type 支付类型
@@ -142,8 +143,9 @@ public class HttpIfoxApi {
 		maps.put(PARAM_CID, cid);
 		maps.put(PARAM_TOKEN, token);
 		maps.put(PARAM_PID, pid);
-		maps.put(PARAM_AMOUNT, amount);
+		maps.put(PARAM_PRICE, amount);
 		maps.put(PARAM_TYPE, payType);
+		maps.put(PARAM_CREATED,System.currentTimeMillis());
 		try {
 			maps.put(PARAM_EXTRA, URLEncoder.encode(extra, "utf-8"));
 		} catch (UnsupportedEncodingException e) {
