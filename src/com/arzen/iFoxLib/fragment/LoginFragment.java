@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.arzen.iFoxLib.R;
 import com.arzen.iFoxLib.setting.KeyConstants;
+import com.arzen.iFoxLib.setting.UserSetting;
 import com.arzen.iFoxLib.utils.MsgUtil;
 import com.encore.libs.utils.Log;
 
@@ -52,6 +53,14 @@ public class LoginFragment extends BaseFragment {
 
 		mGid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_GID);
 		mCid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_CID);
+		
+		String token = UserSetting.getUserToken(getActivity().getApplicationContext());
+		if(token != null && !token.equals("")){ //自动登录
+			String userName = UserSetting.getUserName(getActivity().getApplicationContext());
+			String pwd = UserSetting.getPwd(getActivity().getApplicationContext());
+			//自动登录
+			login(userName,pwd);
+		}
 	}
 
 	@Override
@@ -89,7 +98,9 @@ public class LoginFragment extends BaseFragment {
 				register();
 				break;
 			case R.id.btnLogin:
-				login();
+				String phone = mEtPhone.getText().toString().trim();
+				String password = mEtPassword.getText().toString().trim();
+				login(phone,password);
 				break;
 			case R.id.tvForgetPassword:
 				break;
@@ -100,9 +111,7 @@ public class LoginFragment extends BaseFragment {
 	/**
 	 * 跳转登录加载页面
 	 */
-	public void login() {
-		String phone = mEtPhone.getText().toString().trim();
-		String password = mEtPassword.getText().toString().trim();
+	public void login(String phone,String password) {
 
 		if (check(phone, password)) {
 			Bundle bundle = new Bundle();
@@ -153,6 +162,7 @@ public class LoginFragment extends BaseFragment {
 			if(isSuccess){ //如果注册成功,或登录成功返回登录信息
 				Bundle bundle = new Bundle();
 				bundle.putString(KeyConstants.INTENT_KEY_RESULT, KeyConstants.INTENT_KEY_SUCCESS); //回调成功
+				bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, data.getStringExtra(KeyConstants.INTENT_DATA_KEY_TOKEN));
 				
 				sendResultBroadcast(getActivity(), bundle,  KeyConstants.RECEIVER_ACTION_LOGIN);
 			}

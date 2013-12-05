@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/icon_bg"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="92dp"
+        android:background="@drawable/icon_login_bg"
+        android:orientation="vertical"
+        android:paddingTop="74dp" >
+
+        <EditText
+            android:id="@+id/etOldPassword"
+            style="@style/login_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入您的旧密码"
+            android:maxLength="11"
+            android:numeric="integer" />
+
+        <EditText
+            android:id="@+id/etNewPassword"
+            style="@style/login_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="@string/hint_input_password"
+            android:maxLength="8"
+            android:numeric="integer" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/btnCancel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="35dp"
+                android:layout_marginRight="3dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_register_selector"
+                android:text="取消"
+                android:textColor="#ffffff" />
+
+            <Button
+                android:id="@+id/btnChange"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="35dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_login_selector"
+                android:text="修改"
+                android:textColor="#ffffff" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="86dp"
+        android:background="@drawable/icon_common_title_bg"
+        android:gravity="center_horizontal"
+        android:paddingTop="17dp"
+        android:text="@string/login"
+        android:textColor="#ffffff"
+        android:textSize="20sp" />
+
+</RelativeLayout>

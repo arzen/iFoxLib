@@ -13,10 +13,13 @@ public class UserSetting {
 	 * @param uid
 	 * @param token
 	 */
-	public static final void saveUserData(Context context, String uid, String token) {
+	public static final void saveUserData(Context context, String uid, String token, String userName, String pwd) {
 		SettingUtils settingUtils = getSettingUtils(context);
 		settingUtils.putString(KeyConstants.SHARED_KEY_TOKEN, token);
 		settingUtils.putString(KeyConstants.SHARED_KEY_UID, uid);
+		settingUtils.putString(KeyConstants.SHARED_KEY_USERNAME, userName);
+		settingUtils.putString(KeyConstants.SHARED_KEY_PWD, pwd);
+		settingUtils.commitOperate();
 	}
 
 	/**
@@ -50,4 +53,27 @@ public class UserSetting {
 		SettingUtils settingUtils = new SettingUtils(context, KeyConstants.SHARED_NAME_USER, Context.MODE_PRIVATE);
 		return settingUtils;
 	}
+
+	/**
+	 * 获取用户用户名
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public static final String getUserName(Context context) {
+		SettingUtils settingUtils = getSettingUtils(context);
+		return settingUtils.getString(KeyConstants.SHARED_KEY_USERNAME, "");
+	}
+
+	/**
+	 * 获得密码
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public static final String getPwd(Context context) {
+		SettingUtils settingUtils = getSettingUtils(context);
+		return settingUtils.getString(KeyConstants.SHARED_KEY_PWD, "");
+	}
+
 }

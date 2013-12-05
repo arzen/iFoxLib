@@ -8,6 +8,7 @@ import java.util.Map;
 import android.app.Activity;
 import android.content.Context;
 
+import com.arzen.iFoxLib.bean.BaseBean;
 import com.arzen.iFoxLib.bean.User;
 import com.arzen.iFoxLib.bean.Order;
 import com.arzen.iFoxLib.bean.PayList;
@@ -63,7 +64,6 @@ public class HttpIfoxApi {
 	 * 参数price 价格
 	 */
 	public static final String PARAM_PRICE = "price";
-	
 
 	/**
 	 * 参数type 支付类型
@@ -87,6 +87,11 @@ public class HttpIfoxApi {
 	 * 用户密码key
 	 */
 	public static final String PARAM_PASSWORD = "passwd";
+	
+	/**
+	 * 用户新密码key
+	 */
+	public static final String PARAM_NEWPASSWORD = "new_passwd";
 
 	/**
 	 * 请求支付列表
@@ -134,8 +139,7 @@ public class HttpIfoxApi {
 	 * @param extra
 	 *            游戏上传的自定义信息
 	 */
-	public static void createOrder(Context context, String gid, String cid, String token, int pid, float amount, 
-			int payType, String extra, OnRequestListener onRequestListener) {
+	public static void createOrder(Context context, String gid, String cid, String token, int pid, float amount, int payType, String extra, OnRequestListener onRequestListener) {
 		String url = HttpSetting.IFOX_CREATE_ORDER_URL;
 
 		Map<String, Object> maps = new HashMap<String, Object>();
@@ -145,7 +149,7 @@ public class HttpIfoxApi {
 		maps.put(PARAM_PID, pid);
 		maps.put(PARAM_PRICE, amount);
 		maps.put(PARAM_TYPE, payType);
-		maps.put(PARAM_CREATED,System.currentTimeMillis());
+		maps.put(PARAM_CREATED, System.currentTimeMillis());
 		try {
 			maps.put(PARAM_EXTRA, URLEncoder.encode(extra, "utf-8"));
 		} catch (UnsupportedEncodingException e) {
@@ -164,15 +168,19 @@ public class HttpIfoxApi {
 
 	/**
 	 * 登录帐号
+	 * 
 	 * @param context
-	 * @param gid 游戏id
- 	 * @param cid 渠道id
-	 * @param userName 用户名
-	 * @param password 密码
+	 * @param gid
+	 *            游戏id
+	 * @param cid
+	 *            渠道id
+	 * @param userName
+	 *            用户名
+	 * @param password
+	 *            密码
 	 * @param onRequestListener
 	 */
-	public static void requestLogin(Context context,String gid, String cid, String userName, String password
-			, OnRequestListener onRequestListener) {
+	public static void requestLogin(Context context, String gid, String cid, String userName, String password, OnRequestListener onRequestListener) {
 		String url = HttpSetting.IFOX_LOGIN_URL;
 
 		Map<String, Object> maps = new HashMap<String, Object>();
@@ -180,7 +188,7 @@ public class HttpIfoxApi {
 		maps.put(PARAM_CID, cid);
 		maps.put(PARAM_USERNAME, userName);
 		maps.put(PARAM_PASSWORD, password);
-		
+
 		String postParam = createParams(maps);
 
 		Request request = new Request();
@@ -189,9 +197,10 @@ public class HttpIfoxApi {
 		request.setOnRequestListener(onRequestListener);
 		HttpConnectManager.getInstance(context.getApplicationContext()).doPost(request, postParam);
 	}
-	
+
 	/**
 	 * 注册帐号
+	 * 
 	 * @param context
 	 * @param gid
 	 * @param cid
@@ -199,21 +208,50 @@ public class HttpIfoxApi {
 	 * @param password
 	 * @param onRequestListener
 	 */
-	public static void requestRegister(Context context,String gid, String cid, String userName, String password
-			, OnRequestListener onRequestListener){
+	public static void requestRegister(Context context, String gid, String cid, String userName, String password, OnRequestListener onRequestListener) {
 		String url = HttpSetting.IFOX_REGISTER_URL;
-		
+
 		Map<String, Object> maps = new HashMap<String, Object>();
 		maps.put(PARAM_GID, gid);
 		maps.put(PARAM_CID, cid);
 		maps.put(PARAM_USERNAME, userName);
 		maps.put(PARAM_PASSWORD, password);
-		
+
 		String postParam = createParams(maps);
 
 		Request request = new Request();
 		request.setUrl(url);
 		request.setParser(new JsonParser(User.class));
+		request.setOnRequestListener(onRequestListener);
+		HttpConnectManager.getInstance(context.getApplicationContext()).doPost(request, postParam);
+	}
+
+	/**
+	 * 修改密码
+	 * 
+	 * @param context
+	 * @param gid
+	 * @param cid
+	 * @param token
+	 * @param oldPassword
+	 * @param newPassword
+	 * @param onRequestListener
+	 */
+	public static void requestChangePassword(Context context, String gid, String cid, String token, String oldPassword, String newPassword, OnRequestListener onRequestListener) {
+		String url = HttpSetting.IFOX_CHANGEPASSWORD_URL;
+
+		Map<String, Object> maps = new HashMap<String, Object>();
+		maps.put(PARAM_GID, gid);
+		maps.put(PARAM_CID, cid);
+		maps.put(PARAM_TOKEN, token);
+		maps.put(PARAM_PASSWORD, oldPassword);
+		maps.put(PARAM_NEWPASSWORD, newPassword);
+
+		String postParam = createParams(maps);
+
+		Request request = new Request();
+		request.setUrl(url);
+		request.setParser(new JsonParser(BaseBean.class));
 		request.setOnRequestListener(onRequestListener);
 		HttpConnectManager.getInstance(context.getApplicationContext()).doPost(request, postParam);
 	}

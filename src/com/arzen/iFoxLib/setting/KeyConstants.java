@@ -17,12 +17,12 @@ public class KeyConstants {
 	 * 登录loading页
 	 */
 	public static final String PKG_LOGIN_LOADING_FRAGMENT = "com.arzen.iFoxLib.fragment.LoadingFragment";
-	
+
 	/**
 	 * 注册页面
 	 */
 	public static final String PKG_REGISTER_FRAGMENT = "com.arzen.iFoxLib.fragment.RegisterFragment";
-	
+
 	/**
 	 * 帐号
 	 */
@@ -110,7 +110,7 @@ public class KeyConstants {
 	 * 结果取消。key
 	 */
 	public static final String INTENT_KEY_CANCEL = "cancel";
-	
+
 	/**
 	 * 用户速数据shaed
 	 */
@@ -123,16 +123,26 @@ public class KeyConstants {
 	 * 用户id
 	 */
 	public static final String SHARED_KEY_UID = "uid";
+
+	/**
+	 * 用户帐号
+	 */
+	public static final String SHARED_KEY_USERNAME = "uname";
+	/**
+	 * 用户密码
+	 */
+	public static final String SHARED_KEY_PWD = "pwd";
+
 	/**
 	 * 是否成功
 	 */
 	public static final String IS_SUCCESS = "isSuccess";
-	
+
 	/**
 	 * 结果回调action key
 	 */
 	public static final String RECEIVER_KEY_DISPOSE_ACTION = "disposeAction";
-	
+
 	/**
 	 * pay action
 	 */
@@ -141,4 +151,17 @@ public class KeyConstants {
 	 * login action
 	 */
 	public static final String RECEIVER_ACTION_LOGIN = "android.receiver.action.login";
+	/**
+	 * change password action
+	 */
+	public static final String RECEIVER_ACTION_CHANGE_PASSWORD = "android.receiver.action.changepassword";
+
+	/**
+	 * intent 传递数据key ->旧密码
+	 */
+	public static String INTENT_DATA_KEY_OLDPASSWORD = "oldPassword";
+	/**
+	 * intent 传递数据key ->新密码
+	 */
+	public static String INTENT_DATA_KEY_NEWPASSWORD = "newPassword";
 }

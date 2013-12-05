@@ -6,12 +6,14 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.arzen.iFoxLib.R;
 import com.arzen.iFoxLib.api.HttpIfoxApi;
 import com.arzen.iFoxLib.api.HttpSetting;
+import com.arzen.iFoxLib.bean.BaseBean;
 import com.arzen.iFoxLib.bean.User;
 import com.arzen.iFoxLib.setting.KeyConstants;
 import com.arzen.iFoxLib.setting.UserSetting;
@@ -25,6 +27,7 @@ public class LoadingFragment extends BaseFragment {
 	public static final String TAG = "LoginLoadingFragment";
 
 	private TextView mTvUserName;
+	private TextView mTvChangeUser;
 
 	public Bundle mBundle;
 
@@ -32,7 +35,7 @@ public class LoadingFragment extends BaseFragment {
 	private String mPassword;
 	private String mCid;
 	private String mGid;
-	private int mFrom = -1; // 0 = 登录页跳转过来 1 = 注册页跳转过来
+	private int mFrom = -1; // 0 = 登录页跳转过来 1 = 注册页跳转过来 2 = 修改密码跳转过来
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -70,6 +73,8 @@ public class LoadingFragment extends BaseFragment {
 		} else if (mFrom == 1) {
 			// 注册
 			register();
+		} else if (mFrom == 2) {
+			changePassword();
 		}
 
 	}
@@ -81,20 +86,41 @@ public class LoadingFragment extends BaseFragment {
 	 */
 	public void initUI(View view) {
 		mTvUserName = (TextView) view.findViewById(R.id.tvUserName);
-
+		mTvChangeUser = (TextView) view.findViewById(R.id.tvChangeUser);
 		if (mFrom == 0) {
 			mTvUserName.setText("用户帐号:" + mPhoneNumber);
+			mTvChangeUser.setVisibility(View.VISIBLE);
 		} else if (mFrom == 1) {
 			mTvUserName.setText("注册帐号:" + mPhoneNumber);
+			mTvChangeUser.setVisibility(View.GONE);
+		} else if (mFrom == 2) {
+			mTvUserName.setText("修改密码");
+			mTvChangeUser.setVisibility(View.GONE);
 		}
+
+		/**
+		 * 切换账户
+		 */
+		mTvChangeUser.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent();
+				boolean isSuccess = false;
+				intent.putExtra(KeyConstants.IS_SUCCESS, isSuccess);
+				getActivity().setResult(Activity.RESULT_OK, intent);
+				getActivity().finish();
+			}
+		});
 	}
 
 	/**
 	 * 请求登录
 	 */
 	public void login() {
-		mPassword = MD5Util.getMD5String(mPassword); // 密码需要md5
-		HttpIfoxApi.requestLogin(getActivity(), mGid, mCid, mPhoneNumber, mPassword, new OnRequestListener() {
+		String password = MD5Util.getMD5String(mPassword); // 密码需要md5
+		HttpIfoxApi.requestLogin(getActivity(), mGid, mCid, mPhoneNumber, password, new OnRequestListener() {
 
 			@Override
 			public void onResponse(final String url, final int state, final Object result, final int type) {
@@ -108,12 +134,14 @@ public class LoadingFragment extends BaseFragment {
 						{
 							return;
 						}
+						Intent intent = new Intent();
 						boolean isSuccess = false;
 						if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof User) {
 							User login = (User) result;
 							if (login.getCode() == HttpSetting.RESULT_CODE_OK) {
-								MsgUtil.msg("登录成功", getActivity());
-								saveData(login.getData().getUid(), login.getData().getToken());
+								// MsgUtil.msg("登录成功", getActivity());
+								intent.putExtra(KeyConstants.INTENT_DATA_KEY_TOKEN, login.getData().getToken());
+								saveData(login.getData().getUid(), login.getData().getToken(), mPhoneNumber, mPassword);
 								isSuccess = true;
 							} else {
 								MsgUtil.msg(login.getMsg(), getActivity());
@@ -123,7 +151,7 @@ public class LoadingFragment extends BaseFragment {
 						} else { // 请求失败
 							MsgUtil.msg(getString(R.string.request_fail), getActivity());
 						}
-						Intent intent = new Intent();
+
 						intent.putExtra(KeyConstants.IS_SUCCESS, isSuccess);
 						getActivity().setResult(Activity.RESULT_OK, intent);
 						getActivity().finish();
@@ -134,7 +162,9 @@ public class LoadingFragment extends BaseFragment {
 	}
 
 	public void register() {
-		mPassword = MD5Util.getMD5String(mPassword); // 密码需要md5
+		// mPassword = MD5Util.getMD5String(mPassword); // 密码需要md5
+
+		// 注册时不需要md5
 		HttpIfoxApi.requestRegister(getActivity(), mGid, mCid, mPhoneNumber, mPassword, new OnRequestListener() {
 
 			@Override
@@ -149,12 +179,14 @@ public class LoadingFragment extends BaseFragment {
 						{
 							return;
 						}
+						Intent intent = new Intent();
 						boolean isSuccess = false;
 						if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof User) {
 							User login = (User) result;
 							if (login.getCode() == HttpSetting.RESULT_CODE_OK) {
 								MsgUtil.msg("注册成功", getActivity());
-								saveData(login.getData().getUid(), login.getData().getToken());
+								intent.putExtra(KeyConstants.INTENT_DATA_KEY_TOKEN, login.getData().getToken());
+								saveData(login.getData().getUid(), login.getData().getToken(), mPhoneNumber, mPassword);
 								isSuccess = true;
 							} else {
 								MsgUtil.msg(login.getMsg(), getActivity());
@@ -164,8 +196,60 @@ public class LoadingFragment extends BaseFragment {
 						} else { // 请求失败
 							MsgUtil.msg(getString(R.string.request_fail), getActivity());
 						}
-						
+
+						intent.putExtra(KeyConstants.IS_SUCCESS, isSuccess);
+						getActivity().setResult(Activity.RESULT_OK, intent);
+						getActivity().finish();
+					}
+				});
+			}
+		});
+	}
+
+	/**
+	 * 修改密码
+	 */
+	public void changePassword() {
+		if (mBundle == null) {
+			return;
+		}
+		String token = mBundle.getString(KeyConstants.INTENT_DATA_KEY_TOKEN);
+		String oldPassword = mBundle.getString(KeyConstants.INTENT_DATA_KEY_OLDPASSWORD);
+		String newPassword = mBundle.getString(KeyConstants.INTENT_DATA_KEY_OLDPASSWORD);
+
+		// oldPassword = MD5Util.getMD5String(oldPassword); // 密码需要md5
+		// newPassword = MD5Util.getMD5String(newPassword);
+
+		HttpIfoxApi.requestChangePassword(getActivity(), mGid, mCid, token, oldPassword, newPassword, new OnRequestListener() {
+
+			@Override
+			public void onResponse(final String url, final int state, final Object result, final int type) {
+				// TODO Auto-generated method stub
+				mHandler.post(new Runnable() {
+
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						if (!isAdded()) // fragment 已退出,返回
+						{
+							return;
+						}
 						Intent intent = new Intent();
+						boolean isSuccess = false;
+						if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof BaseBean) {
+							BaseBean baseBean = (BaseBean) result;
+							if (baseBean.getCode() == HttpSetting.RESULT_CODE_OK) {
+								MsgUtil.msg("修改成功", getActivity());
+								isSuccess = true;
+							} else {
+								MsgUtil.msg(baseBean.getMsg(), getActivity());
+							}
+						} else if (state == HttpConnectManager.STATE_TIME_OUT) { // 请求超时
+							MsgUtil.msg(getString(R.string.time_out), getActivity());
+						} else { // 请求失败
+							MsgUtil.msg(getString(R.string.request_fail), getActivity());
+						}
+
 						intent.putExtra(KeyConstants.IS_SUCCESS, isSuccess);
 						getActivity().setResult(Activity.RESULT_OK, intent);
 						getActivity().finish();
@@ -178,8 +262,8 @@ public class LoadingFragment extends BaseFragment {
 	/**
 	 * 保存数据
 	 */
-	public void saveData(String uid, String token) {
-		UserSetting.saveUserData(getActivity(), uid, token);
+	public void saveData(String uid, String token, String userName, String password) {
+		UserSetting.saveUserData(getActivity(), uid, token, userName, password);
 	}
 
 	@Override

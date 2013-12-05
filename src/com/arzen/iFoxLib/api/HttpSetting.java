@@ -42,6 +42,10 @@ public class HttpSetting {
 	public static final String IFOX_REGISTER_URL = IFOX_SERVER_URL+ "/account/register.php";
 	
 	/**
+	 * 修改密码url
+	 */
+	public static final String IFOX_CHANGEPASSWORD_URL = IFOX_SERVER_URL+ "/account/modify.php";
+	/**
 	 * 检查是否有更新url
 	 */
 	public static final String IFOX_UPDATE_DYNAMICLIB = IFOX_SERVER_URL + "/app/bizz.php";
