@@ -1,20 +1,15 @@
 package com.arzen.iFoxLib.fragment;
 
-import java.util.Map;
-
-import android.R.string;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Intent;
-import android.graphics.Path;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.arzen.iFoxLib.R;
 import com.arzen.iFoxLib.api.HttpIfoxApi;
@@ -25,8 +20,6 @@ import com.arzen.iFoxLib.bean.PayList.Data;
 import com.arzen.iFoxLib.pay.WayPay;
 import com.arzen.iFoxLib.setting.KeyConstants;
 import com.arzen.iFoxLib.utils.MsgUtil;
-import com.bx.pay.ApkUpdate;
-import com.bx.pay.ApkUpdate.ApkUpdateCallback;
 import com.encore.libs.http.HttpConnectManager;
 import com.encore.libs.http.OnRequestListener;
 import com.encore.libs.utils.Log;
@@ -38,6 +31,15 @@ public class PayFragment extends BaseFragment {
 	private Button mBtnWiipay;
 	private Button mBtnAlipay;
 	private Button mBtnUnionpay;
+	
+	//微派支付
+	private TextView mTvWayPay;
+	//支付宝
+	private TextView mTvAlipay;
+	//银联支付
+	private TextView mTvUnionpay;
+	//支付帮助
+	private TextView mTvHelp;
 
 	// 微派支付工具类
 	private WayPay mWayPay;
@@ -86,10 +88,20 @@ public class PayFragment extends BaseFragment {
 		mBtnWiipay = (Button) view.findViewById(R.id.btnWiipay);
 		mBtnAlipay = (Button) view.findViewById(R.id.btnAlipay);
 		mBtnUnionpay = (Button) view.findViewById(R.id.btnUnionpay);
+		
+		mTvWayPay = (TextView) view.findViewById(R.id.tvWayPay);
+		mTvAlipay = (TextView) view.findViewById(R.id.tvAlipay);
+		mTvUnionpay = (TextView) view.findViewById(R.id.tvUnionpay);
+		mTvHelp = (TextView) view.findViewById(R.id.tvHelp);
 
 		mBtnWiipay.setOnClickListener(mOnClickListener);
 		mBtnAlipay.setOnClickListener(mOnClickListener);
 		mBtnUnionpay.setOnClickListener(mOnClickListener);
+		
+		mTvWayPay.setOnClickListener(mOnClickListener);
+		mTvAlipay.setOnClickListener(mOnClickListener);
+		mTvUnionpay.setOnClickListener(mOnClickListener);
+		mTvHelp.setOnClickListener(mOnClickListener);
 
 		setOnRefreshClickListener(mOnRefreshClickListener);
 	}
@@ -232,18 +244,18 @@ public class PayFragment extends BaseFragment {
 	 */
 	public void toWayPay() {
 		// 检测微派支付有没更新
-		new ApkUpdate(getActivity(), new ApkUpdateCallback() {
-			@Override
-			public void launch(Map<String, String> arg0) {
-				// TODO Auto-generated method stub
-				mReTryCreateOrderCount = 4;
-				if (mWayPay == null) {
-					mWayPay = new WayPay(mBundle);
-				}
-				Log.d("PayFragment", getActivity().toString());
-				mWayPay.toPay(PayFragment.this, getActivity(), "0001");
-			}
-		});
+//		new ApkUpdate(getActivity(), new ApkUpdateCallback() {
+//			@Override
+//			public void launch(Map<String, String> arg0) {
+//				// TODO Auto-generated method stub
+//				mReTryCreateOrderCount = 4;
+//				if (mWayPay == null) {
+//					mWayPay = new WayPay(mBundle);
+//				}
+//				Log.d("PayFragment", getActivity().toString());
+//				mWayPay.toPay(PayFragment.this, getActivity(), "0001");
+//			}
+//		});
 	}
 
 	/**
