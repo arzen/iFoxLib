@@ -32,6 +32,10 @@ public class KeyConstants {
 	 */
 	public static final String ACTION_COMMON_ACTIVITY = "com.action.common.activty";
 	/**
+	 * 创建订单action
+	 */
+	public static final String ACTION_CREATEORDER_ACTIVITY = "com.action.create.order.receiver";
+	/**
 	 * 密码
 	 */
 	public static final String INTENT_DATA_KEY_PASSWORD = "password";
@@ -53,6 +57,11 @@ public class KeyConstants {
 	 */
 	public static final int PAY_TYPE_UNIONPAY = 3;
 
+	
+	/**
+	 * intent 传递数据key ->支付方式
+	 */
+	public static String INTENT_DATA_KEY_PAY_TYPE = "payType";
 	/**
 	 * intent 传递数据key ->gid游戏id
 	 */
@@ -164,4 +173,34 @@ public class KeyConstants {
 	 * intent 传递数据key ->新密码
 	 */
 	public static String INTENT_DATA_KEY_NEWPASSWORD = "newPassword";
+	
+	/**
+	 * 支付成功
+	 */
+	public static final String SUCCESS = "success";
+	/**
+	 * 表示在付费周期里已经成功付费，已经是付费用户。
+	 */
+	public static final String PASS = "pass";
+	/**
+	 * 表示计费点暂时停止。
+	 */
+	public static final String PAUSE = "pause";
+	/**
+	 * 本地联网失败
+	 */
+	public static final String ERROR = "error";
+	/**
+	 * 支付失败。
+	 */
+	public static final String FAIL = "fail";
+	/**
+	 * 表示用户取消支付。
+	 */
+	public static final String CANCEL = "cancel";
+	
+	/**
+	 * 支付action
+	 */
+	public static final String RECEIVER_PAY_START_ACTION = "android.action.pay.start.receiver";
 }
