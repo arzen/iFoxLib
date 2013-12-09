@@ -71,10 +71,10 @@
                 android:layout_marginLeft="12dp"
                 android:layout_marginRight="12dp"
                 android:background="@drawable/icon_pay_select_bg"
-                android:padding="1dp"
-                android:stretchColumns="*" 
-                
-                >
+                android:paddingTop="2dp"
+                android:paddingLeft="3dp"
+                android:paddingRight="2dp"
+                android:stretchColumns="*" >
 
                 <TableRow>
 
@@ -113,7 +113,7 @@
                     <TextView
                         android:id="@+id/tv50"
                         style="@style/price_item"
-                        android:text="60元" />
+                        android:text="50元" />
 
                     <TextView
                         android:id="@+id/tv30"
@@ -146,13 +146,16 @@
                         android:text="其他金额" />
 
                     <EditText
+                        android:id="@+id/etCusPrice"
                         android:layout_width="match_parent"
                         android:layout_height="33dp"
                         android:layout_span="3"
                         android:background="@null"
                         android:hint="在这里输入其他金额"
                         android:paddingLeft="5dp"
+                        android:maxLength="6"
                         android:paddingRight="5dp"
+                        android:numeric="integer"
                         android:textSize="12sp" />
                 </TableRow>
             </TableLayout>

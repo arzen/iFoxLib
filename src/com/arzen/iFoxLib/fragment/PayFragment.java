@@ -7,12 +7,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.arzen.iFoxLib.R;
@@ -40,7 +43,6 @@ public class PayFragment extends BaseFragment {
 	private TextView mTvUnionpay;
 	// 支付帮助
 	private TextView mTvHelp;
-
 	// 微派支付工具类
 	private WayPay mWayPay;
 	// 主程序传递过来的数据
@@ -55,13 +57,27 @@ public class PayFragment extends BaseFragment {
 	private boolean mIsCreateingOrder = false;
 	// 订单请求出错后重试次数
 	public int mReTryCreateOrderCount = 4;
-
+	// 当前tab id
 	public int mCurrentTab = -1;
+	// 选中的textView
 	public TextView mTvSelectedText;
-
+	// 价格view
 	public View mViewPrice;
-
+	// 支付按钮
 	public Button mBtnPay;
+	
+	
+	private TextView mTv100;
+	private TextView mTv200;
+	private TextView mTv500;
+	private TextView mTv1000;
+	private TextView mTv50;
+	private TextView mTv30;
+	private TextView mTv20;
+	private TextView mTv10;
+	private EditText mEtCusPrice;
+	//当前选中text
+	private TextView mCurrentSelectPrice; 
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -108,9 +124,100 @@ public class PayFragment extends BaseFragment {
 		mTvUnionpay.setOnClickListener(mOnClickListener);
 		mTvHelp.setOnClickListener(mOnClickListener);
 		mBtnPay.setOnClickListener(mPayClickListener);
-
 		setOnRefreshClickListener(mOnRefreshClickListener);
+		
+		
+		
+		mTv100 = (TextView) view.findViewById(R.id.tv100);
+		mTv200 = (TextView) view.findViewById(R.id.tv200);
+		mTv500 = (TextView) view.findViewById(R.id.tv500);
+		mTv1000 = (TextView) view.findViewById(R.id.tv1000);
+		mTv50 = (TextView) view.findViewById(R.id.tv50);
+		mTv30 = (TextView) view.findViewById(R.id.tv30);
+		mTv20 = (TextView) view.findViewById(R.id.tv20);
+		mTv10 = (TextView) view.findViewById(R.id.tv10);
+		mEtCusPrice = (EditText) view.findViewById(R.id.etCusPrice);
+		
+		mTv100.setOnClickListener(mOnPriceClickListener);
+		mTv200.setOnClickListener(mOnPriceClickListener);
+		mTv500.setOnClickListener(mOnPriceClickListener);
+		mTv1000.setOnClickListener(mOnPriceClickListener);
+		mTv50.setOnClickListener(mOnPriceClickListener);
+		mTv30.setOnClickListener(mOnPriceClickListener);
+		mTv20.setOnClickListener(mOnPriceClickListener);
+		mTv10.setOnClickListener(mOnPriceClickListener);
+		
+		mEtCusPrice.addTextChangedListener(new TextWatcher() {
+			
+			@Override
+			public void onTextChanged(CharSequence c, int arg1, int arg2, int arg3) {
+				// TODO Auto-generated method stub
+				initPriceSelected();
+				mCurrentSelectPrice = null;
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void afterTextChanged(Editable arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 	}
+	
+	private void initPriceSelected()
+	{
+		mTv100.setSelected(false);
+		mTv200.setSelected(false);
+		mTv500.setSelected(false);
+		mTv1000.setSelected(false);
+		mTv50.setSelected(false);
+		mTv30.setSelected(false);
+		mTv20.setSelected(false);
+		mTv10.setSelected(false);
+	}
+	
+	public OnClickListener mOnPriceClickListener = new OnClickListener() {
+		
+		@Override
+		public void onClick(View view) {
+			// TODO Auto-generated method stub
+			mEtCusPrice.setText("");
+			initPriceSelected();
+			switch (view.getId()) {
+			case R.id.tv100:
+				mTv100.setSelected(true);
+				break;
+			case R.id.tv200:
+				mTv200.setSelected(true);
+				break;
+			case R.id.tv500:
+				mTv500.setSelected(true);
+				break;
+			case R.id.tv1000:
+				mTv1000.setSelected(true);
+				break;
+			case R.id.tv50:
+				mTv50.setSelected(true);
+				break;
+			case R.id.tv30:
+				mTv30.setSelected(true);
+				break;
+			case R.id.tv20:
+				mTv20.setSelected(true);
+				break;
+			case R.id.tv10:
+				mTv10.setSelected(true);
+				break;
+			}
+			mCurrentSelectPrice = (TextView) view;
+		}
+	};
 
 	/**
 	 * 刷新按钮
@@ -204,6 +311,7 @@ public class PayFragment extends BaseFragment {
 		//
 		mTvSelectedText.setVisibility(View.GONE);
 		mViewPrice.setVisibility(View.GONE);
+		mBtnPay.setVisibility(View.VISIBLE);
 		switch (id) {
 		case R.id.tvWayPay:
 			mTvSelectedText.setVisibility(View.VISIBLE);
@@ -216,10 +324,11 @@ public class PayFragment extends BaseFragment {
 			mTvSelectedText.setText("请选择支付面额");
 			break;
 		case R.id.tvHelp:
+			mBtnPay.setVisibility(View.GONE);
 			break;
 		}
 		mCurrentTab = id;
-		mBtnPay.setVisibility(View.VISIBLE);
+		
 	}
 
 	@Override
@@ -322,6 +431,19 @@ public class PayFragment extends BaseFragment {
 				break;
 			case R.id.tvAlipay:
 			case R.id.tvUnionpay:
+				if(mCurrentSelectPrice != null || !mEtCusPrice.getText().toString().equals("")){
+					int price = 0;
+					if(mCurrentSelectPrice != null ){
+						String p = mCurrentSelectPrice.getText().toString();
+						price = Integer.parseInt(p.substring(0, p.lastIndexOf("元")));
+					
+					}else{
+						price = Integer.parseInt(mEtCusPrice.getText().toString());
+					}
+					MsgUtil.msg(price + "", getActivity());
+				}else{
+					MsgUtil.msg("请'选择/输入'需要充值的金额", getActivity());
+				}
 				break;
 			}
 		}
