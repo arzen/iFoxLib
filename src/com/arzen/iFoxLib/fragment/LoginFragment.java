@@ -129,11 +129,25 @@ public class LoginFragment extends BaseFragment {
 	 * 跳转注册
 	 */
 	public void register() {
-		Bundle bundle = new Bundle();
-		bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_REGISTER_FRAGMENT);
-		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, mGid);
-		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, mCid); // 渠道id
-		startCommonActivityForResult(bundle, mRegisterRequestCode);
+//		Bundle bundle = new Bundle();
+//		bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_REGISTER_FRAGMENT);
+//		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, mGid);
+//		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, mCid); // 渠道id
+//		startCommonActivityForResult(bundle, mRegisterRequestCode);
+		
+		String phone = mEtPhone.getText().toString().trim();
+		String password = mEtPassword.getText().toString().trim();
+
+		if (check(phone, password)) {
+			Bundle bundle = new Bundle();
+			bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_LOGIN_LOADING_FRAGMENT);
+			bundle.putString(KeyConstants.INTENT_DATA_KEY_PHONE_NUMBER, phone);
+			bundle.putString(KeyConstants.INTENT_DATA_KEY_PASSWORD, password);
+			bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, mGid);
+			bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, mCid); // 渠道id
+			bundle.putInt(KeyConstants.INTENT_DATA_KEY_FROM, 1);
+			startCommonActivityForResult(bundle, 0x01);
+		}
 	}
 
 	/**
