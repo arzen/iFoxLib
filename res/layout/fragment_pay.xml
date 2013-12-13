@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/icon_bg"
     android:orientation="vertical" >
 
     <TextView
+        android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/icon_pay_top_bg"
@@ -17,181 +18,167 @@
     <LinearLayout
         android:id="@+id/viewContent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/header"
         android:orientation="vertical" >
 
         <LinearLayout
-            android:id="@+id/viewPayType"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/icon_pay_type_bg"
-            android:orientation="horizontal" >
-
-            <TextView
-                android:id="@+id/tvWayPay"
-                style="@style/pay_selected_style"
-                android:text="微派支付" />
-
-            <TextView
-                android:id="@+id/tvAlipay"
-                style="@style/pay_selected_style"
-                android:text="支付宝" />
-
-            <TextView
-                android:id="@+id/tvUnionpay"
-                style="@style/pay_selected_style"
-                android:text="银联卡" />
-
-            <TextView
-                android:id="@+id/tvHelp"
-                style="@style/pay_selected_style"
-                android:text="充值帮助" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
             android:orientation="vertical" >
 
-            <TextView
-                android:id="@+id/tvSelectedText"
+            <LinearLayout
+                android:id="@+id/viewPayType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
-                android:gravity="center"
-                android:text="请选择支付面额"
-                android:textColor="#4d4d4d"
-                android:textSize="14sp" />
+                android:background="@drawable/icon_pay_type_bg"
+                android:orientation="horizontal" >
 
-            <TableLayout
-                android:id="@+id/viewPrice"
+                <TextView
+                    android:id="@+id/tvWayPay"
+                    style="@style/pay_selected_style"
+                    android:text="微派支付" />
+
+                <TextView
+                    android:id="@+id/tvAlipay"
+                    style="@style/pay_selected_style"
+                    android:text="支付宝" />
+
+                <TextView
+                    android:id="@+id/tvUnionpay"
+                    style="@style/pay_selected_style"
+                    android:text="银联卡" />
+
+                <TextView
+                    android:id="@+id/tvHelp"
+                    style="@style/pay_selected_style"
+                    android:text="充值帮助" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="12dp"
-                android:layout_marginRight="12dp"
-                android:background="@drawable/icon_pay_select_bg"
-                android:paddingTop="2dp"
-                android:paddingLeft="3dp"
-                android:paddingRight="2dp"
-                android:stretchColumns="*" >
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
 
-                <TableRow>
-
-                    <TextView
-                        android:id="@+id/tv100"
-                        style="@style/price_item"
-                        android:layout_weight="0"
-                        android:background="@drawable/btn_pay_left_top_selector"
-                        android:text="100元" />
-
-                    <TextView
-                        android:id="@+id/tv200"
-                        style="@style/price_item"
-                        android:text="200元" />
-
-                    <TextView
-                        android:id="@+id/tv500"
-                        style="@style/price_item"
-                        android:text="500元" />
-
-                    <TextView
-                        android:id="@+id/tv1000"
-                        style="@style/price_item"
-                        android:background="@drawable/btn_pay_right_top_selector"
-                        android:drawableRight="@null"
-                        android:text="1000元" />
-                </TableRow>
-
-                <ImageView
+                <TextView
+                    android:id="@+id/tvSelectedText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/icon_line" />
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:text="请选择支付面额"
+                    android:textColor="#4d4d4d"
+                    android:textSize="14sp" />
 
-                <TableRow>
-
-                    <TextView
-                        android:id="@+id/tv50"
-                        style="@style/price_item"
-                        android:text="50元" />
-
-                    <TextView
-                        android:id="@+id/tv30"
-                        style="@style/price_item"
-                        android:text="30元" />
-
-                    <TextView
-                        android:id="@+id/tv20"
-                        style="@style/price_item"
-                        android:text="20元" />
-
-                    <TextView
-                        android:id="@+id/tv10"
-                        style="@style/price_item"
-                        android:drawableRight="@null"
-                        android:text="10元" />
-                </TableRow>
-
-                <ImageView
+                <TableLayout
+                    android:id="@+id/viewPrice"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/icon_line" />
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginRight="12dp"
+                    android:background="@drawable/icon_pay_select_bg"
+                    android:paddingLeft="3dp"
+                    android:paddingRight="2dp"
+                    android:paddingTop="2dp"
+                    android:stretchColumns="*" >
 
-                <TableRow>
+                    <TableRow>
 
-                    <TextView
-                        android:id="@+id/tvRest"
-                        style="@style/price_item"
-                        android:layout_span="1"
-                        android:text="其他金额" />
+                        <TextView
+                            android:id="@+id/tv100"
+                            style="@style/price_item"
+                            android:layout_weight="0"
+                            android:background="@drawable/btn_pay_left_top_selector"
+                            android:text="100元" />
 
-                    <EditText
-                        android:id="@+id/etCusPrice"
+                        <TextView
+                            android:id="@+id/tv200"
+                            style="@style/price_item"
+                            android:text="200元" />
+
+                        <TextView
+                            android:id="@+id/tv500"
+                            style="@style/price_item"
+                            android:text="500元" />
+
+                        <TextView
+                            android:id="@+id/tv1000"
+                            style="@style/price_item"
+                            android:background="@drawable/btn_pay_right_top_selector"
+                            android:drawableRight="@null"
+                            android:text="1000元" />
+                    </TableRow>
+
+                    <ImageView
                         android:layout_width="match_parent"
-                        android:layout_height="33dp"
-                        android:layout_span="3"
-                        android:background="@null"
-                        android:hint="在这里输入其他金额"
-                        android:paddingLeft="5dp"
-                        android:maxLength="6"
-                        android:paddingRight="5dp"
-                        android:numeric="integer"
-                        android:textSize="12sp" />
-                </TableRow>
-            </TableLayout>
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/icon_line" />
 
-            <Button
-                android:id="@+id/btnWiipay"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="微派支付"
-                android:visibility="gone" />
+                    <TableRow>
 
-            <Button
-                android:id="@+id/btnAlipay"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="支付宝支付"
-                android:visibility="gone" />
+                        <TextView
+                            android:id="@+id/tv50"
+                            style="@style/price_item"
+                            android:text="50元" />
 
-            <Button
-                android:id="@+id/btnUnionpay"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="银联支付"
-                android:visibility="gone" />
+                        <TextView
+                            android:id="@+id/tv30"
+                            style="@style/price_item"
+                            android:text="30元" />
+
+                        <TextView
+                            android:id="@+id/tv20"
+                            style="@style/price_item"
+                            android:text="20元" />
+
+                        <TextView
+                            android:id="@+id/tv10"
+                            style="@style/price_item"
+                            android:drawableRight="@null"
+                            android:text="10元" />
+                    </TableRow>
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/icon_line" />
+
+                    <TableRow>
+
+                        <TextView
+                            android:id="@+id/tvRest"
+                            style="@style/price_item"
+                            android:layout_span="1"
+                            android:text="其他金额" />
+
+                        <EditText
+                            android:id="@+id/etCusPrice"
+                            android:layout_width="match_parent"
+                            android:layout_height="33dp"
+                            android:layout_span="3"
+                            android:background="@null"
+                            android:hint="在这里输入其他金额"
+                            android:maxLength="6"
+                            android:numeric="integer"
+                            android:paddingLeft="5dp"
+                            android:paddingRight="5dp"
+                            android:textSize="12sp" />
+                    </TableRow>
+                </TableLayout>
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
 
-    <Button
-        android:id="@+id/btnPay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/button_pay_selector"
-        android:text="立即充值"
-        android:textColor="@color/white" />
+        <Button
+            android:id="@+id/btnPay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/button_pay_selector"
+            android:text="立即充值"
+            android:textColor="@color/white" />
+    </LinearLayout>
 
     <include
         android:id="@+id/notNetWork"
@@ -203,4 +190,4 @@
         layout="@layout/common_loading_layout"
         android:visibility="gone" />
 
-</LinearLayout>
+</RelativeLayout>

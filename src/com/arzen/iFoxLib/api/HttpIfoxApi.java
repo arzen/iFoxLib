@@ -255,6 +255,18 @@ public class HttpIfoxApi {
 		request.setOnRequestListener(onRequestListener);
 		HttpConnectManager.getInstance(context.getApplicationContext()).doPost(request, postParam);
 	}
+	/**
+	 * 得到流水号
+	 * @param context
+	 * @param onRequestListener
+	 */
+	public static void requestTnNumber(Context context,OnRequestListener onRequestListener){
+		String url = HttpSetting.MERCHANT_SERVER;
+		Request request = new Request();
+		request.setUrl(url);
+		request.setOnRequestListener(onRequestListener);
+		HttpConnectManager.getInstance(context.getApplicationContext()).doPost(request);
+	};
 
 	/**
 	 * 创建参数

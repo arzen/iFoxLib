@@ -35,6 +35,11 @@ public class KeyConstants {
 	 * 创建订单action
 	 */
 	public static final String ACTION_CREATEORDER_ACTIVITY = "com.action.create.order.receiver";
+	
+	/**
+	 * 支付结果action
+	 */
+	public static final String ACTION_PAY_RESULT_RECEIVER = "com.action.pay.result.receiver";
 	/**
 	 * 密码
 	 */
@@ -57,6 +62,10 @@ public class KeyConstants {
 	 */
 	public static final int PAY_TYPE_UNIONPAY = 3;
 
+	/**
+	 * intent 传递数据key ->支付流水号
+	 */
+	public static String INTENT_DATA_KEY_PAY_TN = "tn";
 	
 	/**
 	 * intent 传递数据key ->支付方式

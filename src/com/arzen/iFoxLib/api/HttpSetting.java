@@ -49,6 +49,12 @@ public class HttpSetting {
 	 * 检查是否有更新url
 	 */
 	public static final String IFOX_UPDATE_DYNAMICLIB = IFOX_SERVER_URL + "/app/bizz.php";
+	
+	
+	// 商户服务器地址
+	public static final String MERCHANT_SERVER = "http://202.104.148.76/merchant_server/SubmitOrder";
+	private final String MODE_RELEASE = "00"; // 正式
+	private final String MODE_TEST = "01"; // 测试
 
 	/**
 	 * 获取服务器url
