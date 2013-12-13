@@ -16,14 +16,20 @@ public class TopFragment extends BaseFragment {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		View view = inflater.inflate(R.layout.fragment_top, null);
-		return super.onCreateView(inflater, container, savedInstanceState);
+		return view;
 	}
-	
+	/**
+	 * 初始化ui
+	 */
+	public void initUI(){
+		
+	}
+
 	@Override
 	public boolean onKeyDown(Activity activity, Integer keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
