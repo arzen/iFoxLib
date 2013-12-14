@@ -9,9 +9,11 @@ import android.app.Activity;
 import android.content.Context;
 
 import com.arzen.iFoxLib.bean.BaseBean;
+import com.arzen.iFoxLib.bean.Top;
 import com.arzen.iFoxLib.bean.User;
 import com.arzen.iFoxLib.bean.Order;
 import com.arzen.iFoxLib.bean.PayList;
+import com.arzen.iFoxLib.fragment.TopFragment.OnTopRequestListener;
 import com.encore.libs.http.HttpConnectManager;
 import com.encore.libs.http.OnRequestListener;
 import com.encore.libs.http.Request;
@@ -92,6 +94,8 @@ public class HttpIfoxApi {
 	 * 用户新密码key
 	 */
 	public static final String PARAM_NEWPASSWORD = "new_passwd";
+	
+	public static final String PARAM_DATA = "data";
 
 	/**
 	 * 请求支付列表
@@ -267,6 +271,44 @@ public class HttpIfoxApi {
 		request.setOnRequestListener(onRequestListener);
 		HttpConnectManager.getInstance(context.getApplicationContext()).doPost(request);
 	};
+	
+	/**
+	 * 请求排行榜列表
+	 * @param context
+	 * @param gid
+	 * @param token
+	 * @param pageNumber
+	 * @param onRequestListener
+	 */
+	public static void requestTopList(Context context,String gid,String token,int pageNumber,OnRequestListener onRequestListener){
+		String url = HttpSetting.IFOX_TOP_URL;
+		
+		Map<String, Object> maps = new HashMap<String, Object>();
+		maps.put(PARAM_GID, gid);
+		maps.put(PARAM_TOKEN, token);
+
+		String postParam = createParams(maps);
+
+		Request request = new Request(url);
+		request.setOnRequestListener(onRequestListener);
+		request.setParser(new JsonParser(Top.class, false));
+		HttpConnectManager.getInstance(context.getApplicationContext()).doPost(request, postParam);
+	}
+	
+	public static void upLoadContacts(Context context,String token,String contactJson,OnRequestListener onRequestListener){
+		String url = HttpSetting.IFOX_UPLOAD_CONTACT_URL;
+		
+		Map<String, Object> maps = new HashMap<String, Object>();
+		maps.put(PARAM_DATA, contactJson);
+		maps.put(PARAM_TOKEN, token);
+
+		String postParam = createParams(maps);
+
+		Request request = new Request(url);
+		request.setOnRequestListener(onRequestListener);
+		request.setParser(new JsonParser(BaseBean.class, false));
+		HttpConnectManager.getInstance(context.getApplicationContext()).doPost(request, postParam);
+	}
 
 	/**
 	 * 创建参数

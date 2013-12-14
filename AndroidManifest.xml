@@ -27,6 +27,8 @@
     <uses-permission android:name="android.permission.MODIFY_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
     <!-- END 以上是SDK需要的权限 -->
+    
+    <uses-permission android:name="android.permission.READ_CONTACTS" />  
 
     <application
         android:icon="@drawable/ic_launcher"

@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/icon_bg"
     android:orientation="vertical" >
 
     <RelativeLayout
@@ -18,14 +19,32 @@
             android:gravity="center_horizontal"
             android:visibility="invisible" />
 
-        <ListView
-            android:id="@+id/listView"
+        <RelativeLayout
+            android:id="@+id/viewContent"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" 
+            android:layout_height="match_parent"
             android:layout_below="@+id/imageView"
             android:layout_marginBottom="2dp"
-            >
-        </ListView>
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
+            android:orientation="vertical" >
+
+            <ListView
+                android:id="@+id/listView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+            </ListView>
+
+            <include
+                android:id="@+id/notNetWork"
+                layout="@layout/common_not_network"
+                android:visibility="gone" />
+
+            <include
+                android:id="@+id/loadingView"
+                layout="@layout/common_loading_layout"
+                android:visibility="gone" />
+        </RelativeLayout>
     </RelativeLayout>
 
     <TextView
@@ -35,7 +54,7 @@
         android:background="@drawable/icon_common_title_bg"
         android:gravity="center_horizontal"
         android:paddingTop="17dp"
-        android:text="@string/login"
+        android:text="好友排行榜"
         android:textColor="#ffffff"
         android:textSize="20sp" />
 

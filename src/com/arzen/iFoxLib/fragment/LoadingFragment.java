@@ -1,6 +1,9 @@
 package com.arzen.iFoxLib.fragment;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -15,6 +18,9 @@ import com.arzen.iFoxLib.api.HttpIfoxApi;
 import com.arzen.iFoxLib.api.HttpSetting;
 import com.arzen.iFoxLib.bean.BaseBean;
 import com.arzen.iFoxLib.bean.User;
+import com.arzen.iFoxLib.contacts.Contact;
+import com.arzen.iFoxLib.contacts.ContactUtils;
+import com.arzen.iFoxLib.contacts.ContactUtils.ContactCallBack;
 import com.arzen.iFoxLib.setting.KeyConstants;
 import com.arzen.iFoxLib.setting.UserSetting;
 import com.arzen.iFoxLib.utils.MD5Util;
@@ -264,6 +270,48 @@ public class LoadingFragment extends BaseFragment {
 	 */
 	public void saveData(String uid, String token, String userName, String password) {
 		UserSetting.saveUserData(getActivity(), uid, token, userName, password);
+		
+		//获取本地通讯录，对比上传，缓存等操作
+		upLoadContacts(getActivity().getApplicationContext(),token);
+	}
+	/**
+	 * 上传通讯录
+	 */
+	public void upLoadContacts(final Context context,final String token)
+	{
+		new Thread(){
+			public void run() {
+				Log.d("Contact", "----- getContactCache ------");
+				//是否有缓存
+				final ArrayList<Contact> cacheContacts = ContactUtils.getAllContactsByCache(context);
+				
+				Log.d("Contact", "getContactCache size:" + cacheContacts == null ? "0" : cacheContacts.size()+"");
+				Log.d("Contact", "getAllSystemConcatsDatas()");
+				//读取本地通讯录
+				ContactUtils.getAllConcatsDatas(context, new ContactCallBack() {
+					
+					@Override
+					public void onCallBack(ArrayList<Contact> localContacts) {
+						// TODO Auto-generated method stub
+						Log.d("Contact", "getAllSystemConcatsDatas size" + localContacts == null ? "0" : localContacts.size()+"");
+						if(localContacts != null && localContacts.size() != 0){
+							ArrayList<Contact> upLoadContacts = null;
+							//本地缓存是否存在
+							if(cacheContacts != null){
+								//对比需要上传的通讯录
+								upLoadContacts = ContactUtils.getUpLoadContacts(localContacts, cacheContacts);
+							}else{ //缓存是空，全部上传
+								//保存缓存,上传通讯录
+								upLoadContacts = localContacts;
+								ContactUtils.saveContacts(context, localContacts);
+							}
+							
+							ContactUtils.upLoadContacts(context, token, upLoadContacts);
+						}
+					}
+				});
+			};
+		}.start();
 	}
 
 	@Override

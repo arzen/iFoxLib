@@ -50,7 +50,14 @@ public class HttpSetting {
 	 */
 	public static final String IFOX_UPDATE_DYNAMICLIB = IFOX_SERVER_URL + "/app/bizz.php";
 	
-	
+	/**
+	 * 排行榜url
+	 */
+	public static final String IFOX_TOP_URL= IFOX_SERVER_URL + "/leaderboard/list.php";
+	/**
+	 * 上传通讯录
+	 */
+	public static final String IFOX_UPLOAD_CONTACT_URL= IFOX_SERVER_URL + "/leaderboard/contact.php";
 	// 商户服务器地址
 	public static final String MERCHANT_SERVER = "http://202.104.148.76/merchant_server/SubmitOrder";
 	private final String MODE_RELEASE = "00"; // 正式

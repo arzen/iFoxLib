@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -18,6 +19,11 @@ import com.encore.libs.utils.NetWorkUtils;
 
 public abstract class BaseFragment extends Fragment {
 
+	// 加载更多view
+	private View mFooterView = null;
+	// 用于是否显示moreItemView
+	private View mMoreItemView = null;
+	
 	protected Handler mHandler = new Handler() {
 	};
 
@@ -203,6 +209,29 @@ public abstract class BaseFragment extends Fragment {
 			intent.putExtras(bundle);
 			activity.sendBroadcast(intent);
 		}
+	}
+	
+	/**
+	 * 初始化footerView
+	 */
+	public View getFooterView() {
+		if (mFooterView == null) {
+			mFooterView = LayoutInflater.from(getActivity()).inflate(R.layout.common_footerview_more_item, null);
+		}
+		mMoreItemView = mFooterView.findViewById(R.id.lin_more);
+		mMoreItemView.setEnabled(false);
+		setFooterViewVisibility(View.GONE);
+		return mFooterView;
+	}
+
+	/**
+	 * 设置是否显示footerView
+	 * 
+	 * @param visibility
+	 */
+	public void setFooterViewVisibility(int visibility) {
+		if (mMoreItemView != null)
+			mMoreItemView.setVisibility(visibility);
 	}
 
 	/**
