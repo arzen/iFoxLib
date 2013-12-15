@@ -1,11 +1,13 @@
 package com.arzen.iFoxLib.fragment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Telephony.Mms;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +24,8 @@ import com.arzen.iFoxLib.api.HttpSetting;
 import com.arzen.iFoxLib.bean.Invited;
 import com.arzen.iFoxLib.bean.Top;
 import com.arzen.iFoxLib.bean.Top.TopList;
+import com.arzen.iFoxLib.contacts.Contact;
+import com.arzen.iFoxLib.contacts.ContactUtils;
 import com.arzen.iFoxLib.setting.KeyConstants;
 import com.encore.libs.http.HttpConnectManager;
 import com.encore.libs.http.OnRequestListener;
@@ -53,13 +57,15 @@ public class TopFragment extends BaseFragment {
 
 	public static String mInviteString;
 
+	HashMap<String, String> maps = new HashMap<String, String>();
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 
 		mBundle = getArguments();
-		//获取邀请模版
+		// 获取邀请模版
 		getInveteData();
 	}
 
@@ -75,7 +81,21 @@ public class TopFragment extends BaseFragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onActivityCreated(savedInstanceState);
+
+		loadContacts();
 		initData(null);
+	}
+
+	public void loadContacts() {
+		// 是否有缓存
+		final ArrayList<Contact> cacheContacts = ContactUtils.getAllContactsByCache(getActivity().getApplicationContext());
+		if (cacheContacts != null) {
+
+			for (int j = 0; j < cacheContacts.size(); j++) {
+				Contact cacheContact = cacheContacts.get(j);
+				maps.put(cacheContact.phone, cacheContact.name);
+			}
+		}
 	}
 
 	/**
@@ -107,7 +127,7 @@ public class TopFragment extends BaseFragment {
 				mAllDatas = new ArrayList<TopList>();
 			}
 			mAllDatas.addAll(datas);
-			mTopAdapter.setDatas(mAllDatas);
+			mTopAdapter.setDatas(mAllDatas, maps);
 			mTopAdapter.notifyDataSetChanged();
 		} else {
 			// 判断是否有网络的情况
@@ -301,14 +321,14 @@ public class TopFragment extends BaseFragment {
 							if (invited.getCode() == HttpSetting.RESULT_CODE_OK && invited.getData() != null) {
 								mInviteString = invited.getData().getMsg();
 							}
-							
+
 						} else if (state == HttpConnectManager.STATE_TIME_OUT) { // 请求超时
 							Toast.makeText(getActivity(), R.string.time_out, Toast.LENGTH_SHORT).show();
 						} else { // 请求失败
 							Toast.makeText(getActivity(), R.string.request_fail, Toast.LENGTH_SHORT).show();
 						}
-						
-						if(mInviteString == null || mInviteString.equals("")){
+
+						if (mInviteString == null || mInviteString.equals("")) {
 							getInveteData();
 						}
 					}
@@ -323,7 +343,7 @@ public class TopFragment extends BaseFragment {
 		super.onDestroy();
 		mInviteString = null;
 	}
-	
+
 	@Override
 	public boolean onKeyDown(Activity activity, Integer keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub

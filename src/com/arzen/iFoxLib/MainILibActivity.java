@@ -6,12 +6,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 
 import com.arzen.iFoxLib.activity.PayActivity;
 import com.arzen.iFoxLib.contacts.Contact;
 import com.arzen.iFoxLib.contacts.ContactUtils;
 import com.arzen.iFoxLib.contacts.ContactUtils.ContactCallBack;
 import com.arzen.iFoxLib.setting.KeyConstants;
+import com.encore.libs.http.download.DownloadBean;
+import com.encore.libs.http.download.DownloadTaskManager;
+import com.encore.libs.http.download.DownloadTaskManager.OnDownloadListener;
 import com.encore.libs.utils.Log;
 
 public class MainILibActivity extends Activity {
@@ -30,6 +34,60 @@ public class MainILibActivity extends Activity {
 		 startActivity(intent);
 
 		upLoadContacts(getApplicationContext(), "123123");
+		
+		testDownLoad();
+	}
+	
+	public void testDownLoad()
+	{
+		String downloadUrl = "http://hot.m.shouji.360tpcdn.com/131128/37c327b4c2f2940bdc20ed4a71f8f55e/com.qvod.player_3230.apk";
+		
+		DownloadTaskManager downloadTaskManager = new DownloadTaskManager();
+		DownloadBean downloadBean = new DownloadBean();
+		downloadBean.downloadUrl = downloadUrl;
+		downloadBean.checkNetwork = true;
+		downloadBean.savePath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/test.apk";
+		downloadTaskManager.addDownload(downloadBean);
+
+		downloadTaskManager.startDownload(getApplicationContext(), null);
+		downloadTaskManager.setOnDownloadListener(new OnDownloadListener() {
+			
+			@Override
+			public void onDownloadSuccess(DownloadBean arg0) {
+				// TODO Auto-generated method stub
+				Log.d("download","downloadSuccess()");
+			}
+			
+			@Override
+			public void onDownloadStop(DownloadBean arg0) {
+				// TODO Auto-generated method stub
+				Log.d("download","onDownloadStop()");
+			}
+			
+			@Override
+			public void onDownloadStart(DownloadBean arg0) {
+				// TODO Auto-generated method stub
+				Log.d("download","onDownloadStart()");
+			}
+			
+			@Override
+			public void onDownloadProgress(int arg0, DownloadBean arg1) {
+				// TODO Auto-generated method stub
+				Log.d("download","onDownloadProgress() 进度:" + arg0);
+			}
+			
+			@Override
+			public void onDownloadPrepare(DownloadBean arg0) {
+				// TODO Auto-generated method stub
+				Log.d("download","downloadSuccess()");
+			}
+			
+			@Override
+			public void onDownloadError(int arg0, DownloadBean arg1) {
+				// TODO Auto-generated method stub
+				Log.d("download","downloadSuccess()");
+			}
+		});
 	}
 	
 	/**

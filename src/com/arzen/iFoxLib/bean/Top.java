@@ -37,7 +37,7 @@ public class Top extends BaseBean {
 		public int score;
 		public int rank;
 		public int invited; // 1不允许邀请，0允许邀请
-		public String play_name; // 正在玩的游戏
+		public String play_game; // 正在玩的游戏
 		public String dl; // 下载地址
 
 		public String getUid() {
@@ -88,12 +88,12 @@ public class Top extends BaseBean {
 			this.invited = invited;
 		}
 
-		public String getPlay_name() {
-			return play_name;
+		public String getPlay_game() {
+			return play_game;
 		}
 
-		public void setPlay_name(String play_name) {
-			this.play_name = play_name;
+		public void setPlay_game(String play_game) {
+			this.play_game = play_game;
 		}
 
 		public String getDl() {

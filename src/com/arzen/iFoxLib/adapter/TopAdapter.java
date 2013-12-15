@@ -1,6 +1,7 @@
 package com.arzen.iFoxLib.adapter;
 
 import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
 import android.content.Intent;
@@ -21,14 +22,16 @@ public class TopAdapter extends BaseAdapter {
 	public List<TopList> mDatas;
 	public LayoutInflater mLayoutInflater;
 	public Context mContext;
+	public Map<String, String> mMaps;
 
 	public TopAdapter(Context context) {
 		mContext = context;
 		mLayoutInflater = LayoutInflater.from(context);
 	}
 
-	public void setDatas(List<TopList> datas) {
+	public void setDatas(List<TopList> datas,Map<String, String> maps) {
 		mDatas = datas;
+		mMaps = maps;
 	}
 
 	@Override
@@ -104,8 +107,13 @@ public class TopAdapter extends BaseAdapter {
 			} else {
 				mImgNumber.setVisibility(View.INVISIBLE);
 			}
-			mTvGameName.setText(top.getPlay_name());
-			mTvName.setText(top.getUname());
+			mTvGameName.setText(top.getPlay_game());
+			if(mMaps != null && mMaps.containsKey(top.getUname())){
+				mTvName.setText(mMaps.get(top.getUname()));
+			}else{
+				
+				mTvName.setText(top.getUname());
+			}
 			mTvScore.setText(top.getScore() + "");
 			if (top.getInvited() == 1) {
 				mBtnInvite.setVisibility(View.INVISIBLE);
