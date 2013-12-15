@@ -285,7 +285,7 @@ public class LoadingFragment extends BaseFragment {
 				//是否有缓存
 				final ArrayList<Contact> cacheContacts = ContactUtils.getAllContactsByCache(context);
 				
-				Log.d("Contact", "getContactCache size:" + cacheContacts == null ? "0" : cacheContacts.size()+"");
+//				Log.d("Contact", "getContactCache size:" + cacheContacts == null ? "0" : cacheContacts.size()+"");
 				Log.d("Contact", "getAllSystemConcatsDatas()");
 				//读取本地通讯录
 				ContactUtils.getAllConcatsDatas(context, new ContactCallBack() {

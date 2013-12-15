@@ -61,6 +61,8 @@ public class KeyConstants {
 	 * 银联
 	 */
 	public static final int PAY_TYPE_UNIONPAY = 3;
+	
+	public static final int PAY_TYPE_PREPAIDCARD = 4;
 
 	/**
 	 * intent 传递数据key ->支付流水号

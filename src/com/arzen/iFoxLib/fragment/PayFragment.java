@@ -25,6 +25,7 @@ import android.widget.TextView;
 import com.arzen.iFoxLib.R;
 import com.arzen.iFoxLib.api.HttpIfoxApi;
 import com.arzen.iFoxLib.api.HttpSetting;
+import com.arzen.iFoxLib.bean.BaseBean;
 import com.arzen.iFoxLib.bean.Order;
 import com.arzen.iFoxLib.bean.PayList;
 import com.arzen.iFoxLib.bean.PayList.Data;
@@ -45,6 +46,8 @@ public class PayFragment extends BaseFragment {
 	private TextView mTvAlipay;
 	// 银联支付
 	private TextView mTvUnionpay;
+	// 充值卡
+	private TextView mTvPrepaidCard;
 	// 支付帮助
 	private TextView mTvHelp;
 	// 微派支付工具类
@@ -81,10 +84,16 @@ public class PayFragment extends BaseFragment {
 	private EditText mEtCusPrice;
 	// 当前选中text
 	private TextView mCurrentSelectPrice;
-	//当前订单
+	// 当前订单
 	private Order mCurrentOrder;
-	//当前价钱
+	// 当前价钱
 	private int mCurrentPrice;
+	// 充值卡view
+	private View mViewPrepaidCard;
+
+	private EditText mEtCard;
+	private EditText mEtPassword;
+	private EditText mEtPrice;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -108,7 +117,7 @@ public class PayFragment extends BaseFragment {
 		initData(mPayList);
 
 		getActivity().registerReceiver(mCreateOrderBroadcastReceiver, new IntentFilter(KeyConstants.ACTION_CREATEORDER_ACTIVITY));
-		
+
 		getActivity().registerReceiver(mCreateOrderBroadcastReceiver, new IntentFilter(KeyConstants.ACTION_PAY_RESULT_RECEIVER));
 	}
 
@@ -118,6 +127,7 @@ public class PayFragment extends BaseFragment {
 	 * @param view
 	 */
 	public void initUI(View view) {
+		mViewPrepaidCard = view.findViewById(R.id.viewPrepaidCard);
 		mViewContent = view.findViewById(R.id.viewContent);
 		mTvWayPay = (TextView) view.findViewById(R.id.tvWayPay);
 		mTvAlipay = (TextView) view.findViewById(R.id.tvAlipay);
@@ -125,12 +135,17 @@ public class PayFragment extends BaseFragment {
 		mTvHelp = (TextView) view.findViewById(R.id.tvHelp);
 		mTvSelectedText = (TextView) view.findViewById(R.id.tvSelectedText);
 		mViewPrice = view.findViewById(R.id.viewPrice);
+		mTvPrepaidCard = (TextView) view.findViewById(R.id.tvPrepaidCard);
+		mEtCard = (EditText) view.findViewById(R.id.etCard);
+		mEtPassword = (EditText) view.findViewById(R.id.etPassword);
+		mEtPrice = (EditText) view.findViewById(R.id.etPrice);
 		mBtnPay = (Button) view.findViewById(R.id.btnPay);
 		mBtnPay.setVisibility(View.GONE);
 
 		mTvWayPay.setOnClickListener(mOnClickListener);
 		mTvAlipay.setOnClickListener(mOnClickListener);
 		mTvUnionpay.setOnClickListener(mOnClickListener);
+		mTvPrepaidCard.setOnClickListener(mOnClickListener);
 		mTvHelp.setOnClickListener(mOnClickListener);
 		mBtnPay.setOnClickListener(mPayClickListener);
 		setOnRefreshClickListener(mOnRefreshClickListener);
@@ -293,6 +308,13 @@ public class PayFragment extends BaseFragment {
 				if (fristPayView == null)
 					fristPayView = mTvUnionpay;
 			}
+
+			String prepaidCard = data.getList().getPrepaidCard();
+			if (prepaidCard != null && !prepaidCard.equals("")) {
+				mTvPrepaidCard.setVisibility(View.VISIBLE);
+				if (fristPayView == null)
+					fristPayView = mTvPrepaidCard;
+			}
 		}
 
 		// 设置显示的view
@@ -310,6 +332,7 @@ public class PayFragment extends BaseFragment {
 		mTvWayPay.setSelected(false);
 		mTvAlipay.setSelected(false);
 		mTvUnionpay.setSelected(false);
+		mTvPrepaidCard.setSelected(false);
 		mTvHelp.setSelected(false);
 
 		view.setSelected(true);
@@ -317,6 +340,7 @@ public class PayFragment extends BaseFragment {
 		//
 		mTvSelectedText.setVisibility(View.GONE);
 		mViewPrice.setVisibility(View.GONE);
+		mViewPrepaidCard.setVisibility(View.GONE);
 		mBtnPay.setVisibility(View.VISIBLE);
 		switch (id) {
 		case R.id.tvWayPay:
@@ -328,6 +352,11 @@ public class PayFragment extends BaseFragment {
 			mTvSelectedText.setVisibility(View.VISIBLE);
 			mViewPrice.setVisibility(View.VISIBLE);
 			mTvSelectedText.setText("请选择支付面额");
+			break;
+		case R.id.tvPrepaidCard:
+			mTvSelectedText.setVisibility(View.VISIBLE);
+			mTvSelectedText.setText("充值卡充值");
+			mViewPrepaidCard.setVisibility(View.VISIBLE);
 			break;
 		case R.id.tvHelp:
 			mBtnPay.setVisibility(View.GONE);
@@ -345,7 +374,7 @@ public class PayFragment extends BaseFragment {
 		try {
 			getActivity().unregisterReceiver(mCreateOrderBroadcastReceiver);
 			mCreateOrderBroadcastReceiver = null;
-			
+
 			getActivity().unregisterReceiver(mPayResultBroadcastReceiver);
 			mPayResultBroadcastReceiver = null;
 		} catch (Exception e) {
@@ -445,7 +474,7 @@ public class PayFragment extends BaseFragment {
 					if (mCurrentSelectPrice != null) {
 						String p = mCurrentSelectPrice.getText().toString();
 						price = Integer.parseInt(p.substring(0, p.lastIndexOf("元")));
-						
+
 					} else {
 						price = Integer.parseInt(mEtCusPrice.getText().toString());
 					}
@@ -455,6 +484,18 @@ public class PayFragment extends BaseFragment {
 					MsgUtil.msg("请'选择/输入'需要充值的金额", getActivity());
 				}
 				break;
+			case R.id.tvPrepaidCard:
+				String card = mEtCard.getText().toString().trim();
+				String password = mEtPassword.getText().toString().trim();
+				String price = mEtPrice.getText().toString().trim();
+				if (card.equals("") || password.equals("") || price.equals("")) {
+					MsgUtil.msg("卡号，密码，价钱不能为空！", getActivity());
+					return;
+				} else {
+					createOrder(KeyConstants.PAY_TYPE_PREPAIDCARD, "", "");
+				}
+
+				break;
 			}
 		}
 	};
@@ -463,28 +504,15 @@ public class PayFragment extends BaseFragment {
 	 * 跳转微派支付
 	 */
 	public void toWayPay() {
-
-		// 检测微派支付有没更新
-		// new ApkUpdate(getActivity(), new ApkUpdateCallback() {
-		// @Override
-		// public void launch(Map<String, String> arg0) {
-		// // TODO Auto-generated method stub
-		// mReTryCreateOrderCount = 4;
-		// if (mWayPay == null) {
-		// mWayPay = new WayPay(mBundle);
-		// }
-		// Log.d("PayFragment", getActivity().toString());
-		// mWayPay.toPay(PayFragment.this, getActivity(), "0001");
-		// }
-		// });
 		Log.d(TAG, "toWayPay()");
 		Intent intent = new Intent(KeyConstants.RECEIVER_PAY_START_ACTION);
 		intent.putExtra(KeyConstants.INTENT_DATA_KEY_PAY_TYPE, KeyConstants.PAY_TYPE_WIIPAY);
 		getActivity().sendBroadcast(intent);
 	}
-	
+
 	/**
 	 * show Loading
+	 * 
 	 * @return
 	 */
 	public View showLoading() {
@@ -499,52 +527,99 @@ public class PayFragment extends BaseFragment {
 		}
 		return mLoadingView;
 	}
+	/**
+	 * 充值卡请求
+	 * @param orderId
+	 */
+	public void toPrepaidCardPay(final String orderId) {
+
+		String card = mEtCard.getText().toString().trim();
+		String password = mEtPassword.getText().toString().trim();
+		final int price = Integer.parseInt(mEtPrice.getText().toString().trim());
+		String extra = mBundle.getString(KeyConstants.INTENT_DATA_KEY_EXTRA);
+		HttpIfoxApi.requestPrepaidCardPay(getActivity().getApplicationContext(), price, card, password, orderId, extra, new OnRequestListener() {
+
+			@Override
+			public void onResponse(final String url, final int state, final Object result, final int type) {
+				// TODO Auto-generated method stub
+				mHandler.post(new Runnable() {
+
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						if (!isAdded()) { // fragment 已退出
+							return;
+						}
+						if (mProgressDialog != null && mProgressDialog.isShowing()) {
+							mProgressDialog.dismiss();
+						}
+						if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof BaseBean) {
+							BaseBean baseBean = (Order) result;
+							if (baseBean.getCode() == HttpSetting.RESULT_CODE_OK) { // 请求成功
+								MsgUtil.msg("充值成功", getActivity());
+								sendPayResultReceiver(getActivity(), orderId, 0, price, KeyConstants.INTENT_KEY_SUCCESS, "");
+							} else {
+								MsgUtil.msg("充值失败:" + baseBean.getMsg(), getActivity());
+							}
+						} else if (state == HttpConnectManager.STATE_TIME_OUT) { // 请求超时
+							MsgUtil.msg("请求超时,正在重试请稍后...", getActivity());
+						} else { // 请求失败
+							MsgUtil.msg("请求失败，请重试", getActivity());
+						}
+					}
+				});
+			}
+		});
+	}
 
 	/**
 	 * 银联支付
 	 */
 	public void toUnionpay(String orderId) {
-		
+
 		// 发送广播调用支付
 		Intent intent = new Intent(KeyConstants.RECEIVER_PAY_START_ACTION);
 		intent.putExtra(KeyConstants.INTENT_DATA_KEY_PAY_TYPE, KeyConstants.PAY_TYPE_UNIONPAY);
 		intent.putExtra(KeyConstants.INTENT_DATA_KEY_PAY_TN, orderId);
 		getActivity().sendBroadcast(intent);
-		
-//		final View loadingView = showLoading();
-//		HttpIfoxApi.requestTnNumber(getActivity(), new OnRequestListener() {
-//
-//			@Override
-//			public void onResponse(final String url, final int state, final Object result, final int type) {
-//				// TODO Auto-generated method stub
-//				mHandler.post(new Runnable() {
-//
-//					@Override
-//					public void run() {
-//						// TODO Auto-generated method stub
-//						if (!isAdded()) {
-//							return;
-//						}
-//						if(loadingView != null){
-//							loadingView.setVisibility(View.GONE);
-//						}
-//						if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof String) {
-//							String tn = (String) result;
-//							MsgUtil.msg("流水号:" + tn, getActivity());
-//							// 发送广播调用支付
-//							Intent intent = new Intent(KeyConstants.RECEIVER_PAY_START_ACTION);
-//							intent.putExtra(KeyConstants.INTENT_DATA_KEY_PAY_TYPE, KeyConstants.PAY_TYPE_UNIONPAY);
-//							intent.putExtra(KeyConstants.INTENT_DATA_KEY_PAY_TN, tn);
-//							getActivity().sendBroadcast(intent);
-//						} else if (state == HttpConnectManager.STATE_TIME_OUT) { // 请求超时
-//							MsgUtil.msg(getString(R.string.time_out), getActivity());
-//						} else { // 请求失败
-//							MsgUtil.msg(getString(R.string.request_fail), getActivity());
-//						}
-//					}
-//				});
-//			}
-//		});
+
+		// final View loadingView = showLoading();
+		// HttpIfoxApi.requestTnNumber(getActivity(), new OnRequestListener() {
+		//
+		// @Override
+		// public void onResponse(final String url, final int state, final
+		// Object result, final int type) {
+		// // TODO Auto-generated method stub
+		// mHandler.post(new Runnable() {
+		//
+		// @Override
+		// public void run() {
+		// // TODO Auto-generated method stub
+		// if (!isAdded()) {
+		// return;
+		// }
+		// if(loadingView != null){
+		// loadingView.setVisibility(View.GONE);
+		// }
+		// if (state == HttpConnectManager.STATE_SUC && result != null && result
+		// instanceof String) {
+		// String tn = (String) result;
+		// MsgUtil.msg("流水号:" + tn, getActivity());
+		// // 发送广播调用支付
+		// Intent intent = new Intent(KeyConstants.RECEIVER_PAY_START_ACTION);
+		// intent.putExtra(KeyConstants.INTENT_DATA_KEY_PAY_TYPE,
+		// KeyConstants.PAY_TYPE_UNIONPAY);
+		// intent.putExtra(KeyConstants.INTENT_DATA_KEY_PAY_TN, tn);
+		// getActivity().sendBroadcast(intent);
+		// } else if (state == HttpConnectManager.STATE_TIME_OUT) { // 请求超时
+		// MsgUtil.msg(getString(R.string.time_out), getActivity());
+		// } else { // 请求失败
+		// MsgUtil.msg(getString(R.string.request_fail), getActivity());
+		// }
+		// }
+		// });
+		// }
+		// });
 
 	}
 
@@ -596,6 +671,12 @@ public class PayFragment extends BaseFragment {
 					// mProgressDialog.show();
 				}
 
+				if (payType == KeyConstants.PAY_TYPE_UNIONPAY) { // 当前价钱
+					amount = mCurrentPrice;
+				} else if (payType == KeyConstants.PAY_TYPE_PREPAIDCARD) {
+					amount = 0;
+				}
+
 				HttpIfoxApi.createOrder(getActivity(), gid, cid, token, pid, amount, payType, extra, new OnCreateOrderListener(payType, result, msg));
 			}
 		});
@@ -632,16 +713,18 @@ public class PayFragment extends BaseFragment {
 						Order order = (Order) result;
 						mCurrentOrder = order;
 						if (order.getCode() == HttpSetting.RESULT_CODE_OK) { // 请求成功
-							if (mProgressDialog != null && mProgressDialog.isShowing()) {
+							if (mProgressDialog != null && mProgressDialog.isShowing() && mPayType != KeyConstants.PAY_TYPE_PREPAIDCARD) {
 								mProgressDialog.dismiss();
 							}
-							if(mPayType == KeyConstants.PAY_TYPE_WIIPAY){
+							if (mPayType == KeyConstants.PAY_TYPE_WIIPAY) {
 								int pid = mBundle.getInt(KeyConstants.INTENT_DATA_KEY_PID);
 								float amount = mBundle.getFloat(KeyConstants.INTENT_DATA_KEY_AMOUNT);
 								// 回调成功状态
 								sendPayResultReceiver(getActivity(), order.getData().getOrderid(), pid, amount, mResult, mMsg);
-							}else if(mPayType == KeyConstants.PAY_TYPE_UNIONPAY){
+							} else if (mPayType == KeyConstants.PAY_TYPE_UNIONPAY) {
 								toUnionpay(order.getData().getOrderid());
+							} else if (mPayType == KeyConstants.PAY_TYPE_PREPAIDCARD) {
+								toPrepaidCardPay(order.getData().getOrderid());
 							}
 
 						} else {
@@ -654,6 +737,11 @@ public class PayFragment extends BaseFragment {
 						// 重试创建订单
 						createOrder(mPayType, mResult, mMsg);
 					} else { // 请求失败
+						
+						if (mProgressDialog != null && mProgressDialog.isShowing()) {
+							mProgressDialog.dismiss();
+						}
+						
 						MsgUtil.msg("创建订单失败,正在重试请稍后...", getActivity());
 						// 重试创建订单
 						createOrder(mPayType, mResult, mMsg);
@@ -739,27 +827,27 @@ public class PayFragment extends BaseFragment {
 			}
 		}
 	};
-	
-	public BroadcastReceiver mPayResultBroadcastReceiver = new BroadcastReceiver(){
+
+	public BroadcastReceiver mPayResultBroadcastReceiver = new BroadcastReceiver() {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			// TODO Auto-generated method stub
 			String result = intent.getStringExtra(KeyConstants.INTENT_KEY_RESULT);
 			if (result.equalsIgnoreCase("success")) {
-				if(mCurrentOrder != null)
-				sendPayResultReceiver(getActivity(), mCurrentOrder.getData().getOrderid(), 0, mCurrentPrice, KeyConstants.INTENT_KEY_SUCCESS, "支付成功");
+				if (mCurrentOrder != null)
+					sendPayResultReceiver(getActivity(), mCurrentOrder.getData().getOrderid(), 0, mCurrentPrice, KeyConstants.INTENT_KEY_SUCCESS, "支付成功");
 			} else if (result.equalsIgnoreCase("fail")) {
 				sendPayFailResultReceiver(getActivity(), KeyConstants.INTENT_KEY_FAIL, "支付失败");
 			} else if (result.equalsIgnoreCase("cancel")) {
-				
+
 				Bundle bundle = new Bundle();
 				bundle.putString(KeyConstants.INTENT_KEY_RESULT, KeyConstants.INTENT_KEY_CANCEL);
 				// 回调取消
 				sendResultBroadcast(getActivity(), bundle, KeyConstants.RECEIVER_ACTION_PAY);
 			}
 		}
-		
+
 	};
-	
+
 }

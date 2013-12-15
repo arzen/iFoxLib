@@ -19,6 +19,7 @@ import com.arzen.iFoxLib.R;
 import com.arzen.iFoxLib.adapter.TopAdapter;
 import com.arzen.iFoxLib.api.HttpIfoxApi;
 import com.arzen.iFoxLib.api.HttpSetting;
+import com.arzen.iFoxLib.bean.Invited;
 import com.arzen.iFoxLib.bean.Top;
 import com.arzen.iFoxLib.bean.Top.TopList;
 import com.arzen.iFoxLib.setting.KeyConstants;
@@ -47,15 +48,19 @@ public class TopFragment extends BaseFragment {
 	 * 是否有下一页
 	 */
 	public boolean mIsHasNext = false;
-	
+
 	public Bundle mBundle;
+
+	public static String mInviteString;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		
+
 		mBundle = getArguments();
+		//获取邀请模版
+		getInveteData();
 	}
 
 	@Override
@@ -65,14 +70,13 @@ public class TopFragment extends BaseFragment {
 		initUI(view);
 		return view;
 	}
-	
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onActivityCreated(savedInstanceState);
 		initData(null);
 	}
-	
 
 	/**
 	 * 初始化ui
@@ -111,7 +115,7 @@ public class TopFragment extends BaseFragment {
 				// 显示loading view
 				setLoadingViewVisibility(true, getView(), mListView);
 				// 请求,第一次默认请求第一页
-				requestTopListData(0, false);
+				requestTopListData(1, false);
 			}
 		}
 	}
@@ -124,7 +128,7 @@ public class TopFragment extends BaseFragment {
 
 		String url = HttpSetting.IFOX_TOP_URL;
 		// 请求
-		request(url, isLoadMore,pageNumber);
+		request(url, isLoadMore, pageNumber);
 	}
 
 	/**
@@ -132,15 +136,16 @@ public class TopFragment extends BaseFragment {
 	 * 
 	 * @param url
 	 */
-	public void request(String url, boolean isLoadMore,int pageNumber) {
-//		Request request = new Request(url);
-//		request.setOnRequestListener(new OnTopRequestListener(isLoadMore));
-//		request.setParser(new JsonParser(Top.class, false));
-//		HttpConnectManager.getInstance(getActivity().getApplicationContext()).doGet(request);
-		
+	public void request(String url, boolean isLoadMore, int pageNumber) {
+		// Request request = new Request(url);
+		// request.setOnRequestListener(new OnTopRequestListener(isLoadMore));
+		// request.setParser(new JsonParser(Top.class, false));
+		// HttpConnectManager.getInstance(getActivity().getApplicationContext()).doGet(request);
+
 		String gid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_GID);
 		String token = mBundle.getString(KeyConstants.INTENT_DATA_KEY_TOKEN);
-		
+		Log.d("Top", "gid: " + gid + "token:" + token);
+		Log.d("Top", "pageNumber:" + pageNumber);
 		HttpIfoxApi.requestTopList(getActivity().getApplicationContext(), gid, token, pageNumber, new OnTopRequestListener(isLoadMore));
 	}
 
@@ -158,7 +163,7 @@ public class TopFragment extends BaseFragment {
 			// TODO Auto-generated method stub
 			mIsRequesEnd = true;
 			mHandler.post(new Runnable() {
-				
+
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
@@ -171,20 +176,20 @@ public class TopFragment extends BaseFragment {
 					Log.d("topFragment", "request url:" + url + " resultState :" + state + " result:" + result);
 					if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof Top) {
 						Top top = (Top) result;
-						if(top.getData() != null && top.getData().getList() != null && top.getData().getList().size() !=0){
+						if (top.getData() != null && top.getData().getList() != null && top.getData().getList().size() != 0) {
 							// 显示数据
 							initData(top.getData().getList());
-							
-							if(top.getData().getList().size() < 10){
+
+							if (top.getData().getList().size() < 10) {
 								mIsHasNext = false;
 								setFooterViewVisibility(View.GONE);// 隐藏footerView
-							}else{
+							} else {
 								mPageNumber++;
 								mIsHasNext = true;
 								setFooterViewVisibility(View.VISIBLE);
 							}
-							
-						}else{
+
+						} else {
 							mIsHasNext = false;
 							setFooterViewVisibility(View.GONE);// 隐藏footerView
 							if (!mIsLoadMore) {
@@ -192,7 +197,7 @@ public class TopFragment extends BaseFragment {
 								setNotDataVisibility(getView(), mListView);
 							}
 						}
-					}else if (state == HttpConnectManager.STATE_TIME_OUT) { // 请求超时
+					} else if (state == HttpConnectManager.STATE_TIME_OUT) { // 请求超时
 						// 隐藏loadingView,显示主体内容listView
 						setLoadingViewVisibility(false, getView(), mListView);
 
@@ -202,7 +207,7 @@ public class TopFragment extends BaseFragment {
 							Toast.makeText(getActivity(), R.string.time_out, Toast.LENGTH_SHORT).show();
 							setFooterViewVisibility(View.GONE);// 隐藏footerView
 						}
-
+						mIsHasNext = true;
 						mIsRequesEnd = false;
 					} else { // 请求失败
 						// 隐藏loadingView,显示主体内容listView
@@ -214,7 +219,7 @@ public class TopFragment extends BaseFragment {
 							Toast.makeText(getActivity(), R.string.request_fail, Toast.LENGTH_SHORT).show();
 							setFooterViewVisibility(View.GONE);// 隐藏footerView
 						}
-
+						mIsHasNext = true;
 						mIsRequesEnd = false;
 					}
 				}
@@ -246,6 +251,7 @@ public class TopFragment extends BaseFragment {
 			if (scrollState == OnScrollListener.SCROLL_STATE_IDLE) {
 				if (view.getLastVisiblePosition() == (view.getCount() - 1)) {
 					if (!mIsHasNext) { // 最后一页不做请求
+						setFooterViewVisibility(View.GONE);
 						return;
 					}
 					// 没有网络
@@ -269,6 +275,55 @@ public class TopFragment extends BaseFragment {
 		}
 	};
 
+	public void getInveteData() {
+		String gid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_GID);
+		String token = mBundle.getString(KeyConstants.INTENT_DATA_KEY_TOKEN);
+		HttpIfoxApi.requestInviteData(getActivity(), token, gid, new OnRequestListener() {
+
+			@Override
+			public void onResponse(final String url, final int state, final Object result, final int type) {
+				// TODO Auto-generated method stub
+				mHandler.post(new Runnable() {
+
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						// TODO Auto-generated method stub
+						if (!isAdded()) // fragment 已退出,返回
+						{
+							return;
+						}
+						// 显示loading view
+						setLoadingViewVisibility(false, getView(), mListView);
+						Log.d("topFragment", "request url:" + url + " resultState :" + state + " result:" + result);
+						if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof Invited) {
+							Invited invited = (Invited) result;
+							if (invited.getCode() == HttpSetting.RESULT_CODE_OK && invited.getData() != null) {
+								mInviteString = invited.getData().getMsg();
+							}
+							
+						} else if (state == HttpConnectManager.STATE_TIME_OUT) { // 请求超时
+							Toast.makeText(getActivity(), R.string.time_out, Toast.LENGTH_SHORT).show();
+						} else { // 请求失败
+							Toast.makeText(getActivity(), R.string.request_fail, Toast.LENGTH_SHORT).show();
+						}
+						
+						if(mInviteString == null || mInviteString.equals("")){
+							getInveteData();
+						}
+					}
+				});
+			}
+		});
+	}
+
+	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		mInviteString = null;
+	}
+	
 	@Override
 	public boolean onKeyDown(Activity activity, Integer keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub

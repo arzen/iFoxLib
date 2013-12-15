@@ -41,6 +41,8 @@ public class PayList extends BaseBean implements Serializable {
 		private String alipay;
 		// 银联
 		private String unionpay;
+		
+		private String prepaidCard;
 
 		public String getWiipay() {
 			return wiipay;
@@ -68,6 +70,16 @@ public class PayList extends BaseBean implements Serializable {
 		public void setUnionpay(String unionpay) {
 			this.unionpay = unionpay;
 		}
+
+		public String getPrepaidCard() {
+			return prepaidCard;
+		}
+		@JsonProperty("4")
+		public void setPrepaidCard(String prepaidCard) {
+			this.prepaidCard = prepaidCard;
+		}
+		
+		
 	}
 
 }

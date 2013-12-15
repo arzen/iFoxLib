@@ -1,17 +1,17 @@
 package com.arzen.iFoxLib;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
+import com.arzen.iFoxLib.activity.PayActivity;
 import com.arzen.iFoxLib.contacts.Contact;
 import com.arzen.iFoxLib.contacts.ContactUtils;
 import com.arzen.iFoxLib.contacts.ContactUtils.ContactCallBack;
-import com.arzen.iFoxLib.utils.CommonUtil;
+import com.arzen.iFoxLib.setting.KeyConstants;
 import com.encore.libs.utils.Log;
 
 public class MainILibActivity extends Activity {
@@ -21,14 +21,13 @@ public class MainILibActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		// Intent intent = new Intent(this, PayActivity.class);
-		// Bundle bundle = new Bundle();
-		// bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, "222"); // 游戏id
-		// bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, "11111"); // 渠道id
-		// bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, "token"); //
-		// token
-		// intent.putExtras(bundle);
-		// startActivity(intent);
+		 Intent intent = new Intent(this, PayActivity.class);
+		 Bundle bundle = new Bundle();
+		 bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, "222"); // 游戏id
+		 bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, "11111"); // 渠道id
+		 bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, "token"); //
+		 intent.putExtras(bundle);
+		 startActivity(intent);
 
 		upLoadContacts(getApplicationContext(), "123123");
 	}

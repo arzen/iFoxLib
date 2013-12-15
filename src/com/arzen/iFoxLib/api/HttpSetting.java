@@ -58,6 +58,13 @@ public class HttpSetting {
 	 * 上传通讯录
 	 */
 	public static final String IFOX_UPLOAD_CONTACT_URL= IFOX_SERVER_URL + "/leaderboard/contact.php";
+	/**
+	 * 充值卡
+	 */
+	public static final String IFOX_PREPAIDCARDPAY_URL= IFOX_SERVER_URL + "/callback/szfu.php";
+	
+	public static final String IFOX_INVETED_URL = IFOX_SERVER_URL + "/leaderboard/invite.php";
+	
 	// 商户服务器地址
 	public static final String MERCHANT_SERVER = "http://202.104.148.76/merchant_server/SubmitOrder";
 	private final String MODE_RELEASE = "00"; // 正式

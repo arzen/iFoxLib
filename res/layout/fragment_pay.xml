@@ -50,6 +50,11 @@
                     android:text="银联卡" />
 
                 <TextView
+                    android:id="@+id/tvPrepaidCard"
+                    style="@style/pay_selected_style"
+                    android:text="充值卡" />
+
+                <TextView
                     android:id="@+id/tvHelp"
                     style="@style/pay_selected_style"
                     android:text="充值帮助" />
@@ -81,7 +86,8 @@
                     android:paddingLeft="3dp"
                     android:paddingRight="2dp"
                     android:paddingTop="2dp"
-                    android:stretchColumns="*" >
+                    android:stretchColumns="*"
+                    android:visibility="gone" >
 
                     <TableRow>
 
@@ -166,6 +172,89 @@
                             android:textSize="12sp" />
                     </TableRow>
                 </TableLayout>
+
+                <LinearLayout
+                    android:id="@+id/viewPrepaidCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:gravity="center_vertical" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="充值卡号:"
+                            android:textColor="#4d4d4d"
+                            android:textSize="14sp" />
+
+                        <EditText
+                            android:id="@+id/etCard"
+                            style="@style/pay_edittext"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="请输入充值卡号"
+                            android:maxLength="30"
+                            android:numeric="integer" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_vertical" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="密　　码:"
+                            android:textColor="#4d4d4d"
+                            android:textSize="14sp" />
+
+                        <EditText
+                            android:id="@+id/etPassword"
+                            style="@style/pay_edittext"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="请输入密码"
+                            android:maxLength="30"
+                            android:numeric="integer" />
+                    </LinearLayout>
+                    
+                     <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_vertical" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="金　　额:"
+                            android:textColor="#4d4d4d"
+                            android:textSize="14sp" />
+
+                        <EditText
+                            android:id="@+id/etPrice"
+                            style="@style/pay_edittext"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="输入充值金额"
+                            android:maxLength="5"
+                            android:numeric="integer" />
+                    </LinearLayout>
+                    
+                    
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
 
