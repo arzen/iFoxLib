@@ -300,6 +300,7 @@ public class LoadingFragment extends BaseFragment {
 							if(cacheContacts != null){
 								//对比需要上传的通讯录
 								upLoadContacts = ContactUtils.getUpLoadContacts(localContacts, cacheContacts);
+								ContactUtils.saveContacts(context, upLoadContacts);
 							}else{ //缓存是空，全部上传
 								//保存缓存,上传通讯录
 								upLoadContacts = localContacts;

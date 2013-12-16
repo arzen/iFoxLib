@@ -12,6 +12,7 @@ import com.arzen.iFoxLib.bean.BaseBean;
 import com.arzen.iFoxLib.bean.Invited;
 import com.arzen.iFoxLib.bean.Order;
 import com.arzen.iFoxLib.bean.PayList;
+import com.arzen.iFoxLib.bean.PrepaidCard;
 import com.arzen.iFoxLib.bean.Top;
 import com.arzen.iFoxLib.bean.User;
 import com.encore.libs.http.HttpConnectManager;
@@ -348,13 +349,22 @@ public class HttpIfoxApi {
 		maps.put("ca_sn", ca_sn);
 		maps.put("ca_pwd", ca_pwd);
 		maps.put("oid", orderId);
-		maps.put("extra", extra);
+		try {
+			if(extra == null || extra.equals("")){
+				extra = " ";
+			}
+			maps.put(PARAM_EXTRA, URLEncoder.encode(extra, "utf-8"));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 
 		String postParam = createParams(maps);
 
 		Request request = new Request(url);
 		request.setOnRequestListener(onRequestListener);
-		request.setParser(new JsonParser(BaseBean.class, false));
+		request.setParser(new JsonParser(PrepaidCard.class, false));
 		HttpConnectManager.getInstance(context.getApplicationContext()).doPost(request, postParam);
 	}
 	

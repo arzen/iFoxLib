@@ -190,8 +190,7 @@ public class TopFragment extends BaseFragment {
 					{
 						return;
 					}
-					// 显示loading view
-					setLoadingViewVisibility(false, getView(), mListView);
+					
 					Log.d("topFragment", "request url:" + url + " resultState :" + state + " result:" + result);
 					if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof Top) {
 						Top top = (Top) result;
@@ -241,6 +240,8 @@ public class TopFragment extends BaseFragment {
 						mIsHasNext = true;
 						mIsRequesEnd = false;
 					}
+					
+					setLoadingViewVisibility(false, getView(), mListView);
 				}
 			});
 		}

@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:text="正在玩  "
                 android:textColor="#7c7b7b"
-                android:textSize="12sp" />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/tvGameName"
@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:text="捕鱼达人"
                 android:textColor="#ffffff"
-                android:textSize="12sp" />
+                android:textSize="14sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -62,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:text="john meng"
                 android:textColor="#7c7b7b"
-                android:textSize="10sp" />
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/tvScore"
@@ -71,7 +71,7 @@
                 android:layout_marginLeft="10dp"
                 android:text="33694233"
                 android:textColor="#7c7b7b"
-                android:textSize="10sp" />
+                android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
 

@@ -1,12 +1,9 @@
 package com.arzen.iFoxLib.fragment;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.app.DownloadManager.Request;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -19,18 +16,18 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.arzen.iFoxLib.R;
 import com.arzen.iFoxLib.api.HttpIfoxApi;
 import com.arzen.iFoxLib.api.HttpSetting;
-import com.arzen.iFoxLib.bean.BaseBean;
 import com.arzen.iFoxLib.bean.Order;
 import com.arzen.iFoxLib.bean.PayList;
 import com.arzen.iFoxLib.bean.PayList.Data;
+import com.arzen.iFoxLib.bean.PrepaidCard;
 import com.arzen.iFoxLib.pay.WayPay;
 import com.arzen.iFoxLib.setting.KeyConstants;
+import com.arzen.iFoxLib.utils.CommonUtil;
 import com.arzen.iFoxLib.utils.MsgUtil;
 import com.encore.libs.http.HttpConnectManager;
 import com.encore.libs.http.OnRequestListener;
@@ -553,11 +550,15 @@ public class PayFragment extends BaseFragment {
 						if (mProgressDialog != null && mProgressDialog.isShowing()) {
 							mProgressDialog.dismiss();
 						}
-						if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof BaseBean) {
-							BaseBean baseBean = (Order) result;
+						if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof PrepaidCard) {
+							PrepaidCard baseBean = (PrepaidCard) result;
 							if (baseBean.getCode() == HttpSetting.RESULT_CODE_OK) { // 请求成功
-								MsgUtil.msg("充值成功", getActivity());
-								sendPayResultReceiver(getActivity(), orderId, 0, price, KeyConstants.INTENT_KEY_SUCCESS, "");
+								if(baseBean.getData().getMsg().equals("200")){
+									MsgUtil.msg("充值成功", getActivity());
+									sendPayResultReceiver(getActivity(), orderId, 0, price, KeyConstants.INTENT_KEY_SUCCESS, "");
+								}else{
+									MsgUtil.msg("充值失败:" + CommonUtil.getPrepaidCardPayMsg(baseBean.getData().getMsg()), getActivity());
+								}
 							} else {
 								MsgUtil.msg("充值失败:" + baseBean.getMsg(), getActivity());
 							}
@@ -674,7 +675,7 @@ public class PayFragment extends BaseFragment {
 				if (payType == KeyConstants.PAY_TYPE_UNIONPAY) { // 当前价钱
 					amount = mCurrentPrice;
 				} else if (payType == KeyConstants.PAY_TYPE_PREPAIDCARD) {
-					amount = 0;
+					amount = Integer.parseInt(mEtPrice.getText().toString());
 				}
 
 				HttpIfoxApi.createOrder(getActivity(), gid, cid, token, pid, amount, payType, extra, new OnCreateOrderListener(payType, result, msg));

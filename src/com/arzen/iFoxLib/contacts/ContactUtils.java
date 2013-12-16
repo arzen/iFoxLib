@@ -102,7 +102,7 @@ public class ContactUtils {
 						continue;
 					}
 					Contact contact = new Contact();
-					contact.systemId = contactId;
+//					contact.systemId = contactId;
 					contact.name = name.trim();
 					contact.phone = phoneNumber.trim();
 					contacts.add(contact);
