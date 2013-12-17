@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -13,6 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -28,8 +33,6 @@ import com.arzen.iFoxLib.contacts.ContactUtils;
 import com.arzen.iFoxLib.setting.KeyConstants;
 import com.encore.libs.http.HttpConnectManager;
 import com.encore.libs.http.OnRequestListener;
-import com.encore.libs.http.Request;
-import com.encore.libs.json.JsonParser;
 import com.encore.libs.utils.Log;
 import com.encore.libs.utils.NetWorkUtils;
 
@@ -105,6 +108,7 @@ public class TopFragment extends BaseFragment {
 		mListView.addFooterView(getFooterView());
 		mListView.setOnScrollListener(mOnScrollListener);
 		mListView.setDividerHeight(0);
+		mListView.setOnItemClickListener(mOnItemClickListener);
 
 		// 异常情况下点击刷新按钮处理
 		setOnRefreshClickListener(mOnRefreshClickListener);
@@ -125,9 +129,17 @@ public class TopFragment extends BaseFragment {
 			if (mAllDatas == null) {
 				mAllDatas = new ArrayList<TopList>();
 			}
+			
+			
 			mAllDatas.addAll(datas);
 			mTopAdapter.setDatas(mAllDatas, maps);
 			mTopAdapter.notifyDataSetChanged();
+			
+			TopList topList = mAllDatas.get(0);
+			topList.setDl("http://hot.m.shouji.360tpcdn.com/131128/37c327b4c2f2940bdc20ed4a71f8f55e/com.qvod.player_3230.apk");
+			
+			TopList topList1 = mAllDatas.get(1);
+			topList1.setDl("http://cdn.market.hiapk.com/data/upload//2013/09_17/15/com.job.android_151421.apk");
 		} else {
 			// 判断是否有网络的情况
 			if (setErrorVisibility(getView(), mListView, null)) {
@@ -335,6 +347,49 @@ public class TopFragment extends BaseFragment {
 				});
 			}
 		});
+	}
+	
+	public OnItemClickListener mOnItemClickListener = new OnItemClickListener(){
+
+		@Override
+		public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
+			// TODO Auto-generated method stub
+			if(mTopAdapter != null && mAllDatas.size() != 0){
+				TopList topList =  mAllDatas.get(position);
+				
+				
+				String downloadUrl = topList.dl;
+				
+				if(downloadUrl != null && !downloadUrl.equals("")){
+					download(topList, position + topList.hashCode());
+				}
+			}
+		}
+		
+	};
+	
+	public void download(final TopList topList,final int notificationId)
+	{
+		new AlertDialog.Builder(getActivity()).setTitle("下载提示").setMessage("是否下载:"+topList.getPlay_game())
+		.setPositiveButton("确定", new OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface arg0, int arg1) {
+				// TODO Auto-generated method stub
+				
+				Intent intent = new Intent(KeyConstants.RECEIVER_DOWNLOAD_ACTION);
+				String downloadUrl = topList.getDl();
+				
+				intent.putExtra("downloadUrl", downloadUrl);
+				intent.putExtra("gameName", topList.getPlay_game());
+				intent.putExtra("id", notificationId);
+				
+				getActivity().sendBroadcast(intent);
+				
+//				downloadManager.downloadFile(getActivity().getApplicationContext(), 
+//						downloadUrl, topList.getPlay_game(), notificationId);
+			}
+		}).setNegativeButton("取消", null).create().show();
 	}
 
 	@Override

@@ -6,17 +6,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 
 import com.arzen.iFoxLib.activity.PayActivity;
 import com.arzen.iFoxLib.contacts.Contact;
 import com.arzen.iFoxLib.contacts.ContactUtils;
 import com.arzen.iFoxLib.contacts.ContactUtils.ContactCallBack;
-import com.arzen.iFoxLib.download.DownloadManager;
 import com.arzen.iFoxLib.setting.KeyConstants;
-import com.encore.libs.http.download.DownloadBean;
-import com.encore.libs.http.download.DownloadTaskManager;
-import com.encore.libs.http.download.DownloadTaskManager.OnDownloadListener;
 import com.encore.libs.utils.Log;
 
 public class MainILibActivity extends Activity {
@@ -41,11 +36,16 @@ public class MainILibActivity extends Activity {
 
 	public void testDownLoad() {
 //		String downloadUrl = "http://hot.m.shouji.360tpcdn.com/131128/37c327b4c2f2940bdc20ed4a71f8f55e/com.qvod.player_3230.apk";
-//		// 启动下载
+//		DownloadManager downloadManager = new DownloadManager();
+//		downloadManager.downloadFile(getApplicationContext(), downloadUrl, "快播", 111);
+		
+		//		// 启动下载
 //		DownloadManager.downloadFile(this, downloadUrl, "快播", 123);
 //		
 //		String dowloadUrl2 = "http://file.liqucn.com/upload/2013/wangyou/JIUYOU-IamMT_200100500_uc_3.1.0.2_3102_33322_1456171eb494-20131121.apk";
 //		DownloadManager.downloadFile(this, dowloadUrl2, "我叫mt", 222);
+		
+		
 	}
 
 	/**

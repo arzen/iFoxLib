@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.arzen.iFoxLib.R;
+import com.arzen.iFoxLib.bean.Top;
 import com.arzen.iFoxLib.bean.Top.TopList;
 import com.arzen.iFoxLib.fragment.TopFragment;
 
@@ -32,6 +33,13 @@ public class TopAdapter extends BaseAdapter {
 	public void setDatas(List<TopList> datas,Map<String, String> maps) {
 		mDatas = datas;
 		mMaps = maps;
+		
+		for (int i = 0; i < mDatas.size(); i++) {
+			TopList top = mDatas.get(i);
+			if(mMaps != null && mMaps.containsKey(top.getUname())){
+				top.setUname(mMaps.get(top.getUname()));
+			}
+		}
 	}
 
 	@Override
@@ -108,12 +116,11 @@ public class TopAdapter extends BaseAdapter {
 				mImgNumber.setVisibility(View.INVISIBLE);
 			}
 			mTvGameName.setText(top.getPlay_game());
-			if(mMaps != null && mMaps.containsKey(top.getUname())){
-				mTvName.setText(mMaps.get(top.getUname()));
-			}else{
-				
+//			if(mMaps != null && mMaps.containsKey(top.getUname())){
+//				mTvName.setText(mMaps.get(top.getUname()));
+//			}else{
 				mTvName.setText(top.getUname());
-			}
+//			}
 			mTvScore.setText(top.getScore() + "");
 			if (top.getInvited() == 1) {
 				mBtnInvite.setVisibility(View.INVISIBLE);

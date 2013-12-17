@@ -175,6 +175,10 @@ public class KeyConstants {
 	 * change password action
 	 */
 	public static final String RECEIVER_ACTION_CHANGE_PASSWORD = "android.receiver.action.changepassword";
+	/**
+	 * 下载action
+	 */
+	public static final String RECEIVER_DOWNLOAD_ACTION = "android.action.download.receiver";
 
 	/**
 	 * intent 传递数据key ->旧密码
