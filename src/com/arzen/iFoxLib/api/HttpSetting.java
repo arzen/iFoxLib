@@ -51,6 +51,11 @@ public class HttpSetting {
 	public static final String IFOX_UPDATE_DYNAMICLIB = IFOX_SERVER_URL + "/app/bizz.php";
 	
 	/**
+	 * 提交分数
+	 */
+	public static final String IFOX_COMMIT_SCORE = IFOX_SERVER_URL + "/leaderboard/score.php";
+	
+	/**
 	 * 排行榜url
 	 */
 	public static final String IFOX_TOP_URL= IFOX_SERVER_URL + "/leaderboard/list.php";
@@ -103,5 +108,10 @@ public class HttpSetting {
 	public static String getDynamicUpdateUrl()
 	{
 		return IFOX_UPDATE_DYNAMICLIB;
+	}
+	
+	public static String getCommitScore()
+	{
+		return IFOX_COMMIT_SCORE;
 	}
 }
