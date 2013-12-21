@@ -120,6 +120,8 @@ public class LoginFragment extends BaseFragment {
 			bundle.putString(KeyConstants.INTENT_DATA_KEY_PASSWORD, password);
 			bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, mGid);
 			bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, mCid); // 渠道id
+			bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTID, mBundle.getString(KeyConstants.INTENT_DATA_KEY_CLIENTID));
+			bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET, mBundle.getString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET));
 			bundle.putInt(KeyConstants.INTENT_DATA_KEY_FROM, 0);
 			startCommonActivityForResult(bundle, mLoginRequestCode);
 		}

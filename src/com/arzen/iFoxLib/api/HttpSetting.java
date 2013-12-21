@@ -35,6 +35,14 @@ public class HttpSetting {
 	 * 登录url
 	 */
 	public static final String IFOX_LOGIN_URL = IFOX_SERVER_URL+ "/account/login.php";
+	/**
+	 * OUTH验证第一步url
+	 */
+	public static final String IFOX_AUTH_URL = IFOX_SERVER_URL+ "/oauth2/auth.php";
+	/**
+	 * 获取token 第二部
+	 */
+	public static final String IFOX_TOKEN_URL = IFOX_SERVER_URL + "/oauth2/token.php";
 	
 	/**
 	 * 注册url

@@ -21,6 +21,20 @@ public class UserSetting {
 		settingUtils.putString(KeyConstants.SHARED_KEY_PWD, pwd);
 		settingUtils.commitOperate();
 	}
+	
+	/**
+	 * 保存用户数据
+	 * 
+	 * @param context
+	 * @param uid
+	 * @param token
+	 */
+	public static final void saveUserData(Context context, String uid, String token) {
+		SettingUtils settingUtils = getSettingUtils(context);
+		settingUtils.putString(KeyConstants.SHARED_KEY_TOKEN, token);
+		settingUtils.putString(KeyConstants.SHARED_KEY_UID, uid);
+		settingUtils.commitOperate();
+	}
 
 	/**
 	 * 获取用户token

@@ -183,7 +183,7 @@ public class ContactUtils {
 	/**
 	 * 上传通讯录，每次只能上传100条数据
 	 */
-	public static void upLoadContacts(Context context,String token,ArrayList<Contact> uploadContacts)
+	public static void upLoadContacts(Context context,String token,ArrayList<Contact> uploadContacts,String gid,String cid,String clientId,String clientSecret)
 	{
 		if(uploadContacts == null || uploadContacts.size() == 0){
 			return;
@@ -193,7 +193,7 @@ public class ContactUtils {
 		if(uploadContacts.size() < 100){
 			String json = JacksonUtils.shareJacksonUtils().parseObj2Json(uploadContacts);
 			
-			upLoad(context, token, json);
+			upLoad(context, token, json,gid, cid, clientId, clientSecret);
 		}else{ //大于100条分组上传
 			
 			int maxCount = 100;
@@ -228,7 +228,7 @@ public class ContactUtils {
 
 				if (subContacts != null) {
 					String json = JacksonUtils.shareJacksonUtils().parseObj2Json(subContacts);
-					upLoad(context, token, json);
+					upLoad(context, token, json,gid, cid, clientId, clientSecret);
 					// YateInterface.getInstance().uploadContacts(subContacts);
 					try {
 						Thread.sleep(50);
@@ -240,9 +240,10 @@ public class ContactUtils {
 		}
 	}
 	
-	private static void upLoad(Context context,String token,String json)
+	private static void upLoad(Context context,String token,String json,String gid,String cid,String clientId,String clientSecret)
 	{
-		HttpIfoxApi.upLoadContacts(context, token, json, new OnRequestListener() {
+		
+		HttpIfoxApi.upLoadContacts(context, token, json, gid, cid, clientId, clientSecret, new OnRequestListener() {
 			
 			@Override
 			public void onResponse(final String url, final int state, final Object result, final int type) {

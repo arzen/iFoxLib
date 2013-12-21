@@ -82,6 +82,15 @@ public class KeyConstants {
 	 * intent 传递数据key ->cid 渠道id
 	 */
 	public static String INTENT_DATA_KEY_CID = "cid";
+	
+	/**
+	 * intent 传递数据key ->登录后的clientId
+	 */
+	public static String INTENT_DATA_KEY_CLIENTID = "clientId";
+	/**
+	 * intent 传递数据key ->登录后的clientSecret
+	 */
+	public static String INTENT_DATA_KEY_CLIENTSECRET = "clientSecret";
 
 	/**
 	 * intent 传递数据key ->登录后的token

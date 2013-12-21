@@ -392,9 +392,14 @@ public class PayFragment extends BaseFragment {
 		String gid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_GID);
 		String cid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_CID);
 		String token = mBundle.getString(KeyConstants.INTENT_DATA_KEY_TOKEN);
+		String clientId = mBundle.getString(KeyConstants.INTENT_DATA_KEY_CLIENTID);
+		String clientSecret = mBundle.getString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET);
 		// 请求
-		HttpIfoxApi.requestPayList(getActivity(), gid, cid, token, mOnPayListRequestListener);
+		// HttpIfoxApi.requestPayList(getActivity(), gid, cid, token,
+		// mOnPayListRequestListener);
+		HttpIfoxApi.requestPayList(getActivity(), gid, cid, token, clientId, clientSecret, mOnPayListRequestListener);
 	}
+
 
 	public OnRequestListener mOnPayListRequestListener = new OnRequestListener() {
 
@@ -475,6 +480,7 @@ public class PayFragment extends BaseFragment {
 					} else {
 						price = Integer.parseInt(mEtCusPrice.getText().toString());
 					}
+					mReTryCreateOrderCount = 4;
 					mCurrentPrice = price;
 					createOrder(KeyConstants.PAY_TYPE_UNIONPAY, "", "");
 				} else {
@@ -489,6 +495,7 @@ public class PayFragment extends BaseFragment {
 					MsgUtil.msg("卡号，密码，价钱不能为空！", getActivity());
 					return;
 				} else {
+					mReTryCreateOrderCount = 4;
 					createOrder(KeyConstants.PAY_TYPE_PREPAIDCARD, "", "");
 				}
 
@@ -524,8 +531,10 @@ public class PayFragment extends BaseFragment {
 		}
 		return mLoadingView;
 	}
+
 	/**
 	 * 充值卡请求
+	 * 
 	 * @param orderId
 	 */
 	public void toPrepaidCardPay(final String orderId) {
@@ -553,10 +562,10 @@ public class PayFragment extends BaseFragment {
 						if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof PrepaidCard) {
 							PrepaidCard baseBean = (PrepaidCard) result;
 							if (baseBean.getCode() == HttpSetting.RESULT_CODE_OK) { // 请求成功
-								if(baseBean.getData().getMsg().equals("200")){
+								if (baseBean.getData().getMsg().equals("200")) {
 									MsgUtil.msg("充值成功", getActivity());
 									sendPayResultReceiver(getActivity(), orderId, 0, price, KeyConstants.INTENT_KEY_SUCCESS, "");
-								}else{
+								} else {
 									MsgUtil.msg("充值失败:" + CommonUtil.getPrepaidCardPayMsg(baseBean.getData().getMsg()), getActivity());
 								}
 							} else {
@@ -664,6 +673,8 @@ public class PayFragment extends BaseFragment {
 				int pid = mBundle.getInt(KeyConstants.INTENT_DATA_KEY_PID);
 				float amount = mBundle.getFloat(KeyConstants.INTENT_DATA_KEY_AMOUNT);
 				String extra = mBundle.getString(KeyConstants.INTENT_DATA_KEY_EXTRA);
+				String clientId = mBundle.getString(KeyConstants.INTENT_DATA_KEY_CLIENTID);
+				String clientSecret = mBundle.getString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET);
 				// 创建订单
 				Log.d(TAG, "createOrder -> gid:" + gid + " cid:" + cid + " token:" + token + " pid:" + pid + " amount:" + amount + " extra:" + extra + " payType:" + payType);
 
@@ -678,7 +689,8 @@ public class PayFragment extends BaseFragment {
 					amount = Integer.parseInt(mEtPrice.getText().toString());
 				}
 
-				HttpIfoxApi.createOrder(getActivity(), gid, cid, token, pid, amount, payType, extra, new OnCreateOrderListener(payType, result, msg));
+				HttpIfoxApi.createOrder(getActivity(), gid, cid, token, pid, amount, payType, extra,clientId,clientSecret, new OnCreateOrderListener(payType, result, msg));
+//				HttpIfoxApi.createOrder(getActivity(), gid, cid, token, pid, amount, payType, extra, clientId, clientSecret, cb);
 			}
 		});
 	}
@@ -738,11 +750,11 @@ public class PayFragment extends BaseFragment {
 						// 重试创建订单
 						createOrder(mPayType, mResult, mMsg);
 					} else { // 请求失败
-						
+
 						if (mProgressDialog != null && mProgressDialog.isShowing()) {
 							mProgressDialog.dismiss();
 						}
-						
+
 						MsgUtil.msg("创建订单失败,正在重试请稍后...", getActivity());
 						// 重试创建订单
 						createOrder(mPayType, mResult, mMsg);

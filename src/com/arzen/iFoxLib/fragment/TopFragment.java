@@ -129,15 +129,14 @@ public class TopFragment extends BaseFragment {
 			if (mAllDatas == null) {
 				mAllDatas = new ArrayList<TopList>();
 			}
-			
-			
+
 			mAllDatas.addAll(datas);
 			mTopAdapter.setDatas(mAllDatas, maps);
 			mTopAdapter.notifyDataSetChanged();
-			
+
 			TopList topList = mAllDatas.get(0);
 			topList.setDl("http://hot.m.shouji.360tpcdn.com/131128/37c327b4c2f2940bdc20ed4a71f8f55e/com.qvod.player_3230.apk");
-			
+
 			TopList topList1 = mAllDatas.get(1);
 			topList1.setDl("http://cdn.market.hiapk.com/data/upload//2013/09_17/15/com.job.android_151421.apk");
 		} else {
@@ -175,10 +174,19 @@ public class TopFragment extends BaseFragment {
 
 		String gid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_GID);
 		String token = mBundle.getString(KeyConstants.INTENT_DATA_KEY_TOKEN);
+		
+		
+		String cid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_CID);
+		String clientId = mBundle.getString(KeyConstants.INTENT_DATA_KEY_CLIENTID);
+		String clientSecret = mBundle.getString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET);
+		
 		Log.d("Top", "gid: " + gid + "token:" + token);
 		Log.d("Top", "pageNumber:" + pageNumber);
-		HttpIfoxApi.requestTopList(getActivity().getApplicationContext(), gid, token, pageNumber, new OnTopRequestListener(isLoadMore));
+		// HttpIfoxApi.requestTopList(getActivity().getApplicationContext(),
+		// gid, token, pageNumber, new OnTopRequestListener(isLoadMore));
+		HttpIfoxApi.requestTopList(getActivity().getApplicationContext(), gid, token, pageNumber, cid, clientId, clientSecret, new OnTopRequestListener(isLoadMore));
 	}
+
 
 	public class OnTopRequestListener implements OnRequestListener {
 
@@ -202,7 +210,7 @@ public class TopFragment extends BaseFragment {
 					{
 						return;
 					}
-					
+
 					Log.d("topFragment", "request url:" + url + " resultState :" + state + " result:" + result);
 					if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof Top) {
 						Top top = (Top) result;
@@ -252,7 +260,7 @@ public class TopFragment extends BaseFragment {
 						mIsHasNext = true;
 						mIsRequesEnd = false;
 					}
-					
+
 					setLoadingViewVisibility(false, getView(), mListView);
 				}
 			});
@@ -348,46 +356,43 @@ public class TopFragment extends BaseFragment {
 			}
 		});
 	}
-	
-	public OnItemClickListener mOnItemClickListener = new OnItemClickListener(){
+
+	public OnItemClickListener mOnItemClickListener = new OnItemClickListener() {
 
 		@Override
 		public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
 			// TODO Auto-generated method stub
-			if(mTopAdapter != null && mAllDatas.size() != 0){
-				TopList topList =  mAllDatas.get(position);
-				
-				
+			if (mTopAdapter != null && mAllDatas.size() != 0) {
+				TopList topList = mAllDatas.get(position);
+
 				String downloadUrl = topList.dl;
-				
-				if(downloadUrl != null && !downloadUrl.equals("")){
+
+				if (downloadUrl != null && !downloadUrl.equals("")) {
 					download(topList, position + topList.hashCode());
 				}
 			}
 		}
-		
+
 	};
-	
-	public void download(final TopList topList,final int notificationId)
-	{
-		new AlertDialog.Builder(getActivity()).setTitle("下载提示").setMessage("是否下载:"+topList.getPlay_game())
-		.setPositiveButton("确定", new OnClickListener() {
-			
+
+	public void download(final TopList topList, final int notificationId) {
+		new AlertDialog.Builder(getActivity()).setTitle("下载提示").setMessage("是否下载:" + topList.getPlay_game()).setPositiveButton("确定", new OnClickListener() {
+
 			@Override
 			public void onClick(DialogInterface arg0, int arg1) {
 				// TODO Auto-generated method stub
-				
+
 				Intent intent = new Intent(KeyConstants.RECEIVER_DOWNLOAD_ACTION);
 				String downloadUrl = topList.getDl();
-				
+
 				intent.putExtra("downloadUrl", downloadUrl);
 				intent.putExtra("gameName", topList.getPlay_game());
 				intent.putExtra("id", notificationId);
-				
+
 				getActivity().sendBroadcast(intent);
-				
-//				downloadManager.downloadFile(getActivity().getApplicationContext(), 
-//						downloadUrl, topList.getPlay_game(), notificationId);
+
+				// downloadManager.downloadFile(getActivity().getApplicationContext(),
+				// downloadUrl, topList.getPlay_game(), notificationId);
 			}
 		}).setNegativeButton("取消", null).create().show();
 	}
