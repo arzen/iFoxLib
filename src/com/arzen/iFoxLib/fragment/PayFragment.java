@@ -735,7 +735,7 @@ public class PayFragment extends BaseFragment {
 								// 回调成功状态
 								sendPayResultReceiver(getActivity(), order.getData().getOrderid(), pid, amount, mResult, mMsg);
 							} else if (mPayType == KeyConstants.PAY_TYPE_UNIONPAY) {
-								toUnionpay(order.getData().getOrderid());
+								toUnionpay(order.getData().getTn());
 							} else if (mPayType == KeyConstants.PAY_TYPE_PREPAIDCARD) {
 								toPrepaidCardPay(order.getData().getOrderid());
 							}
