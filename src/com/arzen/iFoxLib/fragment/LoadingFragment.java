@@ -135,15 +135,27 @@ public class LoadingFragment extends BaseFragment {
 		HttpIfoxApi.requestLogin(getActivity(), mGid, mCid, mPhoneNumber, password, mClientId, mClientSecret, new OnLoginCallBack() {
 
 			@Override
-			public void onSuccess(String uid, String token) {
+			public void onSuccess(final String uid,final String token) {
 				// TODO Auto-generated method stub
-				saveData(uid, token, mPhoneNumber, mPassword);
+				mHandler.post(new Runnable() {
+					
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						if(!isAdded())
+						{
+							return;
+						}
+						saveData(uid, token, mPhoneNumber, mPassword);
 
-				Intent intent = new Intent();
-				intent.putExtra(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
-				intent.putExtra(KeyConstants.IS_SUCCESS, true);
-				getActivity().setResult(Activity.RESULT_OK, intent);
-				getActivity().finish();
+						Intent intent = new Intent();
+						intent.putExtra(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
+						intent.putExtra(KeyConstants.IS_SUCCESS, true);
+						getActivity().setResult(Activity.RESULT_OK, intent);
+						getActivity().finish();
+					}
+				});
+				
 			}
 
 			@Override
