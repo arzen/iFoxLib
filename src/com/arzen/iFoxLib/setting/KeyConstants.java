@@ -152,6 +152,10 @@ public class KeyConstants {
 	 * 用户id
 	 */
 	public static final String SHARED_KEY_UID = "uid";
+	/**
+	 * key time
+	 */
+	public static final String SHARED_KEY_TIME  ="pay_list_time";
 
 	/**
 	 * 用户帐号

@@ -27,6 +27,7 @@ import com.arzen.iFoxLib.bean.PayList.Data;
 import com.arzen.iFoxLib.bean.PrepaidCard;
 import com.arzen.iFoxLib.pay.WayPay;
 import com.arzen.iFoxLib.setting.KeyConstants;
+import com.arzen.iFoxLib.setting.UserSetting;
 import com.arzen.iFoxLib.utils.CommonUtil;
 import com.arzen.iFoxLib.utils.MsgUtil;
 import com.encore.libs.http.HttpConnectManager;
@@ -91,10 +92,21 @@ public class PayFragment extends BaseFragment {
 	private EditText mEtCard;
 	private EditText mEtPassword;
 	private EditText mEtPrice;
+	
+	/**
+	 * 检查时间,检测是否需要请求
+	 */
+	private static long mCheckTime = 24 * 60 * 60 * 1000;
+	/**
+	 * 支付列表缓存地址
+	 */
+	public static String mPayListChachePath = "";
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
+		mPayListChachePath = getActivity().getCacheDir().getAbsolutePath() + "/playList.cache";
+		
 		mReTryCreateOrderCount = 4;
 		View payView = inflater.inflate(R.layout.fragment_pay, null);
 		initUI(payView);
@@ -258,12 +270,18 @@ public class PayFragment extends BaseFragment {
 			mPayList = payList;
 			initPayList(payList);
 		} else {
-			// 判断是否有网络的情况
-			if (setErrorVisibility(getView(), mViewContent, null)) {
-				// 显示loading view
-				setLoadingViewVisibility(true, getView(), mViewContent);
-				// 请求
-				requestPayList();
+			PayList cache =  (PayList) CommonUtil.file2Object(mPayListChachePath);
+			long payListTime = UserSetting.getPayListTime(getActivity()); // 得到上次检查的时间
+			if(cache == null || System.currentTimeMillis() - payListTime > mCheckTime){
+				// 判断是否有网络的情况
+				if (setErrorVisibility(getView(), mViewContent, null)) {
+					// 显示loading view
+					setLoadingViewVisibility(true, getView(), mViewContent);
+					// 请求
+					requestPayList();
+				}
+			}else{
+				initData(cache);
 			}
 		}
 	}
@@ -421,6 +439,8 @@ public class PayFragment extends BaseFragment {
 					if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof PayList) {
 						PayList payList = (PayList) result;
 						if (payList.getCode() == HttpSetting.RESULT_CODE_OK) { // 请求成功
+							UserSetting.savePayListTime(getActivity().getApplicationContext(), System.currentTimeMillis());
+							CommonUtil.object2File(payList, mPayListChachePath);
 							initData(payList);
 						} else {
 							setErrorVisibility(getView(), mViewContent, getString(R.string.request_fail));

@@ -35,6 +35,21 @@ public class UserSetting {
 		settingUtils.putString(KeyConstants.SHARED_KEY_UID, uid);
 		settingUtils.commitOperate();
 	}
+	
+	public static void savePayListTime(Context context,long time){
+		SettingUtils settingUtils = getSettingUtils(context);
+		settingUtils.putLong(KeyConstants.SHARED_KEY_TIME, time);
+		settingUtils.commitOperate();
+	}
+	
+	/**
+	 * 上次初始化保存的时间,
+	 * @param context
+	 */
+	public static long getPayListTime(Context context){
+		SettingUtils settingUtils = getSettingUtils(context);
+		return settingUtils.getLong(KeyConstants.SHARED_KEY_TIME, 0);
+	}
 
 	/**
 	 * 获取用户token
