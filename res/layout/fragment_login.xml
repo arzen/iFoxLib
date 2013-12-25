@@ -72,6 +72,7 @@
             android:layout_marginRight="35dp"
             android:text="@string/forget_password"
             android:textColor="#7c7b7b"
+            android:visibility="gone"
             android:textSize="10sp" />
     </LinearLayout>
 

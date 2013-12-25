@@ -134,11 +134,11 @@ public class TopFragment extends BaseFragment {
 			mTopAdapter.setDatas(mAllDatas, maps);
 			mTopAdapter.notifyDataSetChanged();
 
-			TopList topList = mAllDatas.get(0);
-			topList.setDl("http://hot.m.shouji.360tpcdn.com/131128/37c327b4c2f2940bdc20ed4a71f8f55e/com.qvod.player_3230.apk");
-
-			TopList topList1 = mAllDatas.get(1);
-			topList1.setDl("http://cdn.market.hiapk.com/data/upload//2013/09_17/15/com.job.android_151421.apk");
+//			TopList topList = mAllDatas.get(0);
+//			topList.setDl("http://hot.m.shouji.360tpcdn.com/131128/37c327b4c2f2940bdc20ed4a71f8f55e/com.qvod.player_3230.apk");
+//
+//			TopList topList1 = mAllDatas.get(1);
+//			topList1.setDl("http://cdn.market.hiapk.com/data/upload//2013/09_17/15/com.job.android_151421.apk");
 		} else {
 			// 判断是否有网络的情况
 			if (setErrorVisibility(getView(), mListView, null)) {
