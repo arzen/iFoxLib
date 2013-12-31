@@ -5,6 +5,7 @@ import java.util.Map;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -14,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.arzen.iFoxLib.R;
-import com.arzen.iFoxLib.bean.Top;
 import com.arzen.iFoxLib.bean.Top.TopList;
 import com.arzen.iFoxLib.fragment.TopFragment;
 
@@ -92,7 +92,7 @@ public class TopAdapter extends BaseAdapter {
 			mBtnInvite = (TextView) view.findViewById(R.id.btnInvite);
 		}
 
-		public void setData(int position, TopList top) {
+		public void setData(int position,final TopList top) {
 			if (position < 5) {
 				mImgNumber.setVisibility(View.VISIBLE);
 				switch (position) {
@@ -132,11 +132,14 @@ public class TopAdapter extends BaseAdapter {
 					@Override
 					public void onClick(View arg0) {
 						// TODO Auto-generated method stub
-						Intent it = new Intent(Intent.ACTION_VIEW);
+//						Intent it = new Intent(Intent.ACTION_VIEW);
+						Uri uri = Uri.parse("smsto:" + top.getUname());
+
+						Intent it = new Intent(Intent.ACTION_SENDTO, uri);
 
 						it.putExtra("sms_body", TopFragment.mInviteString);
 
-						it.setType("vnd.android-dir/mms-sms");
+//						it.setType("vnd.android-dir/mms-sms");
 
 						mContext.startActivity(it);
 					}
