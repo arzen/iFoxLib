@@ -210,58 +210,62 @@ public class TopFragment extends BaseFragment {
 					{
 						return;
 					}
+					try {
+						Log.d("topFragment", "request url:" + url + " resultState :" + state + " result:" + result);
+						if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof Top) {
+							Top top = (Top) result;
+							if (top.getData() != null && top.getData().getList() != null && top.getData().getList().size() != 0) {
+								// 显示数据
+								initData(top.getData().getList());
 
-					Log.d("topFragment", "request url:" + url + " resultState :" + state + " result:" + result);
-					if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof Top) {
-						Top top = (Top) result;
-						if (top.getData() != null && top.getData().getList() != null && top.getData().getList().size() != 0) {
-							// 显示数据
-							initData(top.getData().getList());
+								if (top.getData().getList().size() < 10) {
+									mIsHasNext = false;
+									setFooterViewVisibility(View.GONE);// 隐藏footerView
+								} else {
+									mPageNumber++;
+									mIsHasNext = true;
+									setFooterViewVisibility(View.VISIBLE);
+								}
 
-							if (top.getData().getList().size() < 10) {
+							} else {
 								mIsHasNext = false;
 								setFooterViewVisibility(View.GONE);// 隐藏footerView
-							} else {
-								mPageNumber++;
-								mIsHasNext = true;
-								setFooterViewVisibility(View.VISIBLE);
+								if (!mIsLoadMore) {
+									// 没有数据
+									setNotDataVisibility(getView(), mListView);
+								}
 							}
+						} else if (state == HttpConnectManager.STATE_TIME_OUT) { // 请求超时
+							// 隐藏loadingView,显示主体内容listView
+							setLoadingViewVisibility(false, getView(), mListView);
 
-						} else {
-							mIsHasNext = false;
-							setFooterViewVisibility(View.GONE);// 隐藏footerView
-							if (!mIsLoadMore) {
-								// 没有数据
-								setNotDataVisibility(getView(), mListView);
+							if (!mIsLoadMore)// 是否加载下一页的请求
+								setErrorVisibility(getView(), mListView, getString(R.string.time_out));
+							else {
+								Toast.makeText(getActivity(), R.string.time_out, Toast.LENGTH_SHORT).show();
+								setFooterViewVisibility(View.GONE);// 隐藏footerView
 							}
-						}
-					} else if (state == HttpConnectManager.STATE_TIME_OUT) { // 请求超时
-						// 隐藏loadingView,显示主体内容listView
-						setLoadingViewVisibility(false, getView(), mListView);
+							mIsHasNext = true;
+							mIsRequesEnd = false;
+						} else { // 请求失败
+							// 隐藏loadingView,显示主体内容listView
+							setLoadingViewVisibility(false, getView(), mListView);
 
-						if (!mIsLoadMore)// 是否加载下一页的请求
-							setErrorVisibility(getView(), mListView, getString(R.string.time_out));
-						else {
-							Toast.makeText(getActivity(), R.string.time_out, Toast.LENGTH_SHORT).show();
-							setFooterViewVisibility(View.GONE);// 隐藏footerView
+							if (!mIsLoadMore)
+								setErrorVisibility(getView(), mListView, getString(R.string.request_fail));
+							else {
+								Toast.makeText(getActivity(), R.string.request_fail, Toast.LENGTH_SHORT).show();
+								setFooterViewVisibility(View.GONE);// 隐藏footerView
+							}
+							mIsHasNext = true;
+							mIsRequesEnd = false;
 						}
-						mIsHasNext = true;
-						mIsRequesEnd = false;
-					} else { // 请求失败
-						// 隐藏loadingView,显示主体内容listView
-						setLoadingViewVisibility(false, getView(), mListView);
 
-						if (!mIsLoadMore)
-							setErrorVisibility(getView(), mListView, getString(R.string.request_fail));
-						else {
-							Toast.makeText(getActivity(), R.string.request_fail, Toast.LENGTH_SHORT).show();
-							setFooterViewVisibility(View.GONE);// 隐藏footerView
-						}
-						mIsHasNext = true;
-						mIsRequesEnd = false;
+						setLoadingViewVisibility(false, getView(), mListView);
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-
-					setLoadingViewVisibility(false, getView(), mListView);
+					
 				}
 			});
 		}
