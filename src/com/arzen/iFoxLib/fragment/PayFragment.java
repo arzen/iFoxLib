@@ -127,7 +127,27 @@ public class PayFragment extends BaseFragment {
 
 		getActivity().registerReceiver(mCreateOrderBroadcastReceiver, new IntentFilter(KeyConstants.ACTION_CREATEORDER_ACTIVITY));
 
-		getActivity().registerReceiver(mCreateOrderBroadcastReceiver, new IntentFilter(KeyConstants.ACTION_PAY_RESULT_RECEIVER));
+		getActivity().registerReceiver(mPayResultBroadcastReceiver, new IntentFilter(KeyConstants.ACTION_PAY_RESULT_RECEIVER));
+	
+	
+		Integer price = mBundle.getInt(KeyConstants.INTENT_DATA_KEY_PROP_PRICE);
+		if(price != null && price > 0){
+			mEtCusPrice.setText(price+"");
+			mEtCusPrice.setEnabled(false);
+			
+			mEtPrice.setText(price+"");
+			mEtPrice.setEnabled(false);
+			
+			
+			mTv100.setEnabled(false);
+			mTv200.setEnabled(false);
+			mTv500.setEnabled(false);
+			mTv1000.setEnabled(false);
+			mTv50.setEnabled(false);
+			mTv30.setEnabled(false);
+			mTv20.setEnabled(false);
+			mTv10.setEnabled(false);
+		}
 	}
 
 	/**

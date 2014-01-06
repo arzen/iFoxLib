@@ -48,6 +48,10 @@ public class KeyConstants {
 	 * 来自那里
 	 */
 	public static final String INTENT_DATA_KEY_FROM = "from";
+	/**
+	 * 固定道具金额
+	 */
+	public static String INTENT_DATA_KEY_PROP_PRICE = "prop_price";
 
 	/**
 	 * 支付方式 微派
