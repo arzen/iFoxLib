@@ -81,7 +81,7 @@ public abstract class BaseFragment extends Fragment {
 		Button mBtnRefresh = (Button) parentView.findViewById(R.id.btnRefresh);
 		TextView textView = (TextView) parentView.findViewById(R.id.tvErrorContent);
 		ImageView imageView = (ImageView) parentView.findViewById(R.id.imgErrorView);
-		textView.setText("没有歌曲...刷新看看?");
+		textView.setText("您的网络不稳定，请尝试重新连接！");
 
 		imageView.setImageResource(R.drawable.ic_launcher);
 		mBtnRefresh.setOnClickListener(mOnClickListener);

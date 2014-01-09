@@ -179,7 +179,9 @@ public class LoginFragment extends BaseFragment {
 				Bundle bundle = new Bundle();
 				bundle.putString(KeyConstants.INTENT_KEY_RESULT, KeyConstants.INTENT_KEY_SUCCESS); //回调成功
 				bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, data.getStringExtra(KeyConstants.INTENT_DATA_KEY_TOKEN));
-				
+				bundle.putString(KeyConstants.INTENT_DATA_KEY_UID,  data.getStringExtra(KeyConstants.INTENT_DATA_KEY_UID));
+				Log.d(TAG, "onActivityResult: token:" + data.getStringExtra(KeyConstants.INTENT_DATA_KEY_TOKEN) + 
+						" uid:" + data.getStringExtra(KeyConstants.INTENT_DATA_KEY_UID));
 				sendResultBroadcast(getActivity(), bundle,  KeyConstants.RECEIVER_ACTION_LOGIN);
 			}
 		} 

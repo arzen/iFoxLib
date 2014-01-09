@@ -31,8 +31,10 @@ public class UserSetting {
 	 */
 	public static final void saveUserData(Context context, String uid, String token) {
 		SettingUtils settingUtils = getSettingUtils(context);
-		settingUtils.putString(KeyConstants.SHARED_KEY_TOKEN, token);
-		settingUtils.putString(KeyConstants.SHARED_KEY_UID, uid);
+		if(token != null && !token.equals(""))
+			settingUtils.putString(KeyConstants.SHARED_KEY_TOKEN, token);
+		if(uid != null && !uid.equals(""))
+			settingUtils.putString(KeyConstants.SHARED_KEY_UID, uid);
 		settingUtils.commitOperate();
 	}
 	

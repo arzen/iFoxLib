@@ -100,6 +100,12 @@ public class KeyConstants {
 	 * intent 传递数据key ->登录后的token
 	 */
 	public static String INTENT_DATA_KEY_TOKEN = "token";
+	
+	/**
+	 * intent 传递数据key ->登录后的得到的uid
+	 */
+	public static String INTENT_DATA_KEY_UID = "uid";
+	
 	/**
 	 * intent 传递数据key -> 支付游戏需要传递记录的数据;如：区服信息，角色信息等 "sn=133242434&role=张三"
 	 */

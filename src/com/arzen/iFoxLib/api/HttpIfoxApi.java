@@ -330,7 +330,7 @@ public class HttpIfoxApi {
 				if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof Auth) {
 					Auth auth = (Auth) result;
 					if (auth.getCode() == HttpSetting.RESULT_CODE_OK && auth.getData() != null) {
-						requestToken(context, clientId, clientSecret, auth.getData().getCode(), cb);
+						requestToken(context,auth.getData().getUid(), clientId, clientSecret, auth.getData().getCode(), cb);
 					} else {
 						cb.onFail(auth.getMsg());
 					}
@@ -344,7 +344,7 @@ public class HttpIfoxApi {
 		HttpConnectManager.getInstance(context.getApplicationContext()).doPost(request, postParam);
 	}
 
-	public static void requestToken(final Context context, String clientId, String clientSecret, String code, final OnLoginCallBack cb) {
+	public static void requestToken(final Context context,final String uid, String clientId, String clientSecret, String code, final OnLoginCallBack cb) {
 		String url = HttpSetting.IFOX_TOKEN_URL;
 
 		Map<String, Object> maps = new HashMap<String, Object>();
@@ -367,8 +367,8 @@ public class HttpIfoxApi {
 				if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof Token) {
 					Token token = (Token) result;
 					if (token.getCode() == HttpSetting.RESULT_CODE_OK && token.getData() != null) {
-						UserSetting.saveUserData(context, token.getData().getUid(), token.getData().getToken());
-						cb.onSuccess(token.getData().getUid(), token.getData().getToken());
+						UserSetting.saveUserData(context, uid, token.getData().getToken());
+						cb.onSuccess(uid, token.getData().getToken());
 					} else {
 						cb.onFail(token.getMsg());
 					}

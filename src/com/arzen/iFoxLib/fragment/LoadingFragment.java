@@ -150,6 +150,7 @@ public class LoadingFragment extends BaseFragment {
 
 						Intent intent = new Intent();
 						intent.putExtra(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
+						intent.putExtra(KeyConstants.INTENT_DATA_KEY_UID, uid);
 						intent.putExtra(KeyConstants.IS_SUCCESS, true);
 						getActivity().setResult(Activity.RESULT_OK, intent);
 						getActivity().finish();
@@ -253,6 +254,7 @@ public class LoadingFragment extends BaseFragment {
 							if (login.getCode() == HttpSetting.RESULT_CODE_OK) {
 								MsgUtil.msg("注册成功", getActivity());
 								intent.putExtra(KeyConstants.INTENT_DATA_KEY_TOKEN, login.getData().getToken());
+								intent.putExtra(KeyConstants.INTENT_DATA_KEY_UID, login.getData().getUid());
 								saveData(login.getData().getUid(), login.getData().getToken(), mPhoneNumber, mPassword);
 								isSuccess = true;
 							} else {
