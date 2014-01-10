@@ -30,6 +30,7 @@ import com.arzen.iFoxLib.setting.KeyConstants;
 import com.arzen.iFoxLib.setting.UserSetting;
 import com.arzen.iFoxLib.utils.CommonUtil;
 import com.arzen.iFoxLib.utils.MsgUtil;
+import com.baidu.mobstat.StatService;
 import com.encore.libs.http.HttpConnectManager;
 import com.encore.libs.http.OnRequestListener;
 import com.encore.libs.utils.Log;
@@ -512,6 +513,7 @@ public class PayFragment extends BaseFragment {
 			case R.id.tvAlipay:
 			case R.id.tvUnionpay:
 				if (mCurrentSelectPrice != null || !mEtCusPrice.getText().toString().equals("")) {
+					StatService.onEvent(getActivity().getApplicationContext(), "PAY_UNION", "");
 					int price = 0;
 					if (mCurrentSelectPrice != null) {
 						String p = mCurrentSelectPrice.getText().toString();
@@ -535,6 +537,7 @@ public class PayFragment extends BaseFragment {
 					MsgUtil.msg("卡号，密码，价钱不能为空！", getActivity());
 					return;
 				} else {
+					StatService.onEvent(getActivity().getApplicationContext(), "PAY_CARD", "");
 					mReTryCreateOrderCount = 4;
 					createOrder(KeyConstants.PAY_TYPE_PREPAIDCARD, "", "");
 				}
@@ -604,8 +607,10 @@ public class PayFragment extends BaseFragment {
 							if (baseBean.getCode() == HttpSetting.RESULT_CODE_OK) { // 请求成功
 								if (baseBean.getData().getMsg().equals("200")) {
 									MsgUtil.msg("充值成功", getActivity());
+									StatService.onEvent(getActivity().getApplicationContext(), "PAY_CARD_SUCCESS", "");
 									sendPayResultReceiver(getActivity(), orderId, 0, price, KeyConstants.INTENT_KEY_SUCCESS, "");
 								} else {
+									StatService.onEvent(getActivity().getApplicationContext(), "PAY_CARD_FAIL", "");
 									MsgUtil.msg("充值失败:" + CommonUtil.getPrepaidCardPayMsg(baseBean.getData().getMsg()), getActivity());
 								}
 							} else {
@@ -888,9 +893,11 @@ public class PayFragment extends BaseFragment {
 			// TODO Auto-generated method stub
 			String result = intent.getStringExtra(KeyConstants.INTENT_KEY_RESULT);
 			if (result.equalsIgnoreCase("success")) {
+				StatService.onEvent(getActivity().getApplicationContext(), "PAY_UNION_SUCCESS", "");
 				if (mCurrentOrder != null)
 					sendPayResultReceiver(getActivity(), mCurrentOrder.getData().getOrderid(), 0, mCurrentPrice, KeyConstants.INTENT_KEY_SUCCESS, "支付成功");
 			} else if (result.equalsIgnoreCase("fail")) {
+				StatService.onEvent(getActivity().getApplicationContext(), "PAY_UNION_FAIL", "");
 				sendPayFailResultReceiver(getActivity(), KeyConstants.INTENT_KEY_FAIL, "支付失败");
 			} else if (result.equalsIgnoreCase("cancel")) {
 

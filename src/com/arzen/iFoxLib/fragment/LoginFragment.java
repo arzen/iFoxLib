@@ -16,6 +16,7 @@ import com.arzen.iFoxLib.R;
 import com.arzen.iFoxLib.setting.KeyConstants;
 import com.arzen.iFoxLib.setting.UserSetting;
 import com.arzen.iFoxLib.utils.MsgUtil;
+import com.baidu.mobstat.StatService;
 import com.encore.libs.utils.Log;
 
 public class LoginFragment extends BaseFragment {
@@ -95,9 +96,11 @@ public class LoginFragment extends BaseFragment {
 			// TODO Auto-generated method stub
 			switch (v.getId()) {
 			case R.id.btnRegister:
+				StatService.onEvent(getActivity().getApplicationContext(), "USER_REG", "");
 				register();
 				break;
 			case R.id.btnLogin:
+				StatService.onEvent(getActivity().getApplicationContext(), "USER_LOGIN", "");
 				String phone = mEtPhone.getText().toString().trim();
 				String password = mEtPassword.getText().toString().trim();
 				login(phone,password);
@@ -148,7 +151,7 @@ public class LoginFragment extends BaseFragment {
 			bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, mGid);
 			bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, mCid); // 渠道id
 			bundle.putInt(KeyConstants.INTENT_DATA_KEY_FROM, 1);
-			startCommonActivityForResult(bundle, 0x01);
+			startCommonActivityForResult(bundle, mRegisterRequestCode);
 		}
 	}
 

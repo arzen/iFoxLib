@@ -26,6 +26,7 @@ import com.arzen.iFoxLib.setting.KeyConstants;
 import com.arzen.iFoxLib.setting.UserSetting;
 import com.arzen.iFoxLib.utils.MD5Util;
 import com.arzen.iFoxLib.utils.MsgUtil;
+import com.baidu.mobstat.StatService;
 import com.encore.libs.http.HttpConnectManager;
 import com.encore.libs.http.OnRequestListener;
 import com.encore.libs.utils.Log;
@@ -119,6 +120,7 @@ public class LoadingFragment extends BaseFragment {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent();
 				boolean isSuccess = false;
+				StatService.onEvent(getActivity().getApplicationContext(), "USER_SWITCH", "");
 				intent.putExtra(KeyConstants.IS_SUCCESS, isSuccess);
 				getActivity().setResult(Activity.RESULT_OK, intent);
 				getActivity().finish();
@@ -147,7 +149,7 @@ public class LoadingFragment extends BaseFragment {
 							return;
 						}
 						saveData(uid, token, mPhoneNumber, mPassword);
-
+						StatService.onEvent(getActivity().getApplicationContext(), "USER_LOGIN_SUCCESS", "");
 						Intent intent = new Intent();
 						intent.putExtra(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
 						intent.putExtra(KeyConstants.INTENT_DATA_KEY_UID, uid);
@@ -172,7 +174,7 @@ public class LoadingFragment extends BaseFragment {
 							return;
 						}
 						MsgUtil.msg(msg, getActivity());
-
+						StatService.onEvent(getActivity().getApplicationContext(), "USER_LOGIN_FAIL", "");
 						Intent intent = new Intent();
 						intent.putExtra(KeyConstants.IS_SUCCESS, false);
 						getActivity().setResult(Activity.RESULT_OK, intent);
@@ -253,6 +255,7 @@ public class LoadingFragment extends BaseFragment {
 							User login = (User) result;
 							if (login.getCode() == HttpSetting.RESULT_CODE_OK) {
 								MsgUtil.msg("注册成功", getActivity());
+								StatService.onEvent(getActivity().getApplicationContext(), "USER_REG_SUCCSS", "");
 								intent.putExtra(KeyConstants.INTENT_DATA_KEY_TOKEN, login.getData().getToken());
 								intent.putExtra(KeyConstants.INTENT_DATA_KEY_UID, login.getData().getUid());
 								saveData(login.getData().getUid(), login.getData().getToken(), mPhoneNumber, mPassword);

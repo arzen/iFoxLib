@@ -31,6 +31,7 @@ import com.arzen.iFoxLib.bean.Top.TopList;
 import com.arzen.iFoxLib.contacts.Contact;
 import com.arzen.iFoxLib.contacts.ContactUtils;
 import com.arzen.iFoxLib.setting.KeyConstants;
+import com.baidu.mobstat.StatService;
 import com.encore.libs.http.HttpConnectManager;
 import com.encore.libs.http.OnRequestListener;
 import com.encore.libs.utils.Log;
@@ -367,6 +368,7 @@ public class TopFragment extends BaseFragment {
 		public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
 			// TODO Auto-generated method stub
 			if (mTopAdapter != null && mAllDatas.size() != 0) {
+				StatService.onEvent(getActivity(), "LEADERBOARD_PLAYING", "");
 				TopList topList = mAllDatas.get(position);
 
 				String downloadUrl = topList.dl;

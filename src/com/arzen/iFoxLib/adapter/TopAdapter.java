@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.arzen.iFoxLib.R;
 import com.arzen.iFoxLib.bean.Top.TopList;
 import com.arzen.iFoxLib.fragment.TopFragment;
+import com.baidu.mobstat.StatService;
 
 public class TopAdapter extends BaseAdapter {
 
@@ -133,6 +134,10 @@ public class TopAdapter extends BaseAdapter {
 					public void onClick(View arg0) {
 						// TODO Auto-generated method stub
 //						Intent it = new Intent(Intent.ACTION_VIEW);
+						
+						StatService.onEvent(mContext, "LEADERBOARD_INVITE", "");
+
+						
 						Uri uri = Uri.parse("smsto:" + top.getUname());
 
 						Intent it = new Intent(Intent.ACTION_SENDTO, uri);

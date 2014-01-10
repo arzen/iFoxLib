@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.StateSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 
 import com.arzen.iFoxLib.R;
 import com.arzen.iFoxLib.setting.KeyConstants;
+import com.baidu.mobstat.StatService;
 import com.encore.libs.utils.NetWorkUtils;
 
 public abstract class BaseFragment extends Fragment {
@@ -232,6 +234,18 @@ public abstract class BaseFragment extends Fragment {
 	public void setFooterViewVisibility(int visibility) {
 		if (mMoreItemView != null)
 			mMoreItemView.setVisibility(visibility);
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		StatService.onResume(this);
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
+		StatService.onPause(this);
 	}
 
 	/**
