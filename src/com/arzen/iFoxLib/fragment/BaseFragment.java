@@ -25,7 +25,22 @@ public abstract class BaseFragment extends Fragment {
 	private View mFooterView = null;
 	// 用于是否显示moreItemView
 	private View mMoreItemView = null;
-	
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onActivityCreated(savedInstanceState);
+
+		Bundle mBundle = getArguments();
+
+		if (mBundle != null) {
+			String mCid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_CID);
+			StatService.setAppChannel(getActivity(), mCid, true);
+			StatService.setDebugOn(true);
+		}
+
+	}
+
 	protected Handler mHandler = new Handler() {
 	};
 
@@ -183,13 +198,13 @@ public abstract class BaseFragment extends Fragment {
 		intent.putExtras(bundle);
 		startActivity(intent);
 	}
-	
+
 	/**
 	 * 跳转通用activity
 	 * 
 	 * @param bundle
 	 */
-	public void startCommonActivityForResult(Bundle bundle,int requstCode) {
+	public void startCommonActivityForResult(Bundle bundle, int requstCode) {
 		if (bundle == null) {
 			return;
 		}
@@ -197,22 +212,26 @@ public abstract class BaseFragment extends Fragment {
 		intent.putExtras(bundle);
 		startActivityForResult(intent, requstCode);
 	}
-	
+
 	/**
 	 * 发送结果回调广播
-	 * @param bundle 需要回调的内容
-	 * @param resultAction 需要回调处理的acion， KeyConstants.RECEIVER_ACTION_PAY or KeyConstants.RECEIVER_ACTION_LOGIN
+	 * 
+	 * @param bundle
+	 *            需要回调的内容
+	 * @param resultAction
+	 *            需要回调处理的acion， KeyConstants.RECEIVER_ACTION_PAY or
+	 *            KeyConstants.RECEIVER_ACTION_LOGIN
 	 */
-	public void sendResultBroadcast(Activity activity,Bundle bundle,String resultAction){
-		if(activity != null && bundle != null && resultAction != null){
+	public void sendResultBroadcast(Activity activity, Bundle bundle, String resultAction) {
+		if (activity != null && bundle != null && resultAction != null) {
 			bundle.putString(KeyConstants.RECEIVER_KEY_DISPOSE_ACTION, resultAction);
-			
+
 			Intent intent = new Intent(KeyConstants.RECEIVER_RESULT_ACTION);
 			intent.putExtras(bundle);
 			activity.sendBroadcast(intent);
 		}
 	}
-	
+
 	/**
 	 * 初始化footerView
 	 */
@@ -235,13 +254,13 @@ public abstract class BaseFragment extends Fragment {
 		if (mMoreItemView != null)
 			mMoreItemView.setVisibility(visibility);
 	}
-	
+
 	@Override
 	public void onResume() {
 		super.onResume();
 		StatService.onResume(this);
 	}
-	
+
 	@Override
 	public void onPause() {
 		super.onPause();

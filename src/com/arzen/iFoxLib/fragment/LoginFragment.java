@@ -101,6 +101,7 @@ public class LoginFragment extends BaseFragment {
 				break;
 			case R.id.btnLogin:
 				StatService.onEvent(getActivity().getApplicationContext(), "USER_LOGIN", "");
+				Log.d(TAG, "login!");
 				String phone = mEtPhone.getText().toString().trim();
 				String password = mEtPassword.getText().toString().trim();
 				login(phone,password);
