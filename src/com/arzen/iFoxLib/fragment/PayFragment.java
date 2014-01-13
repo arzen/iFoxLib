@@ -86,7 +86,7 @@ public class PayFragment extends BaseFragment {
 	// 当前订单
 	private Order mCurrentOrder;
 	// 当前价钱
-	private int mCurrentPrice;
+	private float mCurrentPrice;
 	// 充值卡view
 	private View mViewPrepaidCard;
 
@@ -125,20 +125,16 @@ public class PayFragment extends BaseFragment {
 		Log.d(TAG, "mPayList is null?:" + (mPayList == null));
 
 		initData(mPayList);
-
 		getActivity().registerReceiver(mCreateOrderBroadcastReceiver, new IntentFilter(KeyConstants.ACTION_CREATEORDER_ACTIVITY));
-
 		getActivity().registerReceiver(mPayResultBroadcastReceiver, new IntentFilter(KeyConstants.ACTION_PAY_RESULT_RECEIVER));
 	
-	
-		Integer price = mBundle.getInt(KeyConstants.INTENT_DATA_KEY_PROP_PRICE);
+		Float price = mBundle.getFloat(KeyConstants.INTENT_DATA_KEY_AMOUNT);
 		if(price != null && price > 0){
 			mEtCusPrice.setText(price+"");
 			mEtCusPrice.setEnabled(false);
 			
 			mEtPrice.setText(price+"");
 			mEtPrice.setEnabled(false);
-			
 			
 			mTv100.setEnabled(false);
 			mTv200.setEnabled(false);
@@ -514,13 +510,13 @@ public class PayFragment extends BaseFragment {
 			case R.id.tvUnionpay:
 				if (mCurrentSelectPrice != null || !mEtCusPrice.getText().toString().equals("")) {
 					StatService.onEvent(getActivity().getApplicationContext(), "PAY_UNION", "");
-					int price = 0;
+					float price = 0;
 					if (mCurrentSelectPrice != null) {
 						String p = mCurrentSelectPrice.getText().toString();
-						price = Integer.parseInt(p.substring(0, p.lastIndexOf("元")));
+						price = Float.parseFloat(p.substring(0, p.lastIndexOf("元")));
 
 					} else {
-						price = Integer.parseInt(mEtCusPrice.getText().toString());
+						price = Float.parseFloat(mEtCusPrice.getText().toString());
 					}
 					mReTryCreateOrderCount = 4;
 					mCurrentPrice = price;
@@ -584,7 +580,7 @@ public class PayFragment extends BaseFragment {
 
 		String card = mEtCard.getText().toString().trim();
 		String password = mEtPassword.getText().toString().trim();
-		final int price = Integer.parseInt(mEtPrice.getText().toString().trim());
+		final float price = Float.parseFloat(mEtPrice.getText().toString().trim());
 		String extra = mBundle.getString(KeyConstants.INTENT_DATA_KEY_EXTRA);
 		HttpIfoxApi.requestPrepaidCardPay(getActivity().getApplicationContext(), price, card, password, orderId, extra, new OnRequestListener() {
 
@@ -731,7 +727,7 @@ public class PayFragment extends BaseFragment {
 				if (payType == KeyConstants.PAY_TYPE_UNIONPAY) { // 当前价钱
 					amount = mCurrentPrice;
 				} else if (payType == KeyConstants.PAY_TYPE_PREPAIDCARD) {
-					amount = Integer.parseInt(mEtPrice.getText().toString());
+					amount = Float.parseFloat(mEtPrice.getText().toString());
 				}
 
 				HttpIfoxApi.createOrder(getActivity(), gid, cid, token, pid, amount, payType, extra,clientId,clientSecret, new OnCreateOrderListener(payType, result, msg));

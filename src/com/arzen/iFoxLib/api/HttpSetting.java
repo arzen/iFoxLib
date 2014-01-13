@@ -25,63 +25,67 @@ public class HttpSetting {
 	 * 支付列表url
 	 */
 	public static final String IFOX_PAYLIST_URL = IFOX_SERVER_URL + "/payment/list.php";
-	
+
 	/**
 	 * 创建订单url
 	 */
-	public static final String IFOX_CREATE_ORDER_URL =  IFOX_SERVER_URL + "/payment/create.php";
-	
+	public static final String IFOX_CREATE_ORDER_URL = IFOX_SERVER_URL + "/payment/create.php";
+
 	/**
 	 * 登录url
 	 */
-	public static final String IFOX_LOGIN_URL = IFOX_SERVER_URL+ "/account/login.php";
+	public static final String IFOX_LOGIN_URL = IFOX_SERVER_URL + "/account/login.php";
 	/**
 	 * OUTH验证第一步url
 	 */
-	public static final String IFOX_AUTH_URL = IFOX_SERVER_URL+ "/oauth2/auth.php";
+	public static final String IFOX_AUTH_URL = IFOX_SERVER_URL + "/oauth2/auth.php";
 	/**
 	 * 获取token 第二部
 	 */
 	public static final String IFOX_TOKEN_URL = IFOX_SERVER_URL + "/oauth2/token.php";
-	
+
 	/**
 	 * 注册url
 	 */
-	public static final String IFOX_REGISTER_URL = IFOX_SERVER_URL+ "/account/register.php";
-	
+	public static final String IFOX_REGISTER_URL = IFOX_SERVER_URL + "/account/register.php";
+
 	/**
 	 * 修改密码url
 	 */
-	public static final String IFOX_CHANGEPASSWORD_URL = IFOX_SERVER_URL+ "/account/modify.php";
+	public static final String IFOX_CHANGEPASSWORD_URL = IFOX_SERVER_URL + "/account/modify.php";
 	/**
 	 * 检查是否有更新url
 	 */
 	public static final String IFOX_UPDATE_DYNAMICLIB = IFOX_SERVER_URL + "/app/bizz.php";
-	
+
 	/**
 	 * 提交分数
 	 */
 	public static final String IFOX_COMMIT_SCORE = IFOX_SERVER_URL + "/leaderboard/score.php";
-	
+
 	/**
 	 * 排行榜url
 	 */
-	public static final String IFOX_TOP_URL= IFOX_SERVER_URL + "/leaderboard/list.php";
+	public static final String IFOX_TOP_URL = IFOX_SERVER_URL + "/leaderboard/list.php";
 	/**
 	 * 上传通讯录
 	 */
-	public static final String IFOX_UPLOAD_CONTACT_URL= IFOX_SERVER_URL + "/leaderboard/contact.php";
+	public static final String IFOX_UPLOAD_CONTACT_URL = IFOX_SERVER_URL + "/leaderboard/contact.php";
 	/**
 	 * 充值卡
 	 */
-	public static final String IFOX_PREPAIDCARDPAY_URL= IFOX_SERVER_URL + "/callback/szfu.php";
-	
+	public static final String IFOX_PREPAIDCARDPAY_URL = IFOX_SERVER_URL + "/callback/szfu.php";
+	/**
+	 * 邀请模版
+	 */
 	public static final String IFOX_INVETED_URL = IFOX_SERVER_URL + "/leaderboard/invite.php";
-	
+	/**
+	 * 分享模版
+	 */
+	public static final String IFOX_SHARE_URL = IFOX_SERVER_URL + "/share/msg.php";
+
 	// 商户服务器地址
 	public static final String MERCHANT_SERVER = "http://202.104.148.76/merchant_server/SubmitOrder";
-	private final String MODE_RELEASE = "00"; // 正式
-	private final String MODE_TEST = "01"; // 测试
 
 	/**
 	 * 获取服务器url
@@ -109,17 +113,21 @@ public class HttpSetting {
 	public static String getPayListUrl() {
 		return IFOX_PAYLIST_URL;
 	}
+
 	/**
 	 * 获取动态库更新url
+	 * 
 	 * @return
 	 */
-	public static String getDynamicUpdateUrl()
-	{
+	public static String getDynamicUpdateUrl() {
 		return IFOX_UPDATE_DYNAMICLIB;
 	}
-	
-	public static String getCommitScore()
-	{
+
+	public static String getCommitScore() {
 		return IFOX_COMMIT_SCORE;
+	}
+
+	public static String getShareUrl() {
+		return IFOX_SHARE_URL;
 	}
 }

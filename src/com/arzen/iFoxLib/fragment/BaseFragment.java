@@ -35,8 +35,7 @@ public abstract class BaseFragment extends Fragment {
 
 		if (mBundle != null) {
 			String mCid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_CID);
-			StatService.setAppChannel(getActivity(), mCid, true);
-			StatService.setDebugOn(true);
+			StatService.setAppChannel(getActivity().getApplicationContext(), mCid, true);
 		}
 
 	}

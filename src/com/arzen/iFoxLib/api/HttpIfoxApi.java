@@ -574,7 +574,7 @@ public class HttpIfoxApi {
 	 * @param extra
 	 * @param onRequestListener
 	 */
-	public static void requestPrepaidCardPay(Context context, int price, String ca_sn, String ca_pwd, String orderId, String extra, OnRequestListener onRequestListener) {
+	public static void requestPrepaidCardPay(Context context, float price, String ca_sn, String ca_pwd, String orderId, String extra, OnRequestListener onRequestListener) {
 		String url = HttpSetting.IFOX_PREPAIDCARDPAY_URL;
 
 		Map<String, Object> maps = new HashMap<String, Object>();
