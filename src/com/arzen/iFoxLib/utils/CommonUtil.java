@@ -1,11 +1,18 @@
 package com.arzen.iFoxLib.utils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.encore.libs.imagecache.Utils;
 
@@ -13,6 +20,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Environment;
+import android.text.TextUtils;
 
 public class CommonUtil {
 	/**
@@ -106,7 +114,7 @@ public class CommonUtil {
 			}
 		}
 	}
-	
+
 	/**
 	 * Get a usable cache directory (external if available, internal otherwise).
 	 * 
@@ -160,63 +168,149 @@ public class CommonUtil {
 		return new File(Environment.getExternalStorageDirectory().getPath() + cacheDir);
 	}
 
-	public static String getPrepaidCardPayMsg(String code){
+	public static String getPrepaidCardPayMsg(String code) {
 		String msg = "";
-		if(code.equals("101")){
+		if (code.equals("101")) {
 			msg = "md5 验证失败";
-		}else if(code.equals("102")){
+		} else if (code.equals("102")) {
 			msg = "订单号重复";
-		}else if(code.equals("103")){
+		} else if (code.equals("103")) {
 			msg = "恶意用户";
-		}else if(code.equals("104")){
+		} else if (code.equals("104")) {
 			msg = "序列号，密码简单验证失败或之前曾提交过的卡密已验证失败";
-		}else if(code.equals("105")){
+		} else if (code.equals("105")) {
 			msg = "密码正在处理中";
-		}else if(code.equals("106")){
+		} else if (code.equals("106")) {
 			msg = "系统繁忙，暂停提交";
-		}else if(code.equals("107")){
+		} else if (code.equals("107")) {
 			msg = "多次充值时卡内余额不足";
-		}else if(code.equals("109")){
+		} else if (code.equals("109")) {
 			msg = "des 解密失败";
-		}else if(code.equals("201")){
+		} else if (code.equals("201")) {
 			msg = "证书验证失败";
-		}else if(code.equals("501")){
+		} else if (code.equals("501")) {
 			msg = "插入数据库失败";
-		}else if(code.equals("502")){
+		} else if (code.equals("502")) {
 			msg = "插入数据库失败";
-		}else if(code.equals("902")){
+		} else if (code.equals("902")) {
 			msg = "商户参数不全";
-		}else if(code.equals("903")){
+		} else if (code.equals("903")) {
 			msg = "商户 ID 不存在";
-		}else if(code.equals("904")){
+		} else if (code.equals("904")) {
 			msg = "商户没有激活";
-		}else if(code.equals("905")){
+		} else if (code.equals("905")) {
 			msg = "商户没有使用该接口的权限";
-		}else if(code.equals("906")){
+		} else if (code.equals("906")) {
 			msg = "商户没有设置  密钥（privateKey）";
-		}else if(code.equals("907")){
+		} else if (code.equals("907")) {
 			msg = "商户没有设置  DES 密钥";
-		}else if(code.equals("908")){
+		} else if (code.equals("908")) {
 			msg = "该笔订单已经处理完成（订单状态已经为确定的状态：成功  或者  失败）";
-		}else if(code.equals("910")){
+		} else if (code.equals("910")) {
 			msg = "服务器返回地址，不符合规范";
-		}else if(code.equals("911")){
+		} else if (code.equals("911")) {
 			msg = "订单号，不符合规范";
-		}else if(code.equals("912")){
+		} else if (code.equals("912")) {
 			msg = "非法订单";
-		}else if(code.equals("913")){
+		} else if (code.equals("913")) {
 			msg = "该地方卡暂时不支持";
-		}else if(code.equals("914")){
+		} else if (code.equals("914")) {
 			msg = "金额非法";
-		}else if(code.equals("915")){
+		} else if (code.equals("915")) {
 			msg = "卡面额非法";
-		}else if(code.equals("916")){
+		} else if (code.equals("916")) {
 			msg = "商户不支持该充值卡";
-		}else if(code.equals("917")){
+		} else if (code.equals("917")) {
 			msg = "参数格式不正确";
-		}else if(code.equals("0")){
+		} else if (code.equals("0")) {
 			msg = "网络连接失败";
 		}
 		return msg;
 	}
+
+	// 测试配置文件
+	private static HashMap<String, String> mTestConfigs = new HashMap<String, String>();
+
+	private static String readFile(Context context, String fileName, boolean isAssetFile) {
+		if (TextUtils.isEmpty(fileName)) {
+			return "";
+		}
+		InputStream is = null;
+		ByteArrayOutputStream baos = null;
+		try {
+			if (isAssetFile) {
+				is = context.getAssets().open(fileName);
+			} else {
+				is = new FileInputStream(fileName);
+			}
+			byte[] buffer = new byte[1024];
+			int readBytes = is.read(buffer);
+			baos = new ByteArrayOutputStream(1024);
+			while (0 < readBytes) {
+				baos.write(buffer, 0, readBytes);
+				readBytes = is.read(buffer);
+			}
+			String s = baos.toString();
+
+			return s;
+		} catch (IOException e) {
+		} finally {
+			if (null != is) {
+				try {
+					is.close();
+				} catch (IOException e) {
+				}
+			}
+			if (null != baos) {
+				try {
+					baos.close();
+				} catch (IOException e) {
+				}
+			}
+		}
+		return "";
+	}
+
+	private static void initTestConfig(Context context) {
+		if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
+			String configs = readFile(context, Environment.getExternalStorageDirectory().getAbsolutePath() + "/config.txt", false);
+			if (!configs.equals("")) {
+				// File skynet_config.txt exists in assets directory
+				try {
+					JSONObject jo = new JSONObject(configs);
+					Iterator<?> keys = jo.keys();
+					while (keys.hasNext()) {
+						String key = keys.next().toString();
+						mTestConfigs.put(key, jo.getString(key));
+					}
+				} catch (JSONException e) {
+				}
+			}
+		}
+	}
+
+	/**
+	 * 模式
+	 * 
+	 * @return
+	 */
+	public static boolean getDebugModel(Context context) {
+		String debug = getTestConfig(context, "debug");
+		if (debug == null) {
+			return false;
+		}
+		return Boolean.parseBoolean(debug);
+	}
+
+	private static String getTestConfig(Context context, String key) {
+		// return res;
+		if (mTestConfigs.size() == 0) {
+			initTestConfig(context);
+		}
+		if (mTestConfigs.size() == 0) {
+			return null;
+		}
+		return mTestConfigs.get(key);
+	}
+
 }

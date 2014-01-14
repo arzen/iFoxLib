@@ -48,4 +48,11 @@
         
         <item name="android:textColor">@drawable/btn_pay_price_color_selector</item>
     </style>
+    
+    <!-- 支付宝 -->
+    
+      <style name="AlertDialog" parent="android:Theme.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@drawable/popup_bg</item>
+    </style>
 </resources>

@@ -74,6 +74,11 @@ public class KeyConstants {
 	public static String INTENT_DATA_KEY_PAY_TN = "tn";
 	
 	/**
+	 * intent 传递数据key ->支付宝回调地址key
+	 */
+	public static String INTENT_DATA_KEY_NOTIFY_URL = "notifyUrl";
+	
+	/**
 	 * intent 传递数据key ->支付方式
 	 */
 	public static String INTENT_DATA_KEY_PAY_TYPE = "payType";

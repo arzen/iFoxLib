@@ -5,7 +5,6 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.StateSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,10 +12,15 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.arzen.iFoxLib.R;
+import com.arzen.iFoxLib.pay.AliPayUtil;
+import com.arzen.iFoxLib.pay.Result;
 import com.arzen.iFoxLib.setting.KeyConstants;
+import com.arzen.iFoxLib.utils.CommonUtil;
 import com.baidu.mobstat.StatService;
+import com.encore.libs.utils.Log;
 import com.encore.libs.utils.NetWorkUtils;
 
 public abstract class BaseFragment extends Fragment {
@@ -25,6 +29,10 @@ public abstract class BaseFragment extends Fragment {
 	private View mFooterView = null;
 	// 用于是否显示moreItemView
 	private View mMoreItemView = null;
+	
+	public static Boolean mIsDebugOpen;
+	
+	public static boolean mIsInitChannel = false;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -32,15 +40,23 @@ public abstract class BaseFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 
 		Bundle mBundle = getArguments();
-
-		if (mBundle != null) {
+		
+		if(mIsDebugOpen == null)
+			mIsDebugOpen = CommonUtil.getDebugModel(getActivity().getApplicationContext());
+		
+		if (mBundle != null && !mIsInitChannel) {
+			mIsInitChannel = true;
 			String mCid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_CID);
 			StatService.setAppChannel(getActivity().getApplicationContext(), mCid, true);
+			StatService.setDebugOn(mIsDebugOpen);
 		}
-
+		
+		
+		Log.DEBUG = mIsDebugOpen;
 	}
 
 	protected Handler mHandler = new Handler() {
+		
 	};
 
 	// 出错刷新按钮
