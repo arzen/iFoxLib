@@ -20,7 +20,7 @@
         android:layout_below="@id/imgErrorView"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="5dp"
-        android:text="请检查网络"
+        android:text="您的网络不稳定，请尝试重新连接!"
         android:textColor="#000000"
         android:textSize="16sp" />
 
