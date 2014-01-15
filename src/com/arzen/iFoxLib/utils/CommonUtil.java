@@ -301,6 +301,11 @@ public class CommonUtil {
 		}
 		return Boolean.parseBoolean(debug);
 	}
+	
+	public static String getServerUrl(Context context){
+		String serverUrl = getTestConfig(context, "serverUrl");
+		return serverUrl;
+	}
 
 	private static String getTestConfig(Context context, String key) {
 		// return res;

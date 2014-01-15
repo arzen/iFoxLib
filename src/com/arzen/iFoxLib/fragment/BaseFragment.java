@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.arzen.iFoxLib.R;
+import com.arzen.iFoxLib.api.HttpSetting;
 import com.arzen.iFoxLib.pay.AliPayUtil;
 import com.arzen.iFoxLib.pay.Result;
 import com.arzen.iFoxLib.setting.KeyConstants;
@@ -41,12 +42,13 @@ public abstract class BaseFragment extends Fragment {
 
 		Bundle mBundle = getArguments();
 		
-		if(mIsDebugOpen == null)
+		if(mIsDebugOpen == null){
 			mIsDebugOpen = CommonUtil.getDebugModel(getActivity().getApplicationContext());
+		}
 		
 		if (mBundle != null && !mIsInitChannel) {
 			mIsInitChannel = true;
-			String mCid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_CID);
+			String mCid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_BAIDU_CID);
 			StatService.setAppChannel(getActivity().getApplicationContext(), mCid, true);
 			StatService.setDebugOn(mIsDebugOpen);
 		}

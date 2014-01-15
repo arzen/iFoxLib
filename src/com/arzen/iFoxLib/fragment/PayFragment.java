@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -42,6 +44,10 @@ public class PayFragment extends BaseFragment {
 
 	public static final String TAG = "PayFragment";
 
+	/**
+	 * 当前支付时间,记录是否取消当前创建订单等操作
+	 */
+	private long mCurrentPayTime = 0;
 	// 微派支付
 	private TextView mTvWayPay;
 	// 支付宝
@@ -52,8 +58,8 @@ public class PayFragment extends BaseFragment {
 	private TextView mTvPrepaidCard;
 	// 支付帮助
 	private TextView mTvHelp;
-//	// 微派支付工具类
-//	private WayPay mWayPay;
+	// // 微派支付工具类
+	// private WayPay mWayPay;
 	// 主程序传递过来的数据
 	private Bundle mBundle;
 	// 支付列表对象
@@ -96,7 +102,7 @@ public class PayFragment extends BaseFragment {
 	private EditText mEtCard;
 	private EditText mEtPassword;
 	private EditText mEtPrice;
-	
+
 	/**
 	 * 检查时间,检测是否需要请求
 	 */
@@ -110,7 +116,7 @@ public class PayFragment extends BaseFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		mPayListChachePath = getActivity().getCacheDir().getAbsolutePath() + "/playList.cache";
-		
+
 		mReTryCreateOrderCount = 4;
 		View payView = inflater.inflate(R.layout.fragment_pay, null);
 		initUI(payView);
@@ -127,21 +133,22 @@ public class PayFragment extends BaseFragment {
 		Log.d(TAG, "mPayList is null?:" + (mPayList == null));
 
 		initData(mPayList);
-		
-//		getActivity().registerReceiver(mCreateOrderBroadcastReceiver, new IntentFilter(KeyConstants.ACTION_CREATEORDER_ACTIVITY));
+
+		// getActivity().registerReceiver(mCreateOrderBroadcastReceiver, new
+		// IntentFilter(KeyConstants.ACTION_CREATEORDER_ACTIVITY));
 		getActivity().registerReceiver(mPayUnionResultBroadcastReceiver, new IntentFilter(KeyConstants.ACTION_PAY_RESULT_RECEIVER));
-	
+
 		/*
 		 * 获取是否固定支付金额
 		 */
 		Float price = mBundle.getFloat(KeyConstants.INTENT_DATA_KEY_AMOUNT);
-		if(price != null && price > 0){ //固定支付金额关闭金钱选择项
-			mEtCusPrice.setText(price+"");
+		if (price != null && price > 0) { // 固定支付金额关闭金钱选择项
+			mEtCusPrice.setText(price + "");
 			mEtCusPrice.setEnabled(false);
-			
-			mEtPrice.setText(price+"");
+
+			mEtPrice.setText(price + "");
 			mEtPrice.setEnabled(false);
-			
+
 			mTv100.setEnabled(false);
 			mTv200.setEnabled(false);
 			mTv500.setEnabled(false);
@@ -293,9 +300,9 @@ public class PayFragment extends BaseFragment {
 			mPayList = payList;
 			initPayList(payList);
 		} else {
-			PayList cache =  (PayList) CommonUtil.file2Object(mPayListChachePath);
+			PayList cache = (PayList) CommonUtil.file2Object(mPayListChachePath);
 			long payListTime = UserSetting.getPayListTime(getActivity()); // 得到上次检查的时间
-			if(cache == null || System.currentTimeMillis() - payListTime > mCheckTime){
+			if (cache == null || System.currentTimeMillis() - payListTime > mCheckTime) {
 				// 判断是否有网络的情况
 				if (setErrorVisibility(getView(), mViewContent, null)) {
 					// 显示loading view
@@ -303,7 +310,7 @@ public class PayFragment extends BaseFragment {
 					// 请求
 					requestPayList();
 				}
-			}else{
+			} else {
 				initData(cache);
 			}
 		}
@@ -410,8 +417,8 @@ public class PayFragment extends BaseFragment {
 		super.onDestroy();
 
 		try {
-//			getActivity().unregisterReceiver(mCreateOrderBroadcastReceiver);
-//			mCreateOrderBroadcastReceiver = null;
+			// getActivity().unregisterReceiver(mCreateOrderBroadcastReceiver);
+			// mCreateOrderBroadcastReceiver = null;
 
 			getActivity().unregisterReceiver(mPayUnionResultBroadcastReceiver);
 			mPayUnionResultBroadcastReceiver = null;
@@ -440,7 +447,6 @@ public class PayFragment extends BaseFragment {
 		// mOnPayListRequestListener);
 		HttpIfoxApi.requestPayList(getActivity(), gid, cid, token, clientId, clientSecret, mOnPayListRequestListener);
 	}
-
 
 	public OnRequestListener mOnPayListRequestListener = new OnRequestListener() {
 
@@ -514,7 +520,7 @@ public class PayFragment extends BaseFragment {
 				break;
 			case R.id.tvAlipay:
 				if (mCurrentSelectPrice != null || !mEtCusPrice.getText().toString().equals("")) {
-					StatService.onEvent(getActivity().getApplicationContext(), "PAY_UNION", "");
+					StatService.onEvent(getActivity().getApplicationContext(), "PAY_ALIPAY", "");
 					initPrice();
 					createOrder(KeyConstants.PAY_TYPE_ALIPAY, "", "");
 				} else {
@@ -547,9 +553,8 @@ public class PayFragment extends BaseFragment {
 			}
 		}
 	};
-	
-	public float initPrice()
-	{
+
+	public float initPrice() {
 		float price = 0;
 		if (mCurrentSelectPrice != null) {
 			String p = mCurrentSelectPrice.getText().toString();
@@ -654,36 +659,38 @@ public class PayFragment extends BaseFragment {
 		intent.putExtra(KeyConstants.INTENT_DATA_KEY_PAY_TN, orderId);
 		getActivity().sendBroadcast(intent);
 	}
-	
+
 	/**
 	 * 支付宝支付
+	 * 
 	 * @param orderId
 	 * @param amount
 	 */
-	public void toAliPay(String orderId,float amount){
+	public void toAliPay(String orderId, float amount) {
 		String notifyUrl = mBundle.getString(KeyConstants.INTENT_DATA_KEY_NOTIFY_URL);
 		AliPayUtil.pay(getActivity(), mUIHandler, orderId, "充值游戏币", "道具", amount, notifyUrl);
 	}
-	
+
 	/**
 	 * 支付宝支付结果处理
 	 */
-	public void aliPayResultDispose(String re)
-	{
+	public void aliPayResultDispose(String re) {
 		Result result = new Result(re);
 		result.parseResult();
 		Log.d(TAG, "disposeResult:" + result.getResult() + " resultStatus:" + result.resultStatus);
-		if(result.resultStatus != null && result.resultStatus.equals("success")){ //判断是否支付成功
-			if (mCurrentOrder != null){
+		if (result.resultStatus != null && result.resultStatus.equals("success")) { // 判断是否支付成功
+			if (mCurrentOrder != null) {
+				StatService.onEvent(getActivity().getApplicationContext(), "PAY_ALIPAY_SUCCESS", "");
 				int pid = mBundle.getInt(KeyConstants.INTENT_DATA_KEY_PID);
 				sendPayResultReceiver(getActivity(), mCurrentOrder.getData().getOrderid(), pid, mCurrentPrice, KeyConstants.INTENT_KEY_SUCCESS, "支付成功");
 			}
-		}else{
+		} else {
+			StatService.onEvent(getActivity().getApplicationContext(), "PAY_ALIPAY_FAIL", "");
 			Toast.makeText(getActivity(), result.getResult(), Toast.LENGTH_SHORT).show();
 		}
 	}
-	
-	public Handler mUIHandler = new Handler(){
+
+	public Handler mUIHandler = new Handler() {
 		public void handleMessage(android.os.Message msg) {
 			switch (msg.what) {
 			case AliPayUtil.RQF_PAY:
@@ -742,8 +749,18 @@ public class PayFragment extends BaseFragment {
 				Log.d(TAG, "createOrder -> gid:" + gid + " cid:" + cid + " token:" + token + " pid:" + pid + " amount:" + amount + " extra:" + extra + " payType:" + payType);
 
 				if (mProgressDialog == null || !mProgressDialog.isShowing()) {
-					mProgressDialog = ProgressDialog.show(getActivity(), "正在处理订单", "正在处理订单,请不要退出当前操作!", true, false);
+					mProgressDialog = ProgressDialog.show(getActivity(), "正在处理订单", "正在处理订单,请不要退出当前操作!", true, true);
 					// mProgressDialog.show();
+					mProgressDialog.setOnCancelListener(new OnCancelListener() {
+
+						@Override
+						public void onCancel(DialogInterface dialog) {
+							// TODO Auto-generated method stub
+							mIsCreateingOrder = false;
+							mCurrentPayTime = System.currentTimeMillis();
+							Toast.makeText(getActivity(), "操作取消", Toast.LENGTH_LONG).show();
+						}
+					});
 				}
 
 				if (payType == KeyConstants.PAY_TYPE_UNIONPAY || payType == KeyConstants.PAY_TYPE_ALIPAY) { // 当前价钱
@@ -752,8 +769,8 @@ public class PayFragment extends BaseFragment {
 				} else if (payType == KeyConstants.PAY_TYPE_PREPAIDCARD) {
 					amount = Float.parseFloat(mEtPrice.getText().toString());
 				}
-
-				HttpIfoxApi.createOrder(getActivity(), gid, cid, token, pid, amount, payType, extra,clientId,clientSecret, new OnCreateOrderListener(payType, result, msg));
+				mCurrentPayTime = System.currentTimeMillis();
+				HttpIfoxApi.createOrder(getActivity(), gid, cid, token, pid, amount, payType, extra, clientId, clientSecret, new OnCreateOrderListener(payType, result, msg, mCurrentPayTime));
 			}
 		});
 	}
@@ -766,16 +783,22 @@ public class PayFragment extends BaseFragment {
 		private int mPayType;
 		private String mResult;
 		private String mMsg;
+		private long mCreateTime = 0;
 
-		public OnCreateOrderListener(final int payType, String result, String msg) {
+		public OnCreateOrderListener(final int payType, String result, String msg, long createTime) {
 			mPayType = payType;
 			mResult = result;
 			mMsg = msg;
+			mCreateTime = new Long(createTime);
 		}
 
 		@Override
 		public void onResponse(final String url, final int state, final Object result, final int type) {
 			// TODO Auto-generated method stub
+			// 判断是否取消了当前的创建订单动作
+			if (mCreateTime != mCurrentPayTime) {
+				return;
+			}
 			mIsCreateingOrder = false;
 			mHandler.post(new Runnable() {
 
@@ -792,16 +815,11 @@ public class PayFragment extends BaseFragment {
 							if (mProgressDialog != null && mProgressDialog.isShowing() && mPayType != KeyConstants.PAY_TYPE_PREPAIDCARD) {
 								mProgressDialog.dismiss();
 							}
-//							if (mPayType == KeyConstants.PAY_TYPE_WIIPAY) {
-//								int pid = mBundle.getInt(KeyConstants.INTENT_DATA_KEY_PID);
-//								float amount = mBundle.getFloat(KeyConstants.INTENT_DATA_KEY_AMOUNT);
-//								sendPayResultReceiver(getActivity(), order.getData().getOrderid(), pid, amount, mResult, mMsg);
-//							} else 
 							if (mPayType == KeyConstants.PAY_TYPE_UNIONPAY) {
 								toUnionpay(order.getData().getTn());
 							} else if (mPayType == KeyConstants.PAY_TYPE_PREPAIDCARD) {
 								toPrepaidCardPay(order.getData().getOrderid());
-							}else if(mPayType == KeyConstants.PAY_TYPE_ALIPAY){
+							} else if (mPayType == KeyConstants.PAY_TYPE_ALIPAY) {
 								toAliPay(order.getData().getOrderid(), mCurrentPrice);
 							}
 
@@ -876,36 +894,39 @@ public class PayFragment extends BaseFragment {
 		return true;
 	}
 
-//	/**
-//	 * 支付广播
-//	 */
-//	public BroadcastReceiver mCreateOrderBroadcastReceiver = new BroadcastReceiver() {
-//
-//		@Override
-//		public void onReceive(Context context, Intent intent) {
-//			// TODO Auto-generated method stub
-//			if (intent != null && intent.getAction().equals(KeyConstants.ACTION_CREATEORDER_ACTIVITY)) {
-//				int payType = intent.getIntExtra(KeyConstants.INTENT_DATA_KEY_PAY_TYPE, -1);
-//				if (payType != -1) {
-//					String result = intent.getStringExtra(KeyConstants.INTENT_KEY_RESULT);
-//					String msg = intent.getStringExtra(KeyConstants.INTENT_KEY_MSG);
-//
-//					if (result == null || msg == null) {
-//						return;
-//					}
-//
-//					// 如果支付成功
-//					if (result.equals(KeyConstants.SUCCESS)) {
-//						createOrder(payType, result, msg);
-//					} else if (result.equals(KeyConstants.FAIL)) { // 支付失败
-//						sendPayFailResultReceiver(getActivity(), result, msg);
-//					}
-//
-//				}
-//			}
-//		}
-//	};
-	
+	// /**
+	// * 支付广播
+	// */
+	// public BroadcastReceiver mCreateOrderBroadcastReceiver = new
+	// BroadcastReceiver() {
+	//
+	// @Override
+	// public void onReceive(Context context, Intent intent) {
+	// // TODO Auto-generated method stub
+	// if (intent != null &&
+	// intent.getAction().equals(KeyConstants.ACTION_CREATEORDER_ACTIVITY)) {
+	// int payType = intent.getIntExtra(KeyConstants.INTENT_DATA_KEY_PAY_TYPE,
+	// -1);
+	// if (payType != -1) {
+	// String result = intent.getStringExtra(KeyConstants.INTENT_KEY_RESULT);
+	// String msg = intent.getStringExtra(KeyConstants.INTENT_KEY_MSG);
+	//
+	// if (result == null || msg == null) {
+	// return;
+	// }
+	//
+	// // 如果支付成功
+	// if (result.equals(KeyConstants.SUCCESS)) {
+	// createOrder(payType, result, msg);
+	// } else if (result.equals(KeyConstants.FAIL)) { // 支付失败
+	// sendPayFailResultReceiver(getActivity(), result, msg);
+	// }
+	//
+	// }
+	// }
+	// }
+	// };
+
 	/**
 	 * 银联支付广播
 	 */
@@ -917,7 +938,7 @@ public class PayFragment extends BaseFragment {
 			String result = intent.getStringExtra(KeyConstants.INTENT_KEY_RESULT);
 			if (result.equalsIgnoreCase("success")) {
 				StatService.onEvent(getActivity().getApplicationContext(), "PAY_UNION_SUCCESS", "");
-				if (mCurrentOrder != null){
+				if (mCurrentOrder != null) {
 					int pid = mBundle.getInt(KeyConstants.INTENT_DATA_KEY_PID);
 					sendPayResultReceiver(getActivity(), mCurrentOrder.getData().getOrderid(), pid, mCurrentPrice, KeyConstants.INTENT_KEY_SUCCESS, "支付成功");
 				}
@@ -926,10 +947,10 @@ public class PayFragment extends BaseFragment {
 				sendPayFailResultReceiver(getActivity(), KeyConstants.INTENT_KEY_FAIL, "支付失败");
 			} else if (result.equalsIgnoreCase("cancel")) {
 
-				Bundle bundle = new Bundle();
-				bundle.putString(KeyConstants.INTENT_KEY_RESULT, KeyConstants.INTENT_KEY_CANCEL);
-				// 回调取消
-				sendResultBroadcast(getActivity(), bundle, KeyConstants.RECEIVER_ACTION_PAY);
+//				Bundle bundle = new Bundle();
+//				bundle.putString(KeyConstants.INTENT_KEY_RESULT, KeyConstants.INTENT_KEY_CANCEL);
+//				// 回调取消
+//				sendResultBroadcast(getActivity(), bundle, KeyConstants.RECEIVER_ACTION_PAY);
 			}
 		}
 

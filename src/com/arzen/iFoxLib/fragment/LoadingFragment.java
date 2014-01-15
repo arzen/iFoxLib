@@ -79,16 +79,22 @@ public class LoadingFragment extends BaseFragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onActivityCreated(savedInstanceState);
-		if (mFrom == 0) {
-			// 登录
-			login();
-		} else if (mFrom == 1) {
-			// 注册
-			register();
-		} else if (mFrom == 2) {
-			changePassword();
-		}
-
+		mHandler.postDelayed(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				if (mFrom == 0) {
+					// 登录
+					login();
+				} else if (mFrom == 1) {
+					// 注册
+					register();
+				} else if (mFrom == 2) {
+					changePassword();
+				}
+			}
+		}, 1000);
 	}
 
 	/**
