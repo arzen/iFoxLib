@@ -764,7 +764,6 @@ public class PayFragment extends BaseFragment {
 				}
 
 				if (payType == KeyConstants.PAY_TYPE_UNIONPAY || payType == KeyConstants.PAY_TYPE_ALIPAY) { // 当前价钱
-					mCurrentPrice = 0.01f;
 					amount = mCurrentPrice;
 				} else if (payType == KeyConstants.PAY_TYPE_PREPAIDCARD) {
 					amount = Float.parseFloat(mEtPrice.getText().toString());
