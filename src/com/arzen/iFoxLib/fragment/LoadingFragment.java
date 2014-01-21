@@ -79,7 +79,7 @@ public class LoadingFragment extends BaseFragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onActivityCreated(savedInstanceState);
-		mHandler.postDelayed(new Runnable() {
+		getMainHandler().postDelayed(new Runnable() {
 			
 			@Override
 			public void run() {
@@ -145,7 +145,7 @@ public class LoadingFragment extends BaseFragment {
 			@Override
 			public void onSuccess(final String uid,final String token) {
 				// TODO Auto-generated method stub
-				mHandler.post(new Runnable() {
+				getMainHandler().post(new Runnable() {
 					
 					@Override
 					public void run() {
@@ -170,7 +170,7 @@ public class LoadingFragment extends BaseFragment {
 			@Override
 			public void onFail(final String msg) {
 				// TODO Auto-generated method stub
-				mHandler.post(new Runnable() {
+				getMainHandler().post(new Runnable() {
 
 					@Override
 					public void run() {
@@ -246,7 +246,7 @@ public class LoadingFragment extends BaseFragment {
 			@Override
 			public void onResponse(final String url, final int state, final Object result, final int type) {
 				// TODO Auto-generated method stub
-				mHandler.post(new Runnable() {
+				getMainHandler().post(new Runnable() {
 
 					@Override
 					public void run() {
@@ -303,7 +303,7 @@ public class LoadingFragment extends BaseFragment {
 			@Override
 			public void onResponse(final String url, final int state, final Object result, final int type) {
 				// TODO Auto-generated method stub
-				mHandler.post(new Runnable() {
+				getMainHandler().post(new Runnable() {
 
 					@Override
 					public void run() {

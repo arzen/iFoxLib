@@ -57,9 +57,15 @@ public abstract class BaseFragment extends Fragment {
 		Log.DEBUG = mIsDebugOpen;
 	}
 
-	protected Handler mHandler = new Handler() {
-		
-	};
+	protected Handler mHandler = null;
+	
+	public synchronized Handler getMainHandler()
+	{
+		if(mHandler == null){
+			mHandler = new Handler();
+		}
+		return mHandler;
+	}
 
 	// 出错刷新按钮
 	private OnRefreshClickListener mOnRefreshClickListener;
@@ -117,7 +123,9 @@ public abstract class BaseFragment extends Fragment {
 		ImageView imageView = (ImageView) parentView.findViewById(R.id.imgErrorView);
 		textView.setText("没有排行榜数据！");
 
-		imageView.setImageResource(R.drawable.ic_launcher);
+//		imageView.setImageResource(R.drawable.ic_launcher);
+		imageView.setVisibility(View.GONE);
+		
 		mBtnRefresh.setOnClickListener(mOnClickListener);
 		containerView.setVisibility(View.GONE);
 		mNotNetWorkView.setVisibility(View.VISIBLE);

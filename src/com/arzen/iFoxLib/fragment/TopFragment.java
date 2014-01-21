@@ -202,7 +202,7 @@ public class TopFragment extends BaseFragment {
 		public void onResponse(final String url, final int state, final Object result, final int type) {
 			// TODO Auto-generated method stub
 			mIsRequesEnd = true;
-			mHandler.post(new Runnable() {
+			getMainHandler().post(new Runnable() {
 
 				@Override
 				public void run() {
@@ -328,7 +328,7 @@ public class TopFragment extends BaseFragment {
 			@Override
 			public void onResponse(final String url, final int state, final Object result, final int type) {
 				// TODO Auto-generated method stub
-				mHandler.post(new Runnable() {
+				getMainHandler().post(new Runnable() {
 
 					@Override
 					public void run() {

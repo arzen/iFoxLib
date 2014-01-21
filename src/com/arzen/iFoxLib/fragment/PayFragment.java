@@ -453,7 +453,7 @@ public class PayFragment extends BaseFragment {
 		@Override
 		public void onResponse(final String url, final int state, final Object result, final int type) {
 			// TODO Auto-generated method stub
-			mHandler.post(new Runnable() {
+			getMainHandler().post(new Runnable() {
 
 				@Override
 				public void run() {
@@ -612,7 +612,7 @@ public class PayFragment extends BaseFragment {
 			@Override
 			public void onResponse(final String url, final int state, final Object result, final int type) {
 				// TODO Auto-generated method stub
-				mHandler.post(new Runnable() {
+				getMainHandler().post(new Runnable() {
 
 					@Override
 					public void run() {
@@ -720,7 +720,7 @@ public class PayFragment extends BaseFragment {
 			return;
 		}
 
-		mHandler.post(new Runnable() {
+		getMainHandler().post(new Runnable() {
 
 			@Override
 			public void run() {
@@ -799,7 +799,7 @@ public class PayFragment extends BaseFragment {
 				return;
 			}
 			mIsCreateingOrder = false;
-			mHandler.post(new Runnable() {
+			getMainHandler().post(new Runnable() {
 
 				@Override
 				public void run() {
