@@ -57,13 +57,10 @@ public abstract class BaseFragment extends Fragment {
 		Log.DEBUG = mIsDebugOpen;
 	}
 
-	protected Handler mHandler = null;
+	protected Handler mHandler = new Handler();
 	
 	public synchronized Handler getMainHandler()
 	{
-		if(mHandler == null){
-			mHandler = new Handler();
-		}
 		return mHandler;
 	}
 
