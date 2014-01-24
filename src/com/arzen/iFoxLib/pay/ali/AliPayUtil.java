@@ -1,4 +1,4 @@
-package com.arzen.iFoxLib.pay;
+package com.arzen.iFoxLib.pay.ali;
 
 import java.net.URLEncoder;
 

@@ -16,8 +16,8 @@ import android.widget.Toast;
 
 import com.arzen.iFoxLib.R;
 import com.arzen.iFoxLib.api.HttpSetting;
-import com.arzen.iFoxLib.pay.AliPayUtil;
-import com.arzen.iFoxLib.pay.Result;
+import com.arzen.iFoxLib.pay.ali.AliPayUtil;
+import com.arzen.iFoxLib.pay.ali.Result;
 import com.arzen.iFoxLib.setting.KeyConstants;
 import com.arzen.iFoxLib.utils.CommonUtil;
 import com.baidu.mobstat.StatService;

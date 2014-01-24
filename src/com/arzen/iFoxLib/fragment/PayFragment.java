@@ -29,8 +29,12 @@ import com.arzen.iFoxLib.bean.Order;
 import com.arzen.iFoxLib.bean.PayList;
 import com.arzen.iFoxLib.bean.PayList.Data;
 import com.arzen.iFoxLib.bean.PrepaidCard;
-import com.arzen.iFoxLib.pay.AliPayUtil;
-import com.arzen.iFoxLib.pay.Result;
+import com.arzen.iFoxLib.pay.AliPay;
+import com.arzen.iFoxLib.pay.BasePay;
+import com.arzen.iFoxLib.pay.PrepaidCardPay;
+import com.arzen.iFoxLib.pay.UnionPay;
+import com.arzen.iFoxLib.pay.ali.AliPayUtil;
+import com.arzen.iFoxLib.pay.ali.Result;
 import com.arzen.iFoxLib.setting.KeyConstants;
 import com.arzen.iFoxLib.setting.UserSetting;
 import com.arzen.iFoxLib.utils.CommonUtil;
@@ -66,12 +70,6 @@ public class PayFragment extends BaseFragment {
 	private PayList mPayList = null;
 	// 主内容view
 	private View mViewContent;
-	// 进度dialog
-	private ProgressDialog mProgressDialog;
-	// 是否正在创建订单
-	private boolean mIsCreateingOrder = false;
-	// 订单请求出错后重试次数
-	public int mReTryCreateOrderCount = 4;
 	// 当前tab id
 	public int mCurrentTab = -1;
 	// 选中的textView
@@ -102,6 +100,8 @@ public class PayFragment extends BaseFragment {
 	private EditText mEtCard;
 	private EditText mEtPassword;
 	private EditText mEtPrice;
+	
+	private BasePay mBasePay;
 
 	/**
 	 * 检查时间,检测是否需要请求
@@ -117,7 +117,6 @@ public class PayFragment extends BaseFragment {
 		// TODO Auto-generated method stub
 		mPayListChachePath = getActivity().getCacheDir().getAbsolutePath() + "/playList.cache";
 
-		mReTryCreateOrderCount = 4;
 		View payView = inflater.inflate(R.layout.fragment_pay, null);
 		initUI(payView);
 		return payView;
@@ -133,11 +132,6 @@ public class PayFragment extends BaseFragment {
 		Log.d(TAG, "mPayList is null?:" + (mPayList == null));
 
 		initData(mPayList);
-
-		// getActivity().registerReceiver(mCreateOrderBroadcastReceiver, new
-		// IntentFilter(KeyConstants.ACTION_CREATEORDER_ACTIVITY));
-		getActivity().registerReceiver(mPayUnionResultBroadcastReceiver, new IntentFilter(KeyConstants.ACTION_PAY_RESULT_RECEIVER));
-
 		/*
 		 * 获取是否固定支付金额
 		 */
@@ -419,9 +413,12 @@ public class PayFragment extends BaseFragment {
 		try {
 			// getActivity().unregisterReceiver(mCreateOrderBroadcastReceiver);
 			// mCreateOrderBroadcastReceiver = null;
-
-			getActivity().unregisterReceiver(mPayUnionResultBroadcastReceiver);
-			mPayUnionResultBroadcastReceiver = null;
+			if(mBasePay != null && mBasePay instanceof UnionPay){
+				UnionPay unionPay = (UnionPay) mBasePay;
+				getActivity().unregisterReceiver(unionPay.mPayUnionResultBroadcastReceiver);
+				unionPay.mPayUnionResultBroadcastReceiver = null;
+			}
+			
 		} catch (Exception e) {
 		}
 	}
@@ -443,8 +440,6 @@ public class PayFragment extends BaseFragment {
 		String clientId = mBundle.getString(KeyConstants.INTENT_DATA_KEY_CLIENTID);
 		String clientSecret = mBundle.getString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET);
 		// 请求
-		// HttpIfoxApi.requestPayList(getActivity(), gid, cid, token,
-		// mOnPayListRequestListener);
 		HttpIfoxApi.requestPayList(getActivity(), gid, cid, token, clientId, clientSecret, mOnPayListRequestListener);
 	}
 
@@ -520,18 +515,16 @@ public class PayFragment extends BaseFragment {
 				break;
 			case R.id.tvAlipay:
 				if (mCurrentSelectPrice != null || !mEtCusPrice.getText().toString().equals("")) {
-					StatService.onEvent(getActivity().getApplicationContext(), "PAY_ALIPAY", "");
-					initPrice();
-					createOrder(KeyConstants.PAY_TYPE_ALIPAY, "", "");
+					float amount = getPrice();
+					toAliPay(amount);
 				} else {
 					MsgUtil.msg("请'选择/输入'需要充值的金额", getActivity());
 				}
 				break;
 			case R.id.tvUnionpay:
 				if (mCurrentSelectPrice != null || !mEtCusPrice.getText().toString().equals("")) {
-					StatService.onEvent(getActivity().getApplicationContext(), "PAY_UNION", "");
-					initPrice();
-					createOrder(KeyConstants.PAY_TYPE_UNIONPAY, "", "");
+					float amount = getPrice();
+					toUnionpay(amount);
 				} else {
 					MsgUtil.msg("请'选择/输入'需要充值的金额", getActivity());
 				}
@@ -540,21 +533,51 @@ public class PayFragment extends BaseFragment {
 				String card = mEtCard.getText().toString().trim();
 				String password = mEtPassword.getText().toString().trim();
 				String price = mEtPrice.getText().toString().trim();
+				
 				if (card.equals("") || password.equals("") || price.equals("")) {
 					MsgUtil.msg("卡号，密码，价钱不能为空！", getActivity());
 					return;
 				} else {
-					StatService.onEvent(getActivity().getApplicationContext(), "PAY_CARD", "");
-					mReTryCreateOrderCount = 4;
-					createOrder(KeyConstants.PAY_TYPE_PREPAIDCARD, "", "");
+					final float amount = Float.parseFloat(mEtPrice.getText().toString().trim());
+					toPrepaidCardPay(amount);
 				}
 
 				break;
 			}
 		}
 	};
-
-	public float initPrice() {
+	/**
+	 * 跳转支付
+	 */
+	public BasePay getPayInfo(int payType,float amount)
+	{
+		BasePay basePay = null;
+		if(payType == BasePay.PAY_TYPE_ALIPAY){
+			basePay = new AliPay();
+		}else if(payType == BasePay.PAY_TYPE_UNIONPAY){
+			basePay = new UnionPay();
+		}else if(payType == BasePay.PAY_TYPE_PREPAIDCARD){
+			basePay = new PrepaidCardPay();
+		}
+		
+		if(basePay != null){
+			mBasePay = basePay;
+			basePay.setGid(mBundle.getString(KeyConstants.INTENT_DATA_KEY_GID));
+			basePay.setCid(mBundle.getString(KeyConstants.INTENT_DATA_KEY_CID));
+			basePay.setToken(mBundle.getString(KeyConstants.INTENT_DATA_KEY_TOKEN));
+			basePay.setPid(mBundle.getInt(KeyConstants.INTENT_DATA_KEY_PID));
+			basePay.setExtra(mBundle.getString(KeyConstants.INTENT_DATA_KEY_EXTRA));
+			basePay.setClientId( mBundle.getString(KeyConstants.INTENT_DATA_KEY_CLIENTID));
+			basePay.setClientSecret( mBundle.getString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET));
+			basePay.setAmount(amount);
+		}
+		return basePay;
+	}
+	/**
+	 * 得到支付价钱
+	 * @return
+	 */
+	public float getPrice() {
 		float price = 0;
 		if (mCurrentSelectPrice != null) {
 			String p = mCurrentSelectPrice.getText().toString();
@@ -563,18 +586,19 @@ public class PayFragment extends BaseFragment {
 		} else {
 			price = Float.parseFloat(mEtCusPrice.getText().toString());
 		}
-		mReTryCreateOrderCount = 4;
 		mCurrentPrice = price;
 		return price;
 	}
 
 	/**
 	 * 跳转微派支付
+	 * 已关闭
 	 */
+	@Deprecated
 	public void toWayPay() {
 		Log.d(TAG, "toWayPay()");
 		Intent intent = new Intent(KeyConstants.RECEIVER_PAY_START_ACTION);
-		intent.putExtra(KeyConstants.INTENT_DATA_KEY_PAY_TYPE, KeyConstants.PAY_TYPE_WIIPAY);
+		intent.putExtra(KeyConstants.INTENT_DATA_KEY_PAY_TYPE, BasePay.PAY_TYPE_WIIPAY);
 		getActivity().sendBroadcast(intent);
 	}
 
@@ -601,63 +625,30 @@ public class PayFragment extends BaseFragment {
 	 * 
 	 * @param orderId
 	 */
-	public void toPrepaidCardPay(final String orderId) {
+	public void toPrepaidCardPay(float amount) {
 
 		String card = mEtCard.getText().toString().trim();
 		String password = mEtPassword.getText().toString().trim();
-		final float price = Float.parseFloat(mEtPrice.getText().toString().trim());
-		String extra = mBundle.getString(KeyConstants.INTENT_DATA_KEY_EXTRA);
-		HttpIfoxApi.requestPrepaidCardPay(getActivity().getApplicationContext(), price, card, password, orderId, extra, new OnRequestListener() {
-
-			@Override
-			public void onResponse(final String url, final int state, final Object result, final int type) {
-				// TODO Auto-generated method stub
-				getMainHandler().post(new Runnable() {
-
-					@Override
-					public void run() {
-						// TODO Auto-generated method stub
-						if (!isAdded()) { // fragment 已退出
-							return;
-						}
-						if (mProgressDialog != null && mProgressDialog.isShowing()) {
-							mProgressDialog.dismiss();
-						}
-						if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof PrepaidCard) {
-							PrepaidCard baseBean = (PrepaidCard) result;
-							if (baseBean.getCode() == HttpSetting.RESULT_CODE_OK) { // 请求成功
-								if (baseBean.getData().getMsg().equals("200")) {
-									MsgUtil.msg("充值成功", getActivity());
-									StatService.onEvent(getActivity().getApplicationContext(), "PAY_CARD_SUCCESS", "");
-									sendPayResultReceiver(getActivity(), orderId, 0, price, KeyConstants.INTENT_KEY_SUCCESS, "");
-								} else {
-									StatService.onEvent(getActivity().getApplicationContext(), "PAY_CARD_FAIL", "");
-									MsgUtil.msg("充值失败:" + CommonUtil.getPrepaidCardPayMsg(baseBean.getData().getMsg()), getActivity());
-								}
-							} else {
-								MsgUtil.msg("充值失败:" + baseBean.getMsg(), getActivity());
-							}
-						} else if (state == HttpConnectManager.STATE_TIME_OUT) { // 请求超时
-							MsgUtil.msg("请求超时,正在重试请稍后...", getActivity());
-						} else { // 请求失败
-							MsgUtil.msg("请求失败，请重试", getActivity());
-						}
-					}
-				});
-			}
-		});
+		
+		BasePay basePay = getPayInfo(BasePay.PAY_TYPE_PREPAIDCARD, amount);
+		if(basePay != null && basePay instanceof PrepaidCardPay){
+			PrepaidCardPay prepaidCardPay = (PrepaidCardPay) basePay;
+			prepaidCardPay.setCard(card);
+			prepaidCardPay.setPassword(password);
+			prepaidCardPay.pay(getActivity()); //支付
+		}
 	}
 
 	/**
 	 * 银联支付
 	 */
-	public void toUnionpay(String orderId) {
-
-		// 发送广播调用支付
-		Intent intent = new Intent(KeyConstants.RECEIVER_PAY_START_ACTION);
-		intent.putExtra(KeyConstants.INTENT_DATA_KEY_PAY_TYPE, KeyConstants.PAY_TYPE_UNIONPAY);
-		intent.putExtra(KeyConstants.INTENT_DATA_KEY_PAY_TN, orderId);
-		getActivity().sendBroadcast(intent);
+	public void toUnionpay(float amount) {
+		BasePay basePay = getPayInfo(BasePay.PAY_TYPE_UNIONPAY, amount);
+		if(basePay != null && basePay instanceof UnionPay){
+			UnionPay unionPay = (UnionPay) basePay;
+			getActivity().registerReceiver(unionPay.mPayUnionResultBroadcastReceiver, new IntentFilter(KeyConstants.ACTION_PAY_RESULT_RECEIVER));
+			unionPay.pay(getActivity()); //支付
+		}
 	}
 
 	/**
@@ -666,218 +657,16 @@ public class PayFragment extends BaseFragment {
 	 * @param orderId
 	 * @param amount
 	 */
-	public void toAliPay(String orderId, float amount) {
-		String notifyUrl = mBundle.getString(KeyConstants.INTENT_DATA_KEY_NOTIFY_URL);
-		AliPayUtil.pay(getActivity(), mUIHandler, orderId, "充值游戏币", "道具", amount, notifyUrl);
-	}
-
-	/**
-	 * 支付宝支付结果处理
-	 */
-	public void aliPayResultDispose(String re) {
-		Result result = new Result(re);
-		result.parseResult();
-		Log.d(TAG, "disposeResult:" + result.getResult() + " resultStatus:" + result.resultStatus);
-		if (result.resultStatus != null && result.resultStatus.equals("success")) { // 判断是否支付成功
-			if (mCurrentOrder != null) {
-				StatService.onEvent(getActivity().getApplicationContext(), "PAY_ALIPAY_SUCCESS", "");
-				int pid = mBundle.getInt(KeyConstants.INTENT_DATA_KEY_PID);
-				sendPayResultReceiver(getActivity(), mCurrentOrder.getData().getOrderid(), pid, mCurrentPrice, KeyConstants.INTENT_KEY_SUCCESS, "支付成功");
-			}
-		} else {
-			StatService.onEvent(getActivity().getApplicationContext(), "PAY_ALIPAY_FAIL", "");
-			Toast.makeText(getActivity(), result.getResult(), Toast.LENGTH_SHORT).show();
+	public void toAliPay(float amount) {
+		BasePay basePay = getPayInfo(BasePay.PAY_TYPE_ALIPAY, amount);
+		if(basePay != null && basePay instanceof AliPay){
+			AliPay aliPay = (AliPay) basePay;
+			String notifyUrl = mBundle.getString(KeyConstants.INTENT_DATA_KEY_NOTIFY_URL);
+			aliPay.setNotifyUrl(notifyUrl);
+			aliPay.pay(getActivity()); //支付
 		}
 	}
 
-	public Handler mUIHandler = new Handler() {
-		public void handleMessage(android.os.Message msg) {
-			switch (msg.what) {
-			case AliPayUtil.RQF_PAY:
-				aliPayResultDispose((String) msg.obj);
-				break;
-
-			default:
-				break;
-			}
-		};
-	};
-
-	/**
-	 * 支付成功后,创建订单
-	 * 
-	 * @param payType
-	 *            支付方式 (微派:KeyConstants.PAY_TYPE_WIIPAY) (支付宝:
-	 *            KeyConstants.PAY_TYPE_ALIPAY)(银联:
-	 *            KeyConstants.PAY_TYPE_UNIONPAY )
-	 * @param result
-	 *            支付结果
-	 * @param msg
-	 *            支付提示
-	 */
-	public void createOrder(final int payType, final String result, final String msg) {
-		if (mIsCreateingOrder) {
-			return;
-		}
-
-		getMainHandler().post(new Runnable() {
-
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				if (mReTryCreateOrderCount == 0) {
-					MsgUtil.msg("创建订单失败,请检查网络或联系我们!", getActivity());
-					return;
-				}
-				// 改变重试次数
-				mReTryCreateOrderCount--;
-
-				if (mBundle == null) {
-					MsgUtil.msg("支付数据为空!", getActivity());
-					return;
-				}
-				mIsCreateingOrder = true;
-				String gid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_GID);
-				String cid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_CID);
-				String token = mBundle.getString(KeyConstants.INTENT_DATA_KEY_TOKEN);
-				int pid = mBundle.getInt(KeyConstants.INTENT_DATA_KEY_PID);
-				float amount = mBundle.getFloat(KeyConstants.INTENT_DATA_KEY_AMOUNT);
-				String extra = mBundle.getString(KeyConstants.INTENT_DATA_KEY_EXTRA);
-				String clientId = mBundle.getString(KeyConstants.INTENT_DATA_KEY_CLIENTID);
-				String clientSecret = mBundle.getString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET);
-				// 创建订单
-				Log.d(TAG, "createOrder -> gid:" + gid + " cid:" + cid + " token:" + token + " pid:" + pid + " amount:" + amount + " extra:" + extra + " payType:" + payType);
-
-				if (mProgressDialog == null || !mProgressDialog.isShowing()) {
-					mProgressDialog = ProgressDialog.show(getActivity(), "正在处理订单", "正在处理订单,请不要退出当前操作!", true, true);
-					// mProgressDialog.show();
-					mProgressDialog.setOnCancelListener(new OnCancelListener() {
-
-						@Override
-						public void onCancel(DialogInterface dialog) {
-							// TODO Auto-generated method stub
-							mIsCreateingOrder = false;
-							mCurrentPayTime = System.currentTimeMillis();
-							Toast.makeText(getActivity(), "操作取消", Toast.LENGTH_LONG).show();
-						}
-					});
-				}
-
-				if (payType == KeyConstants.PAY_TYPE_UNIONPAY || payType == KeyConstants.PAY_TYPE_ALIPAY) { // 当前价钱
-					amount = mCurrentPrice;
-				} else if (payType == KeyConstants.PAY_TYPE_PREPAIDCARD) {
-					amount = Float.parseFloat(mEtPrice.getText().toString());
-				}
-				mCurrentPayTime = System.currentTimeMillis();
-				HttpIfoxApi.createOrder(getActivity(), gid, cid, token, pid, amount, payType, extra, clientId, clientSecret, new OnCreateOrderListener(payType, result, msg, mCurrentPayTime));
-			}
-		});
-	}
-
-	/**
-	 * 创建订单回调
-	 */
-	public class OnCreateOrderListener implements OnRequestListener {
-
-		private int mPayType;
-		private String mResult;
-		private String mMsg;
-		private long mCreateTime = 0;
-
-		public OnCreateOrderListener(final int payType, String result, String msg, long createTime) {
-			mPayType = payType;
-			mResult = result;
-			mMsg = msg;
-			mCreateTime = new Long(createTime);
-		}
-
-		@Override
-		public void onResponse(final String url, final int state, final Object result, final int type) {
-			// TODO Auto-generated method stub
-			// 判断是否取消了当前的创建订单动作
-			if (mCreateTime != mCurrentPayTime) {
-				return;
-			}
-			mIsCreateingOrder = false;
-			getMainHandler().post(new Runnable() {
-
-				@Override
-				public void run() {
-					// TODO Auto-generated method stub
-					if (!isAdded()) { // fragment 已退出
-						return;
-					}
-					if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof Order) {
-						Order order = (Order) result;
-						mCurrentOrder = order;
-						if (order.getCode() == HttpSetting.RESULT_CODE_OK) { // 请求成功
-							if (mProgressDialog != null && mProgressDialog.isShowing() && mPayType != KeyConstants.PAY_TYPE_PREPAIDCARD) {
-								mProgressDialog.dismiss();
-							}
-							if (mPayType == KeyConstants.PAY_TYPE_UNIONPAY) {
-								toUnionpay(order.getData().getTn());
-							} else if (mPayType == KeyConstants.PAY_TYPE_PREPAIDCARD) {
-								toPrepaidCardPay(order.getData().getOrderid());
-							} else if (mPayType == KeyConstants.PAY_TYPE_ALIPAY) {
-								toAliPay(order.getData().getOrderid(), mCurrentPrice);
-							}
-
-						} else {
-							MsgUtil.msg("创建订单失败:" + order.getMsg() + ",正在重试请稍后...", getActivity());
-							// 重试创建订单
-							createOrder(mPayType, mResult, mMsg);
-						}
-					} else if (state == HttpConnectManager.STATE_TIME_OUT) { // 请求超时
-						MsgUtil.msg("请求超时,正在重试请稍后...", getActivity());
-						// 重试创建订单
-						createOrder(mPayType, mResult, mMsg);
-					} else { // 请求失败
-
-						if (mProgressDialog != null && mProgressDialog.isShowing()) {
-							mProgressDialog.dismiss();
-						}
-
-						MsgUtil.msg("创建订单失败,正在重试请稍后...", getActivity());
-						// 重试创建订单
-						createOrder(mPayType, mResult, mMsg);
-					}
-
-					if (mReTryCreateOrderCount == 0 && mProgressDialog != null && mProgressDialog.isShowing()) {
-						MsgUtil.msg("创建订单失败!", getActivity());
-						mProgressDialog.dismiss();
-					}
-				}
-			});
-		}
-	};
-
-	/**
-	 * 发送支付回调
-	 */
-	public void sendPayFailResultReceiver(Activity activity, String result, String msg) {
-
-		Bundle bundle = new Bundle();
-		bundle.putString(KeyConstants.INTENT_KEY_RESULT, result);
-		bundle.putString(KeyConstants.INTENT_KEY_MSG, msg);
-		// 回调广播
-		sendResultBroadcast(getActivity(), bundle, KeyConstants.RECEIVER_ACTION_PAY);
-	}
-
-	/**
-	 * 发送成功支付支付回调
-	 */
-	public void sendPayResultReceiver(Activity activity, String orderId, int pid, float amount, String result, String msg) {
-
-		// 回调内容
-		Bundle bundle = new Bundle();
-		bundle.putString(KeyConstants.INTENT_KEY_RESULT, result);
-		bundle.putString(KeyConstants.INTENT_KEY_MSG, msg);
-		bundle.putInt(KeyConstants.INTENT_DATA_KEY_PID, pid);
-		bundle.putFloat(KeyConstants.INTENT_DATA_KEY_AMOUNT, amount);
-		bundle.putString(KeyConstants.INTENT_DATA_KEY_ORDERID, orderId);
-
-		sendResultBroadcast(getActivity(), bundle, KeyConstants.RECEIVER_ACTION_PAY);
-	}
 
 	@Override
 	public boolean onKeyDown(Activity activity, Integer keyCode, KeyEvent event) {
@@ -885,74 +674,13 @@ public class PayFragment extends BaseFragment {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			Bundle bundle = new Bundle();
 			bundle.putString(KeyConstants.INTENT_KEY_RESULT, KeyConstants.INTENT_KEY_CANCEL);
-
 			// 回调取消
-			sendResultBroadcast(activity, bundle, KeyConstants.RECEIVER_ACTION_PAY);
+			BasePay.sendResultBroadcast(activity, bundle, KeyConstants.RECEIVER_ACTION_PAY);
 			return false;
 		}
 		return true;
 	}
 
-	// /**
-	// * 支付广播
-	// */
-	// public BroadcastReceiver mCreateOrderBroadcastReceiver = new
-	// BroadcastReceiver() {
-	//
-	// @Override
-	// public void onReceive(Context context, Intent intent) {
-	// // TODO Auto-generated method stub
-	// if (intent != null &&
-	// intent.getAction().equals(KeyConstants.ACTION_CREATEORDER_ACTIVITY)) {
-	// int payType = intent.getIntExtra(KeyConstants.INTENT_DATA_KEY_PAY_TYPE,
-	// -1);
-	// if (payType != -1) {
-	// String result = intent.getStringExtra(KeyConstants.INTENT_KEY_RESULT);
-	// String msg = intent.getStringExtra(KeyConstants.INTENT_KEY_MSG);
-	//
-	// if (result == null || msg == null) {
-	// return;
-	// }
-	//
-	// // 如果支付成功
-	// if (result.equals(KeyConstants.SUCCESS)) {
-	// createOrder(payType, result, msg);
-	// } else if (result.equals(KeyConstants.FAIL)) { // 支付失败
-	// sendPayFailResultReceiver(getActivity(), result, msg);
-	// }
-	//
-	// }
-	// }
-	// }
-	// };
 
-	/**
-	 * 银联支付广播
-	 */
-	public BroadcastReceiver mPayUnionResultBroadcastReceiver = new BroadcastReceiver() {
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			// TODO Auto-generated method stub
-			String result = intent.getStringExtra(KeyConstants.INTENT_KEY_RESULT);
-			if (result.equalsIgnoreCase("success")) {
-				StatService.onEvent(getActivity().getApplicationContext(), "PAY_UNION_SUCCESS", "");
-				if (mCurrentOrder != null) {
-					int pid = mBundle.getInt(KeyConstants.INTENT_DATA_KEY_PID);
-					sendPayResultReceiver(getActivity(), mCurrentOrder.getData().getOrderid(), pid, mCurrentPrice, KeyConstants.INTENT_KEY_SUCCESS, "支付成功");
-				}
-			} else if (result.equalsIgnoreCase("fail")) {
-				StatService.onEvent(getActivity().getApplicationContext(), "PAY_UNION_FAIL", "");
-				sendPayFailResultReceiver(getActivity(), KeyConstants.INTENT_KEY_FAIL, "支付失败");
-			} else if (result.equalsIgnoreCase("cancel")) {
-
-//				Bundle bundle = new Bundle();
-//				bundle.putString(KeyConstants.INTENT_KEY_RESULT, KeyConstants.INTENT_KEY_CANCEL);
-//				// 回调取消
-//				sendResultBroadcast(getActivity(), bundle, KeyConstants.RECEIVER_ACTION_PAY);
-			}
-		}
-
-	};
 
 }

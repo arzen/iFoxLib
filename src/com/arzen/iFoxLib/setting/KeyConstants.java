@@ -53,20 +53,22 @@ public class KeyConstants {
 	 */
 	public static String INTENT_DATA_KEY_PROP_PRICE = "prop_price";
 
-	/**
-	 * 支付方式 微派
-	 */
-	public static final int PAY_TYPE_WIIPAY = 1;
-	/**
-	 * 支付宝
-	 */
-	public static final int PAY_TYPE_ALIPAY = 2;
-	/**
-	 * 银联
-	 */
-	public static final int PAY_TYPE_UNIONPAY = 3;
-	
-	public static final int PAY_TYPE_PREPAIDCARD = 4;
+//	/**
+//	 * 支付方式 微派
+//	 */
+//	public static final int PAY_TYPE_WIIPAY = 1;
+//	/**
+//	 * 支付宝
+//	 */
+//	public static final int PAY_TYPE_ALIPAY = 2;
+//	/**
+//	 * 银联
+//	 */
+//	public static final int PAY_TYPE_UNIONPAY = 3;
+//	/**
+//	 * 充值卡
+//	 */
+//	public static final int PAY_TYPE_PREPAIDCARD = 4;
 
 	/**
 	 * intent 传递数据key ->支付流水号

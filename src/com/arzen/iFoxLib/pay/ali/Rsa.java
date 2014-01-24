@@ -4,7 +4,7 @@
  * author: shiqun.shi@alipay.com
  */
 
-package com.arzen.iFoxLib.pay;
+package com.arzen.iFoxLib.pay.ali;
 
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
