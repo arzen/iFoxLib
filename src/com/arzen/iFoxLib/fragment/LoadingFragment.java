@@ -22,6 +22,7 @@ import com.arzen.iFoxLib.bean.User;
 import com.arzen.iFoxLib.contacts.Contact;
 import com.arzen.iFoxLib.contacts.ContactUtils;
 import com.arzen.iFoxLib.contacts.ContactUtils.ContactCallBack;
+import com.arzen.iFoxLib.fragment.base.BaseFragment;
 import com.arzen.iFoxLib.setting.KeyConstants;
 import com.arzen.iFoxLib.setting.UserSetting;
 import com.arzen.iFoxLib.utils.MD5Util;

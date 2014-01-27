@@ -1,5 +1,6 @@
 package com.arzen.iFoxLib.api;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -10,7 +11,6 @@ import android.content.Context;
 
 import com.arzen.iFoxLib.R;
 import com.arzen.iFoxLib.bean.Auth;
-import com.arzen.iFoxLib.bean.BaseBean;
 import com.arzen.iFoxLib.bean.Invited;
 import com.arzen.iFoxLib.bean.Order;
 import com.arzen.iFoxLib.bean.PayList;
@@ -19,9 +19,8 @@ import com.arzen.iFoxLib.bean.Token;
 import com.arzen.iFoxLib.bean.Top;
 import com.arzen.iFoxLib.bean.User;
 import com.arzen.iFoxLib.setting.UserSetting;
-import com.arzen.iFoxLib.utils.MD5;
 import com.arzen.iFoxLib.utils.MD5Util;
-import com.arzen.iFoxLib.utils.MsgUtil;
+import com.arzen.iFoxLib.utils.NetCache;
 import com.encore.libs.http.HttpConnectManager;
 import com.encore.libs.http.OnRequestListener;
 import com.encore.libs.http.Request;
@@ -133,7 +132,7 @@ public class HttpIfoxApi {
 	 *            登录后的token
 	 */
 	public static void requestPayList(final Activity activity, final String gid, final String cid, 
-			final String token, final String clientId, final String clientSecret, final OnRequestListener onRequestListener) {
+			final String token, final String clientId, final String clientSecret, final OnRequestCallback onRequestCallback) {
 		// 得到支付列表url
 		String url = HttpSetting.getPayListUrl();
 
@@ -158,20 +157,28 @@ public class HttpIfoxApi {
 						@Override
 						public void onSuccess(String token) {
 							// TODO Auto-generated method stub
-							requestPayList(activity, gid, cid, token, clientId, clientSecret, onRequestListener); // 刷新token
-																									// 成功重新请求
+							requestPayList(activity, gid, cid, token, clientId, clientSecret, onRequestCallback); //成功重新请求
 						}
 
 						@Override
 						public void onFail(String msg) {
 							// TODO Auto-generated method stub
-							onRequestListener.onResponse(url, state, result, type);
+							if(onRequestCallback != null)
+								onRequestCallback.onFail(msg, HttpConnectManager.STATE_EXCEPTION);
 						}
 					});
 					return;
 				}
-
-				onRequestListener.onResponse(url, state, result, type);
+				
+				if (onRequestCallback != null) {
+					if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof PayList) {
+						onRequestCallback.onSuccess(result);
+					} else if (state == HttpConnectManager.STATE_TIME_OUT) { // 处理超时
+						onRequestCallback.onFail(activity.getString(R.string.time_out), state);
+					} else { // 其他错误
+						onRequestCallback.onFail(activity.getString(R.string.request_fail), state);
+					}
+				}
 			}
 		});
 		HttpConnectManager.getInstance(activity.getApplicationContext()).doPost(request, postParam);
@@ -466,7 +473,7 @@ public class HttpIfoxApi {
 	 * @param onRequestListener
 	 */
 	public static void requestTopList(final Context context,final String gid,final String token,final int pageNumber,
-			final String cid,final String clientId, final String clientSecret,final OnRequestListener onRequestListener) {
+			final String cid,final String clientId, final String clientSecret,final OnRequestCallback onRequestCallback) {
 		String url = HttpSetting.IFOX_TOP_URL;
 
 		Map<String, Object> maps = new HashMap<String, Object>();
@@ -491,19 +498,28 @@ public class HttpIfoxApi {
 						@Override
 						public void onSuccess(String token) {
 							// TODO Auto-generated method stub
-							requestTopList(context, gid, token, pageNumber,cid, clientId, clientSecret, onRequestListener);
+							requestTopList(context, gid, token, pageNumber,cid, clientId, clientSecret, onRequestCallback);
 						}
 
 						@Override
 						public void onFail(String msg) {
 							// TODO Auto-generated method stub
-							onRequestListener.onResponse(url, state, result, type);
+							if(onRequestCallback != null){
+								onRequestCallback.onFail(msg, HttpConnectManager.STATE_EXCEPTION);
+							}
 						}
 					});
 					return;
 				}
-
-				onRequestListener.onResponse(url, state, result, type);
+				if (onRequestCallback != null) {
+					if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof Top) {
+						onRequestCallback.onSuccess(result);
+					} else if (state == HttpConnectManager.STATE_TIME_OUT) { // 处理超时
+						onRequestCallback.onFail(context.getString(R.string.time_out), state);
+					} else { // 其他错误
+						onRequestCallback.onFail(context.getString(R.string.request_fail), state);
+					}
+				}
 			}
 		});
 		
@@ -608,7 +624,7 @@ public class HttpIfoxApi {
 	 * @param gid
 	 * @param onRequestListener
 	 */
-	public static void requestInviteData(Context context, String token, String gid, OnRequestListener onRequestListener) {
+	public static void requestInviteData(final Context context, String token, String gid,final OnRequestCallback onRequestCallback) {
 		String url = HttpSetting.IFOX_INVETED_URL;
 
 		Map<String, Object> maps = new HashMap<String, Object>();
@@ -618,7 +634,22 @@ public class HttpIfoxApi {
 		String postParam = createParams(maps);
 
 		Request request = new Request(url);
-		request.setOnRequestListener(onRequestListener);
+		request.setOnRequestListener(new OnRequestListener() {
+			
+			@Override
+			public void onResponse(final String url, final int state, final Object result, final int type) {
+				// TODO Auto-generated method stub
+				if (onRequestCallback != null) {
+					if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof Invited) {
+						onRequestCallback.onSuccess(result);
+					} else if (state == HttpConnectManager.STATE_TIME_OUT) { // 处理超时
+						onRequestCallback.onFail(context.getString(R.string.time_out), state);
+					} else { // 其他错误
+						onRequestCallback.onFail(context.getString(R.string.request_fail), state);
+					}
+				}
+			}
+		});
 		request.setParser(new JsonParser(Invited.class, false));
 		HttpConnectManager.getInstance(context.getApplicationContext()).doPost(request, postParam);
 	}
@@ -665,5 +696,35 @@ public class HttpIfoxApi {
 		public void onSuccess(String uid, String token);
 
 		public void onFail(String msg);
+	}
+	
+	/**
+	 * 回调缓存
+	 * @param url 保存的url
+	 * @param cb callBack
+	 */
+	public static boolean callBackCache(Context context,String url,final OnRequestCallback cb)
+	{
+		boolean isHaveCache = false;
+		Object object = NetCache.readCache(context, url);
+		if (object != null && cb != null) {
+			isHaveCache = true;
+			cb.onSuccess(object);
+		}
+		return isHaveCache;
+	}
+	/**
+	 * 保存缓存
+	 * @param context
+	 * @param object
+	 * @param url
+	 */
+	public static void saveCache(Context context,Object object,String url){
+		try {
+			NetCache.saveCache(context, object, url);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

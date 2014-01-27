@@ -19,7 +19,7 @@ import android.widget.Toast;
  * @author Encore.liang
  * 
  */
-public class AliPay extends BasePay {
+public class AliPay extends IFoxPay {
 	/**
 	 * 当前是否类型,支付宝
 	 */

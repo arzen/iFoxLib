@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.arzen.iFoxLib.R;
+import com.arzen.iFoxLib.fragment.base.BaseFragment;
 import com.arzen.iFoxLib.setting.KeyConstants;
 import com.arzen.iFoxLib.setting.UserSetting;
 import com.arzen.iFoxLib.utils.MsgUtil;

@@ -4,7 +4,7 @@ import com.arzen.iFoxLib.api.HttpIfoxApi;
 import com.arzen.iFoxLib.api.HttpSetting;
 import com.arzen.iFoxLib.bean.Order;
 import com.arzen.iFoxLib.bean.PrepaidCard;
-import com.arzen.iFoxLib.pay.BasePay.OnCreateOrderCallBack;
+import com.arzen.iFoxLib.pay.IFoxPay.OnCreateOrderCallBack;
 import com.arzen.iFoxLib.setting.KeyConstants;
 import com.arzen.iFoxLib.utils.CommonUtil;
 import com.arzen.iFoxLib.utils.MsgUtil;
@@ -21,7 +21,7 @@ import android.content.Context;
  * @author Encore.liang
  * 
  */
-public class PrepaidCardPay extends BasePay {
+public class PrepaidCardPay extends IFoxPay {
 	private int mCurrentPayType = PAY_TYPE_PREPAIDCARD;
 
 	private String card;

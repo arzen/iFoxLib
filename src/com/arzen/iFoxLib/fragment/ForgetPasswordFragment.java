@@ -1,6 +1,7 @@
 package com.arzen.iFoxLib.fragment;
 
 import com.arzen.iFoxLib.R;
+import com.arzen.iFoxLib.fragment.base.BaseFragment;
 
 import android.app.Activity;
 import android.app.Fragment;

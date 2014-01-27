@@ -20,7 +20,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
 
-public abstract class BasePay {
+public abstract class IFoxPay {
 	/**
 	 * 支付方式 微派 (已关闭)
 	 */

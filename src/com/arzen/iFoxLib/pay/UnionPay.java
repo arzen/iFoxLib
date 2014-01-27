@@ -15,7 +15,7 @@ import com.baidu.mobstat.StatService;
  * @author Encore.liang
  * 
  */
-public class UnionPay extends BasePay {
+public class UnionPay extends IFoxPay {
 	private int mCurrentPayType = PAY_TYPE_UNIONPAY;
 
 	private Activity mActivity;

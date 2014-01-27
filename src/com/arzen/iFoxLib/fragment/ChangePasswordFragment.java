@@ -1,6 +1,7 @@
 package com.arzen.iFoxLib.fragment;
 
 import com.arzen.iFoxLib.R;
+import com.arzen.iFoxLib.fragment.base.BaseFragment;
 import com.arzen.iFoxLib.setting.KeyConstants;
 import com.arzen.iFoxLib.utils.MsgUtil;
 

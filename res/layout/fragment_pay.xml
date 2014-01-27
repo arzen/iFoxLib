@@ -268,14 +268,4 @@
             android:textColor="@color/white" />
     </LinearLayout>
 
-    <include
-        android:id="@+id/notNetWork"
-        layout="@layout/common_not_network"
-        android:visibility="gone" />
-
-    <include
-        android:id="@+id/loadingView"
-        layout="@layout/common_loading_layout"
-        android:visibility="gone" />
-
 </RelativeLayout>
