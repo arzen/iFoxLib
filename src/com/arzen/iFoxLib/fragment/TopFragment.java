@@ -33,6 +33,7 @@ import com.arzen.iFoxLib.contacts.Contact;
 import com.arzen.iFoxLib.contacts.ContactUtils;
 import com.arzen.iFoxLib.fragment.base.ProgressFragment;
 import com.arzen.iFoxLib.setting.KeyConstants;
+import com.arzen.iFoxLib.utils.MsgUtil;
 import com.baidu.mobstat.StatService;
 import com.encore.libs.http.HttpConnectManager;
 import com.encore.libs.http.OnRequestListener;
@@ -142,13 +143,12 @@ public class TopFragment extends ProgressFragment {
 			mTopAdapter.setDatas(mAllDatas, maps);
 			mTopAdapter.notifyDataSetChanged();
 		} else {
-			// 判断是否有网络的情况
-			// if (setErrorVisibility(getView(), mListView, null)) {
-			// // 显示loading view
-			// setLoadingViewVisibility(true, getView(), mListView);
-			// 请求,第一次默认请求第一页
+			// 没有网络
+			if (!NetWorkUtils.isNetworkAvailable(getActivity())) {
+				setContentError(true, getActivity().getString(R.string.not_network));
+				return;
+			}
 			requestTopListData(1, false);
-			// }
 		}
 	}
 
@@ -178,7 +178,7 @@ public class TopFragment extends ProgressFragment {
 		String cid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_CID);
 		String clientId = mBundle.getString(KeyConstants.INTENT_DATA_KEY_CLIENTID);
 		String clientSecret = mBundle.getString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET);
-		HttpIfoxApi.requestTopList(getActivity().getApplicationContext(), gid, token, pageNumber, cid, clientId, clientSecret, new OnTopRequestCallBack(isLoadMore));
+		HttpIfoxApi.requestTopList(getActivity(), gid, token, pageNumber, cid, clientId, clientSecret, new OnTopRequestCallBack(isLoadMore));
 	}
 
 	public class OnTopRequestCallBack implements OnRequestCallback {

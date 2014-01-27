@@ -21,11 +21,13 @@ import com.arzen.iFoxLib.bean.User;
 import com.arzen.iFoxLib.setting.UserSetting;
 import com.arzen.iFoxLib.utils.MD5Util;
 import com.arzen.iFoxLib.utils.NetCache;
+import com.arzen.iFoxLib.utils.Util;
 import com.encore.libs.http.HttpConnectManager;
 import com.encore.libs.http.OnRequestListener;
 import com.encore.libs.http.Request;
 import com.encore.libs.json.JsonParser;
 import com.encore.libs.utils.Log;
+import com.encore.libs.utils.NetWorkUtils;
 
 /**
  * 请求类
@@ -34,6 +36,8 @@ import com.encore.libs.utils.Log;
  * 
  */
 public class HttpIfoxApi {
+
+	public static final String TAG = "HttpIfoxApi";
 	/**
 	 * 参数gid
 	 */
@@ -107,7 +111,7 @@ public class HttpIfoxApi {
 	 * 页码
 	 */
 	public static final String PARAM_PAGE = "page";
-	
+
 	/**
 	 * RESPINSE TYPE
 	 */
@@ -131,8 +135,7 @@ public class HttpIfoxApi {
 	 * @param token
 	 *            登录后的token
 	 */
-	public static void requestPayList(final Activity activity, final String gid, final String cid, 
-			final String token, final String clientId, final String clientSecret, final OnRequestCallback onRequestCallback) {
+	public static void requestPayList(final Activity activity, final String gid, final String cid, final String token, final String clientId, final String clientSecret, final OnRequestCallback onRequestCallback) {
 		// 得到支付列表url
 		String url = HttpSetting.getPayListUrl();
 
@@ -152,24 +155,24 @@ public class HttpIfoxApi {
 			public void onResponse(final String url, final int state, final Object result, final int type) {
 				// TODO Auto-generated method stub
 				if (state == HttpConnectManager.STATE_TOKEN_EXCEPTION) { // 先判断token失效
-					refreshToken(activity.getApplicationContext(), gid, cid, clientId, clientSecret, new RefreshTokenCallBack() {
+					refreshToken(activity, gid, cid, clientId, clientSecret, new RefreshTokenCallBack() {
 
 						@Override
 						public void onSuccess(String token) {
 							// TODO Auto-generated method stub
-							requestPayList(activity, gid, cid, token, clientId, clientSecret, onRequestCallback); //成功重新请求
+							requestPayList(activity, gid, cid, token, clientId, clientSecret, onRequestCallback); // 成功重新请求
 						}
 
 						@Override
 						public void onFail(String msg) {
 							// TODO Auto-generated method stub
-							if(onRequestCallback != null)
+							if (onRequestCallback != null)
 								onRequestCallback.onFail(msg, HttpConnectManager.STATE_EXCEPTION);
 						}
 					});
 					return;
 				}
-				
+
 				if (onRequestCallback != null) {
 					if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof PayList) {
 						onRequestCallback.onSuccess(result);
@@ -195,7 +198,7 @@ public class HttpIfoxApi {
 	 * @param clientId
 	 * @param clientSecret
 	 */
-	public static void refreshToken(final Context context, String gid, String cid, final String clientId, final String clientSecret, final RefreshTokenCallBack cb) {
+	public static void refreshToken(final Activity context, String gid, String cid, final String clientId, final String clientSecret, final RefreshTokenCallBack cb) {
 		String userName = UserSetting.getUserName(context);
 		String password = UserSetting.getPwd(context);
 
@@ -237,9 +240,7 @@ public class HttpIfoxApi {
 	 * @param extra
 	 *            游戏上传的自定义信息
 	 */
-	public static void createOrder(final Context context,final String gid, 
-			final String cid,final String token,final int pid,final float amount,final int payType,
-			final String extra,final String clientId, final String clientSecret,final OnRequestListener onRequestListener) {
+	public static void createOrder(final Activity context, final String gid, final String cid, final String token, final int pid, final float amount, final int payType, final String extra, final String clientId, final String clientSecret, final OnRequestListener onRequestListener) {
 		String url = HttpSetting.IFOX_CREATE_ORDER_URL;
 
 		Map<String, Object> maps = new HashMap<String, Object>();
@@ -253,10 +254,10 @@ public class HttpIfoxApi {
 		try {
 			if (extra == null || extra.equals("")) {
 				maps.put(PARAM_EXTRA, URLEncoder.encode(" ", "utf-8"));
-			}else{
+			} else {
 				maps.put(PARAM_EXTRA, URLEncoder.encode(extra, "utf-8"));
 			}
-			
+
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -267,7 +268,7 @@ public class HttpIfoxApi {
 		Request request = new Request();
 		request.setUrl(url);
 		request.setParser(new JsonParser(Order.class));
-		
+
 		request.setOnRequestListener(new OnRequestListener() {
 
 			@Override
@@ -294,7 +295,7 @@ public class HttpIfoxApi {
 				onRequestListener.onResponse(url, state, result, type);
 			}
 		});
-		
+
 		HttpConnectManager.getInstance(context.getApplicationContext()).doPost(request, postParam);
 	}
 
@@ -312,9 +313,11 @@ public class HttpIfoxApi {
 	 *            密码
 	 * @param onRequestListener
 	 */
-	public static void requestLogin(final Context context, String gid, String cid, String userName, String password, final String clientId, final String clientSecret, final OnLoginCallBack cb) {
+	public static void requestLogin(final Activity activity, String gid, String cid, String userName, String password, final String clientId, final String clientSecret, final OnLoginCallBack cb) {
+		if(activity == null){
+			return;
+		}
 		String url = HttpSetting.IFOX_AUTH_URL;
-
 		Map<String, Object> maps = new HashMap<String, Object>();
 		maps.put(PARAM_GID, gid);
 		maps.put(PARAM_CID, cid);
@@ -323,37 +326,35 @@ public class HttpIfoxApi {
 		maps.put(PARAM_RESPONSE_TYPE, "code");
 		maps.put(PARAM_REDIRECT_URI, "");
 		maps.put(PARAM_CLIENT_ID, clientId);
-
 		String postParam = createParams(maps);
-
 		Request request = new Request();
 		request.setUrl(url);
 		request.setParser(new JsonParser(Auth.class));
 		request.setOnRequestListener(new OnRequestListener() {
 
 			@Override
-			public void onResponse(final String url, final int state, final Object result, final int type) {
+			public void onResponse(String url, int state, Object result, int type) {
 				// TODO Auto-generated method stub
+				Log.d(TAG, "onResponse - URL:" + url + " STATE:" + state + " RESULT:" + result + " TYPE:" + type);
 				if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof Auth) {
 					Auth auth = (Auth) result;
 					if (auth.getCode() == HttpSetting.RESULT_CODE_OK && auth.getData() != null) {
-						requestToken(context,auth.getData().getUid(), clientId, clientSecret, auth.getData().getCode(), cb);
+						requestToken(activity, auth.getData().getUid(), clientId, clientSecret, auth.getData().getCode(), cb);
 					} else {
 						cb.onFail(auth.getMsg());
 					}
 				} else if (state == HttpConnectManager.STATE_TIME_OUT) { // 请求超时
-					cb.onFail(context.getString(R.string.time_out));
+					cb.onFail(activity.getString(R.string.time_out));
 				} else { // 请求失败
-					cb.onFail(context.getString(R.string.request_fail));
+					cb.onFail(activity.getString(R.string.request_fail));
 				}
 			}
 		});
-		HttpConnectManager.getInstance(context.getApplicationContext()).doPost(request, postParam);
+		HttpConnectManager.getInstance(activity.getApplicationContext()).doPost(request, postParam);
 	}
 
-	public static void requestToken(final Context context,final String uid, String clientId, String clientSecret, String code, final OnLoginCallBack cb) {
+	public static void requestToken(final Context context, final String uid, String clientId, String clientSecret, String code, final OnLoginCallBack cb) {
 		String url = HttpSetting.IFOX_TOKEN_URL;
-
 		Map<String, Object> maps = new HashMap<String, Object>();
 		maps.put(PARAM_REDIRECT_URI, "");
 		maps.put(PARAM_CLIENT_ID, clientId);
@@ -389,8 +390,6 @@ public class HttpIfoxApi {
 		HttpConnectManager.getInstance(context.getApplicationContext()).doPost(request, postParam);
 	}
 
-	
-
 	/**
 	 * 注册帐号
 	 * 
@@ -402,8 +401,10 @@ public class HttpIfoxApi {
 	 * @param onRequestListener
 	 */
 	public static void requestRegister(Context context, String gid, String cid, String userName, String password, OnRequestListener onRequestListener) {
+		if(context == null){
+			return;
+		}
 		String url = HttpSetting.IFOX_REGISTER_URL;
-
 		Map<String, Object> maps = new HashMap<String, Object>();
 		maps.put(PARAM_GID, gid);
 		maps.put(PARAM_CID, cid);
@@ -431,37 +432,24 @@ public class HttpIfoxApi {
 	 * @param onRequestListener
 	 */
 	public static void requestChangePassword(Context context, String gid, String cid, String token, String oldPassword, String newPassword, OnRequestListener onRequestListener) {
-//		String url = HttpSetting.IFOX_CHANGEPASSWORD_URL;
-//
-//		Map<String, Object> maps = new HashMap<String, Object>();
-//		maps.put(PARAM_GID, gid);
-//		maps.put(PARAM_CID, cid);
-//		maps.put(PARAM_TOKEN, token);
-//		maps.put(PARAM_PASSWORD, oldPassword);
-//		maps.put(PARAM_NEWPASSWORD, newPassword);
-//
-//		String postParam = createParams(maps);
-//
-//		Request request = new Request();
-//		request.setUrl(url);
-//		request.setParser(new JsonParser(BaseBean.class));
-//		request.setOnRequestListener(onRequestListener);
-//		HttpConnectManager.getInstance(context.getApplicationContext()).doPost(request, postParam);
+		// String url = HttpSetting.IFOX_CHANGEPASSWORD_URL;
+		//
+		// Map<String, Object> maps = new HashMap<String, Object>();
+		// maps.put(PARAM_GID, gid);
+		// maps.put(PARAM_CID, cid);
+		// maps.put(PARAM_TOKEN, token);
+		// maps.put(PARAM_PASSWORD, oldPassword);
+		// maps.put(PARAM_NEWPASSWORD, newPassword);
+		//
+		// String postParam = createParams(maps);
+		//
+		// Request request = new Request();
+		// request.setUrl(url);
+		// request.setParser(new JsonParser(BaseBean.class));
+		// request.setOnRequestListener(onRequestListener);
+		// HttpConnectManager.getInstance(context.getApplicationContext()).doPost(request,
+		// postParam);
 	}
-
-	/**
-	 * 得到流水号
-	 * 
-	 * @param context
-	 * @param onRequestListener
-	 */
-	public static void requestTnNumber(Context context, OnRequestListener onRequestListener) {
-		String url = HttpSetting.MERCHANT_SERVER;
-		Request request = new Request();
-		request.setUrl(url);
-		request.setOnRequestListener(onRequestListener);
-		HttpConnectManager.getInstance(context.getApplicationContext()).doPost(request);
-	};
 
 	/**
 	 * 请求排行榜列表
@@ -472,8 +460,7 @@ public class HttpIfoxApi {
 	 * @param pageNumber
 	 * @param onRequestListener
 	 */
-	public static void requestTopList(final Context context,final String gid,final String token,final int pageNumber,
-			final String cid,final String clientId, final String clientSecret,final OnRequestCallback onRequestCallback) {
+	public static void requestTopList(final Activity context, final String gid, final String token, final int pageNumber, final String cid, final String clientId, final String clientSecret, final OnRequestCallback onRequestCallback) {
 		String url = HttpSetting.IFOX_TOP_URL;
 
 		Map<String, Object> maps = new HashMap<String, Object>();
@@ -485,8 +472,7 @@ public class HttpIfoxApi {
 
 		Request request = new Request(url);
 		request.setParser(new JsonParser(Top.class, false));
-		
-		
+
 		request.setOnRequestListener(new OnRequestListener() {
 
 			@Override
@@ -498,13 +484,13 @@ public class HttpIfoxApi {
 						@Override
 						public void onSuccess(String token) {
 							// TODO Auto-generated method stub
-							requestTopList(context, gid, token, pageNumber,cid, clientId, clientSecret, onRequestCallback);
+							requestTopList(context, gid, token, pageNumber, cid, clientId, clientSecret, onRequestCallback);
 						}
 
 						@Override
 						public void onFail(String msg) {
 							// TODO Auto-generated method stub
-							if(onRequestCallback != null){
+							if (onRequestCallback != null) {
 								onRequestCallback.onFail(msg, HttpConnectManager.STATE_EXCEPTION);
 							}
 						}
@@ -522,7 +508,7 @@ public class HttpIfoxApi {
 				}
 			}
 		});
-		
+
 		HttpConnectManager.getInstance(context.getApplicationContext()).doPost(request, postParam);
 	}
 
@@ -534,10 +520,7 @@ public class HttpIfoxApi {
 	 * @param contactJson
 	 * @param onRequestListener
 	 */
-	public static void upLoadContacts(final Context context,final String token,final String contactJson,
-			final String gid,
-			final String cid,final String clientId, final String clientSecret,
-			final OnRequestListener onRequestListener) {
+	public static void upLoadContacts(final Activity context, final String token, final String contactJson, final String gid, final String cid, final String clientId, final String clientSecret, final OnRequestListener onRequestListener) {
 		String url = HttpSetting.IFOX_UPLOAD_CONTACT_URL;
 
 		Map<String, Object> maps = new HashMap<String, Object>();
@@ -624,7 +607,7 @@ public class HttpIfoxApi {
 	 * @param gid
 	 * @param onRequestListener
 	 */
-	public static void requestInviteData(final Context context, String token, String gid,final OnRequestCallback onRequestCallback) {
+	public static void requestInviteData(final Context context, String token, String gid, final OnRequestCallback onRequestCallback) {
 		String url = HttpSetting.IFOX_INVETED_URL;
 
 		Map<String, Object> maps = new HashMap<String, Object>();
@@ -635,7 +618,7 @@ public class HttpIfoxApi {
 
 		Request request = new Request(url);
 		request.setOnRequestListener(new OnRequestListener() {
-			
+
 			@Override
 			public void onResponse(final String url, final int state, final Object result, final int type) {
 				// TODO Auto-generated method stub
@@ -680,31 +663,33 @@ public class HttpIfoxApi {
 		return data;
 	}
 
-//	public interface RequestCallBack {
-//		public void onSuccess(Object object);
-//
-//		public void onFail(String msg);
-//	}
+	// public interface RequestCallBack {
+	// public void onSuccess(Object object);
+	//
+	// public void onFail(String msg);
+	// }
 
 	public interface RefreshTokenCallBack {
 		public void onSuccess(String token);
 
 		public void onFail(String msg);
 	}
-	
+
 	public interface OnLoginCallBack {
 		public void onSuccess(String uid, String token);
 
 		public void onFail(String msg);
 	}
-	
+
 	/**
 	 * 回调缓存
-	 * @param url 保存的url
-	 * @param cb callBack
+	 * 
+	 * @param url
+	 *            保存的url
+	 * @param cb
+	 *            callBack
 	 */
-	public static boolean callBackCache(Context context,String url,final OnRequestCallback cb)
-	{
+	public static boolean callBackCache(Context context, String url, final OnRequestCallback cb) {
 		boolean isHaveCache = false;
 		Object object = NetCache.readCache(context, url);
 		if (object != null && cb != null) {
@@ -713,13 +698,15 @@ public class HttpIfoxApi {
 		}
 		return isHaveCache;
 	}
+
 	/**
 	 * 保存缓存
+	 * 
 	 * @param context
 	 * @param object
 	 * @param url
 	 */
-	public static void saveCache(Context context,Object object,String url){
+	public static void saveCache(Context context, Object object, String url) {
 		try {
 			NetCache.saveCache(context, object, url);
 		} catch (IOException e) {

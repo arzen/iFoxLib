@@ -31,6 +31,7 @@ import com.arzen.iFoxLib.setting.UserSetting;
 import com.arzen.iFoxLib.utils.CommonUtil;
 import com.arzen.iFoxLib.utils.MsgUtil;
 import com.encore.libs.utils.Log;
+import com.encore.libs.utils.NetWorkUtils;
 
 public class PayFragment extends ProgressFragment {
 
@@ -257,6 +258,11 @@ public class PayFragment extends ProgressFragment {
 			PayList cache = (PayList) CommonUtil.file2Object(PAYLISTCHACHEPATH);
 			long payListTime = UserSetting.getPayListTime(getActivity()); // 得到上次检查的时间
 			if (cache == null || System.currentTimeMillis() - payListTime > mCheckTime) {
+				// 没有网络
+				if (!NetWorkUtils.isNetworkAvailable(getActivity())) {
+					setContentError(true, getActivity().getString(R.string.not_network));
+					return;
+				}
 				// 当前为loading状态
 				setContentShown(false);
 				// 请求支付列表

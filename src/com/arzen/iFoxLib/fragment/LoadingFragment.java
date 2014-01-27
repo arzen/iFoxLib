@@ -140,7 +140,6 @@ public class LoadingFragment extends BaseFragment {
 	 */
 	public void login() {
 		String password = MD5Util.getMD5String(mPassword); // 密码需要md5
-
 		HttpIfoxApi.requestLogin(getActivity(), mGid, mCid, mPhoneNumber, password, mClientId, mClientSecret, new OnLoginCallBack() {
 
 			@Override
@@ -171,6 +170,7 @@ public class LoadingFragment extends BaseFragment {
 			@Override
 			public void onFail(final String msg) {
 				// TODO Auto-generated method stub
+				Log.d(TAG, "loginFail:" + msg);
 				getMainHandler().post(new Runnable() {
 
 					@Override
@@ -191,51 +191,6 @@ public class LoadingFragment extends BaseFragment {
 
 			}
 		});
-
-		// HttpIfoxApi.requestLogin(getActivity(), mGid, mCid, mPhoneNumber,
-		// password, new OnRequestListener() {
-		//
-		// @Override
-		// public void onResponse(final String url, final int state, final
-		// Object result, final int type) {
-		// // TODO Auto-generated method stub
-		// mHandler.post(new Runnable() {
-		//
-		// @Override
-		// public void run() {
-		// // TODO Auto-generated method stub
-		// if (!isAdded()) // fragment 已退出,返回
-		// {
-		// return;
-		// }
-		// Intent intent = new Intent();
-		// boolean isSuccess = false;
-		// if (state == HttpConnectManager.STATE_SUC && result != null && result
-		// instanceof User) {
-		// User login = (User) result;
-		// if (login.getCode() == HttpSetting.RESULT_CODE_OK) {
-		// // MsgUtil.msg("登录成功", getActivity());
-		// intent.putExtra(KeyConstants.INTENT_DATA_KEY_TOKEN,
-		// login.getData().getToken());
-		// saveData(login.getData().getUid(), login.getData().getToken(),
-		// mPhoneNumber, mPassword);
-		// isSuccess = true;
-		// } else {
-		// MsgUtil.msg(login.getMsg(), getActivity());
-		// }
-		// } else if (state == HttpConnectManager.STATE_TIME_OUT) { // 请求超时
-		// MsgUtil.msg(getString(R.string.time_out), getActivity());
-		// } else { // 请求失败
-		// MsgUtil.msg(getString(R.string.request_fail), getActivity());
-		// }
-		//
-		// intent.putExtra(KeyConstants.IS_SUCCESS, isSuccess);
-		// getActivity().setResult(Activity.RESULT_OK, intent);
-		// getActivity().finish();
-		// }
-		// });
-		// }
-		// });
 	}
 
 	public void register() {
@@ -345,13 +300,13 @@ public class LoadingFragment extends BaseFragment {
 		UserSetting.saveUserData(getActivity(), uid, token, userName, password);
 
 		// 获取本地通讯录，对比上传，缓存等操作
-		upLoadContacts(getActivity().getApplicationContext(), token);
+		upLoadContacts(getActivity(), token);
 	}
 
 	/**
 	 * 上传通讯录
 	 */
-	public void upLoadContacts(final Context context, final String token) {
+	public void upLoadContacts(final Activity context, final String token) {
 		new Thread() {
 			public void run() {
 				Log.d("Contact", "----- getContactCache ------");

@@ -170,7 +170,7 @@ public abstract class IFoxPay {
 	/**
 	 * 创建订单
 	 */
-	public void createOrder(final Context context, final int payType, OnCreateOrderCallBack onCreateOrderCallBack) {
+	public void createOrder(final Activity context, final int payType, OnCreateOrderCallBack onCreateOrderCallBack) {
 		if (mIsDisposePayAction) {
 			return;
 		}
@@ -212,9 +212,9 @@ public abstract class IFoxPay {
 
 		private int mPayType;
 		private long mCreateTime = 0;
-		private Context mContext;
+		private Activity mContext;
 
-		public OnCreateOrderListener(Context context, final int payType, long createTime) {
+		public OnCreateOrderListener(Activity context, final int payType, long createTime) {
 			mContext = context;
 			mPayType = payType;
 			mCreateTime = new Long(createTime);
@@ -267,7 +267,7 @@ public abstract class IFoxPay {
 	/**
 	 * 创建订单失败处理
 	 */
-	private void createFailDispose(Context context, String msg, int payType) {
+	private void createFailDispose(Activity context, String msg, int payType) {
 		MsgUtil.msg("创建订单失败:" + msg + ",正在重试请稍后...", context);
 		// 重试创建订单
 		createOrder(context, payType, mOnCreateOrderCallBack);

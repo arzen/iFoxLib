@@ -19,6 +19,7 @@ import com.arzen.iFoxLib.setting.UserSetting;
 import com.arzen.iFoxLib.utils.MsgUtil;
 import com.baidu.mobstat.StatService;
 import com.encore.libs.utils.Log;
+import com.encore.libs.utils.NetWorkUtils;
 
 public class LoginFragment extends BaseFragment {
 	/**
@@ -55,13 +56,13 @@ public class LoginFragment extends BaseFragment {
 
 		mGid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_GID);
 		mCid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_CID);
-		
+
 		String token = UserSetting.getUserToken(getActivity().getApplicationContext());
-		if(token != null && !token.equals("")){ //自动登录
+		if (token != null && !token.equals("")) { // 自动登录
 			String userName = UserSetting.getUserName(getActivity().getApplicationContext());
 			String pwd = UserSetting.getPwd(getActivity().getApplicationContext());
-			//自动登录
-			login(userName,pwd);
+			// 自动登录
+			login(userName, pwd);
 		}
 	}
 
@@ -105,7 +106,7 @@ public class LoginFragment extends BaseFragment {
 				Log.d(TAG, "login!");
 				String phone = mEtPhone.getText().toString().trim();
 				String password = mEtPassword.getText().toString().trim();
-				login(phone,password);
+				login(phone, password);
 				break;
 			case R.id.tvForgetPassword:
 				break;
@@ -116,8 +117,12 @@ public class LoginFragment extends BaseFragment {
 	/**
 	 * 跳转登录加载页面
 	 */
-	public void login(String phone,String password) {
-
+	public void login(String phone, String password) {
+		// 没有网络
+		if (!NetWorkUtils.isNetworkAvailable(getActivity())) {
+			MsgUtil.msg(getActivity().getString(R.string.not_network), getActivity());
+			return;
+		}
 		if (check(phone, password)) {
 			Bundle bundle = new Bundle();
 			bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_LOGIN_LOADING_FRAGMENT);
@@ -136,12 +141,11 @@ public class LoginFragment extends BaseFragment {
 	 * 跳转注册
 	 */
 	public void register() {
-//		Bundle bundle = new Bundle();
-//		bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_REGISTER_FRAGMENT);
-//		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, mGid);
-//		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, mCid); // 渠道id
-//		startCommonActivityForResult(bundle, mRegisterRequestCode);
-		
+		// 没有网络
+		if (!NetWorkUtils.isNetworkAvailable(getActivity())) {
+			MsgUtil.msg(getActivity().getString(R.string.not_network), getActivity());
+			return;
+		}
 		String phone = mEtPhone.getText().toString().trim();
 		String password = mEtPassword.getText().toString().trim();
 
@@ -179,17 +183,16 @@ public class LoginFragment extends BaseFragment {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
 		if ((requestCode == mLoginRequestCode || requestCode == mRegisterRequestCode) && resultCode == Activity.RESULT_OK) {
-			boolean isSuccess = data.getBooleanExtra(KeyConstants.IS_SUCCESS,false);
-			if(isSuccess){ //如果注册成功,或登录成功返回登录信息
+			boolean isSuccess = data.getBooleanExtra(KeyConstants.IS_SUCCESS, false);
+			if (isSuccess) { // 如果注册成功,或登录成功返回登录信息
 				Bundle bundle = new Bundle();
-				bundle.putString(KeyConstants.INTENT_KEY_RESULT, KeyConstants.INTENT_KEY_SUCCESS); //回调成功
+				bundle.putString(KeyConstants.INTENT_KEY_RESULT, KeyConstants.INTENT_KEY_SUCCESS); // 回调成功
 				bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, data.getStringExtra(KeyConstants.INTENT_DATA_KEY_TOKEN));
-				bundle.putString(KeyConstants.INTENT_DATA_KEY_UID,  data.getStringExtra(KeyConstants.INTENT_DATA_KEY_UID));
-				Log.d(TAG, "onActivityResult: token:" + data.getStringExtra(KeyConstants.INTENT_DATA_KEY_TOKEN) + 
-						" uid:" + data.getStringExtra(KeyConstants.INTENT_DATA_KEY_UID));
-				sendResultBroadcast(getActivity(), bundle,  KeyConstants.RECEIVER_ACTION_LOGIN);
+				bundle.putString(KeyConstants.INTENT_DATA_KEY_UID, data.getStringExtra(KeyConstants.INTENT_DATA_KEY_UID));
+				Log.d(TAG, "onActivityResult: token:" + data.getStringExtra(KeyConstants.INTENT_DATA_KEY_TOKEN) + " uid:" + data.getStringExtra(KeyConstants.INTENT_DATA_KEY_UID));
+				sendResultBroadcast(getActivity(), bundle, KeyConstants.RECEIVER_ACTION_LOGIN);
 			}
-		} 
+		}
 		Log.d(TAG, "onActivityResult");
 		super.onActivityResult(requestCode, resultCode, data);
 	}
@@ -199,12 +202,11 @@ public class LoginFragment extends BaseFragment {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			Bundle bundle = new Bundle();
 			bundle.putString(KeyConstants.INTENT_KEY_RESULT, KeyConstants.INTENT_KEY_CANCEL);
-			
-			sendResultBroadcast(activity, bundle,  KeyConstants.RECEIVER_ACTION_LOGIN);
+
+			sendResultBroadcast(activity, bundle, KeyConstants.RECEIVER_ACTION_LOGIN);
 			return false;
 		}
 		return true;
 	}
-	
-	
+
 }

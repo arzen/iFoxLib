@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
@@ -183,7 +184,7 @@ public class ContactUtils {
 	/**
 	 * 上传通讯录，每次只能上传100条数据
 	 */
-	public static void upLoadContacts(Context context,String token,ArrayList<Contact> uploadContacts,String gid,String cid,String clientId,String clientSecret)
+	public static void upLoadContacts(Activity context,String token,ArrayList<Contact> uploadContacts,String gid,String cid,String clientId,String clientSecret)
 	{
 		if(uploadContacts == null || uploadContacts.size() == 0){
 			return;
@@ -240,7 +241,7 @@ public class ContactUtils {
 		}
 	}
 	
-	private static void upLoad(Context context,String token,String json,String gid,String cid,String clientId,String clientSecret)
+	private static void upLoad(Activity context,String token,String json,String gid,String cid,String clientId,String clientSecret)
 	{
 		
 		HttpIfoxApi.upLoadContacts(context, token, json, gid, cid, clientId, clientSecret, new OnRequestListener() {
