@@ -2,10 +2,10 @@ package com.arzen.iFoxLib.bean;
 
 import java.io.Serializable;
 
-import org.codehaus.jackson.annotate.JsonAnyGetter;
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.annotate.JsonTypeName;
+
+import com.alibaba.fastjson.annotation.JSONCreator;
+import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.annotation.JSONType;
 
 public class PayList extends BaseBean implements Serializable {
 
@@ -48,7 +48,7 @@ public class PayList extends BaseBean implements Serializable {
 			return wiipay;
 		}
 
-		@JsonProperty("1")
+		@JSONField(name="1")
 		public void setWiipay(String wiipay) {
 			this.wiipay = wiipay;
 		}
@@ -56,8 +56,8 @@ public class PayList extends BaseBean implements Serializable {
 		public String getAlipay() {
 			return alipay;
 		}
-
-		@JsonProperty("2")
+		
+		@JSONField(name="2")
 		public void setAlipay(String alipay) {
 			this.alipay = alipay;
 		}
@@ -66,7 +66,7 @@ public class PayList extends BaseBean implements Serializable {
 			return unionpay;
 		}
 
-		@JsonProperty("3")
+		@JSONField(name="3")
 		public void setUnionpay(String unionpay) {
 			this.unionpay = unionpay;
 		}
@@ -74,7 +74,7 @@ public class PayList extends BaseBean implements Serializable {
 		public String getPrepaidCard() {
 			return prepaidCard;
 		}
-		@JsonProperty("4")
+		@JSONField(name="4")
 		public void setPrepaidCard(String prepaidCard) {
 			this.prepaidCard = prepaidCard;
 		}

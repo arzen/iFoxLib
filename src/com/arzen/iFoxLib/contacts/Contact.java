@@ -2,8 +2,6 @@ package com.arzen.iFoxLib.contacts;
 
 import java.io.Serializable;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-
 public class Contact implements Serializable {
 
 //	public String systemId;
