@@ -217,7 +217,9 @@ public class LoadingFragment extends BaseFragment {
 							User login = (User) result;
 							if (login.getCode() == HttpSetting.RESULT_CODE_OK) {
 								MsgUtil.msg("注册成功", getActivity());
+								
 								StatService.onEvent(getActivity().getApplicationContext(), "USER_REG_SUCCSS", "");
+								
 								intent.putExtra(KeyConstants.INTENT_DATA_KEY_TOKEN, login.getData().getToken());
 								intent.putExtra(KeyConstants.INTENT_DATA_KEY_UID, login.getData().getUid());
 								saveData(login.getData().getUid(), login.getData().getToken(), mPhoneNumber, mPassword);

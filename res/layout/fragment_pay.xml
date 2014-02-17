@@ -37,27 +37,27 @@
                 <TextView
                     android:id="@+id/tvWayPay"
                     style="@style/pay_selected_style"
-                    android:text="微派支付" />
+                    android:text="@string/waypay" />
 
                 <TextView
                     android:id="@+id/tvAlipay"
                     style="@style/pay_selected_style"
-                    android:text="支付宝" />
+                    android:text="@string/alipay" />
 
                 <TextView
                     android:id="@+id/tvUnionpay"
                     style="@style/pay_selected_style"
-                    android:text="银联卡" />
+                    android:text="@string/unionpay" />
 
                 <TextView
                     android:id="@+id/tvPrepaidCard"
                     style="@style/pay_selected_style"
-                    android:text="充值卡" />
+                    android:text="@string/prepaidcard" />
 
                 <TextView
                     android:id="@+id/tvHelp"
                     style="@style/pay_selected_style"
-                    android:text="充值帮助" />
+                    android:text="@string/help" />
             </LinearLayout>
 
             <LinearLayout
@@ -72,7 +72,7 @@
                     android:layout_marginBottom="10dp"
                     android:layout_marginTop="10dp"
                     android:gravity="center"
-                    android:text="请选择支付面额"
+                    android:text="@string/pay_select_pay_price"
                     android:textColor="#4d4d4d"
                     android:textSize="14sp" />
 
@@ -96,24 +96,24 @@
                             style="@style/price_item"
                             android:layout_weight="0"
                             android:background="@drawable/btn_pay_left_top_selector"
-                            android:text="100元" />
+                            android:text="@string/_100_" />
 
                         <TextView
                             android:id="@+id/tv200"
                             style="@style/price_item"
-                            android:text="200元" />
+                            android:text="@string/_200_" />
 
                         <TextView
                             android:id="@+id/tv500"
                             style="@style/price_item"
-                            android:text="500元" />
+                            android:text="@string/_500_" />
 
                         <TextView
                             android:id="@+id/tv1000"
                             style="@style/price_item"
                             android:background="@drawable/btn_pay_right_top_selector"
                             android:drawableRight="@null"
-                            android:text="1000元" />
+                            android:text="@string/_1000_" />
                     </TableRow>
 
                     <ImageView
@@ -126,23 +126,23 @@
                         <TextView
                             android:id="@+id/tv50"
                             style="@style/price_item"
-                            android:text="50元" />
+                            android:text="@string/_50_" />
 
                         <TextView
                             android:id="@+id/tv30"
                             style="@style/price_item"
-                            android:text="30元" />
+                            android:text="@string/_30_" />
 
                         <TextView
                             android:id="@+id/tv20"
                             style="@style/price_item"
-                            android:text="20元" />
+                            android:text="@string/_20_" />
 
                         <TextView
                             android:id="@+id/tv10"
                             style="@style/price_item"
                             android:drawableRight="@null"
-                            android:text="10元" />
+                            android:text="@string/_10_" />
                     </TableRow>
 
                     <ImageView
@@ -156,7 +156,7 @@
                             android:id="@+id/tvRest"
                             style="@style/price_item"
                             android:layout_span="1"
-                            android:text="其他金额" />
+                            android:text="@string/rest" />
 
                         <EditText
                             android:id="@+id/etCusPrice"
@@ -164,7 +164,7 @@
                             android:layout_height="33dp"
                             android:layout_span="3"
                             android:background="@null"
-                            android:hint="在这里输入其他金额"
+                            android:hint="@string/input_price"
                             android:maxLength="6"
                             android:numeric="integer"
                             android:paddingLeft="5dp"
@@ -190,7 +190,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="充值卡号:"
+                            android:text="@string/cardNumber"
                             android:textColor="#4d4d4d"
                             android:textSize="14sp" />
 
@@ -199,7 +199,7 @@
                             style="@style/pay_edittext"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="请输入充值卡号"
+                            android:hint="@string/input_card_number"
                             android:maxLength="30"
                             android:numeric="integer" />
                     </LinearLayout>
@@ -215,7 +215,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="密　　码:"
+                            android:text="@string/password"
                             android:textColor="#4d4d4d"
                             android:textSize="14sp" />
 
@@ -224,7 +224,7 @@
                             style="@style/pay_edittext"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="请输入密码"
+                            android:hint="@string/inputPwd"
                             android:maxLength="30"
                             android:numeric="integer" />
                     </LinearLayout>
@@ -240,7 +240,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="金　　额:"
+                            android:text="@string/amount"
                             android:textColor="#4d4d4d"
                             android:textSize="14sp" />
 
@@ -249,7 +249,7 @@
                             style="@style/pay_edittext"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="输入充值金额"
+                            android:hint="@string/input_amount"
                             android:maxLength="5"
                             android:numeric="integer" />
                     </LinearLayout>

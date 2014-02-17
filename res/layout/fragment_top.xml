@@ -29,21 +29,10 @@
             android:layout_marginRight="3dp"
             android:orientation="vertical" >
 
-            <ListView
+            <com.arzen.iFoxLib.widget.XListView
                 android:id="@+id/listView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" >
-            </ListView>
-
-            <include
-                android:id="@+id/notNetWork"
-                layout="@layout/common_not_network"
-                android:visibility="gone" />
-
-            <include
-                android:id="@+id/loadingView"
-                layout="@layout/common_loading_layout"
-                android:visibility="gone" />
+                android:layout_height="match_parent" />
         </RelativeLayout>
     </RelativeLayout>
 

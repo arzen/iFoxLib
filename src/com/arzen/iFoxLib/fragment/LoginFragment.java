@@ -170,9 +170,9 @@ public class LoginFragment extends BaseFragment {
 
 		boolean isOk = false;
 		if (phone.length() < 11) {
-			MsgUtil.msg("您输出的手机号码不正确,请重新输入!", getActivity());
+			MsgUtil.msg(getActivity().getString(R.string.toast_phone_error), getActivity());
 		} else if (password.length() < 6) {
-			MsgUtil.msg("您输入的密码不能少于6位", getActivity());
+			MsgUtil.msg(getActivity().getString(R.string.pwd_error), getActivity());
 		} else {
 			isOk = true;
 		}

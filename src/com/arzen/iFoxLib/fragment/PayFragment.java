@@ -123,17 +123,19 @@ public class PayFragment extends ProgressFragment {
 		// 检查是否传了金额进来,固定支付金额
 		checkIsImmobilizationAmount();
 	}
-
+	/**
+	 * 检查是否固定支付金额,禁止选择金额框的enabled
+	 */
 	public void checkIsImmobilizationAmount() {
 		/*
 		 * 获取是否固定支付金额
 		 */
 		Float price = mBundle.getFloat(KeyConstants.INTENT_DATA_KEY_AMOUNT);
 		if (price != null && price > 0) { // 固定支付金额关闭金钱选择项
-			mEtCusPrice.setText(price + "");
+			mEtCusPrice.setText(String.valueOf(price));
 			mEtCusPrice.setEnabled(false);
-
-			mEtPrice.setText(price + "");
+			
+			mEtPrice.setText(String.valueOf(price));
 			mEtPrice.setEnabled(false);
 
 			mTv100.setEnabled(false);
@@ -364,11 +366,11 @@ public class PayFragment extends ProgressFragment {
 		case R.id.tvUnionpay:
 			mTvSelectedText.setVisibility(View.VISIBLE);
 			mViewPrice.setVisibility(View.VISIBLE);
-			mTvSelectedText.setText("请选择支付面额");
+			mTvSelectedText.setText(R.string.pay_select_pay_price);
 			break;
 		case R.id.tvPrepaidCard:
 			mTvSelectedText.setVisibility(View.VISIBLE);
-			mTvSelectedText.setText("充值卡充值");
+			mTvSelectedText.setText(R.string.toast_prepaidCard);
 			mViewPrepaidCard.setVisibility(View.VISIBLE);
 			break;
 		case R.id.tvHelp:
@@ -402,9 +404,9 @@ public class PayFragment extends ProgressFragment {
 	 */
 	public void requestPayList() {
 		if (mBundle == null) {
-			sendErrorMessage("没有传参数");
+			sendErrorMessage(R.string.not_param);
 			// 显示出错view
-			setContentError(true, "没有传参数");
+			setContentError(true, getActivity().getString(R.string.not_param));
 			return;
 		}
 		String gid = mBundle.getString(KeyConstants.INTENT_DATA_KEY_GID);
@@ -471,7 +473,7 @@ public class PayFragment extends ProgressFragment {
 					float amount = getPrice();
 					toAliPay(amount);
 				} else {
-					MsgUtil.msg("请'选择/输入'需要充值的金额", getActivity());
+					MsgUtil.msg(getActivity().getString(R.string.input_pay_amount), getActivity());
 				}
 				break;
 			case R.id.tvUnionpay:
@@ -479,7 +481,7 @@ public class PayFragment extends ProgressFragment {
 					float amount = getPrice();
 					toUnionpay(amount);
 				} else {
-					MsgUtil.msg("请'选择/输入'需要充值的金额", getActivity());
+					MsgUtil.msg(getActivity().getString(R.string.input_pay_amount), getActivity());
 				}
 				break;
 			case R.id.tvPrepaidCard:
@@ -488,7 +490,7 @@ public class PayFragment extends ProgressFragment {
 				String price = mEtPrice.getText().toString().trim();
 
 				if (card.equals("") || password.equals("") || price.equals("")) {
-					MsgUtil.msg("卡号，密码，价钱不能为空！", getActivity());
+					MsgUtil.msg(getActivity().getString(R.string.card_pwd_not_null), getActivity());
 					return;
 				} else {
 					final float amount = Float.parseFloat(mEtPrice.getText().toString().trim());
@@ -555,23 +557,6 @@ public class PayFragment extends ProgressFragment {
 		getActivity().sendBroadcast(intent);
 	}
 
-	/**
-	 * show Loading
-	 * 
-	 * @return
-	 */
-	public View showLoading() {
-		if (getView() == null) {
-			return null;
-		}
-		// 显示loadingView
-		final View mLoadingView = getView().findViewById(R.id.loadingView);
-
-		if (mLoadingView != null) {
-			mLoadingView.setVisibility(View.VISIBLE);
-		}
-		return mLoadingView;
-	}
 
 	/**
 	 * 充值卡请求

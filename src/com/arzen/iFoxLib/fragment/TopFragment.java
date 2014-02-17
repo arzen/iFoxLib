@@ -33,17 +33,15 @@ import com.arzen.iFoxLib.contacts.Contact;
 import com.arzen.iFoxLib.contacts.ContactUtils;
 import com.arzen.iFoxLib.fragment.base.ProgressFragment;
 import com.arzen.iFoxLib.setting.KeyConstants;
-import com.arzen.iFoxLib.utils.MsgUtil;
+import com.arzen.iFoxLib.widget.XListView;
+import com.arzen.iFoxLib.widget.XListView.IXListViewListener;
 import com.baidu.mobstat.StatService;
-import com.encore.libs.http.HttpConnectManager;
-import com.encore.libs.http.OnRequestListener;
-import com.encore.libs.utils.Log;
 import com.encore.libs.utils.NetWorkUtils;
 
 public class TopFragment extends ProgressFragment {
 
 	// listView
-	private ListView mListView;
+	private XListView mListView;
 	// adapter
 	private TopAdapter mTopAdapter;
 	// allData
@@ -63,7 +61,7 @@ public class TopFragment extends ProgressFragment {
 
 	public static String mInviteString;
 
-	HashMap<String, String> maps = new HashMap<String, String>();
+	public HashMap<String, String> mContactMaps = new HashMap<String, String>();
 
 	// fragment 主体内容view
 	private View mContentView;
@@ -106,7 +104,7 @@ public class TopFragment extends ProgressFragment {
 		if (cacheContacts != null) {
 			for (int j = 0; j < cacheContacts.size(); j++) {
 				Contact cacheContact = cacheContacts.get(j);
-				maps.put(cacheContact.phone, cacheContact.name);
+				mContactMaps.put(cacheContact.phone, cacheContact.name);
 			}
 		}
 	}
@@ -115,16 +113,69 @@ public class TopFragment extends ProgressFragment {
 	 * 初始化ui
 	 */
 	public void initUI(View view) {
-		mListView = (ListView) view.findViewById(R.id.listView);
-		mListView.addFooterView(getFooterView());
-		mListView.setOnScrollListener(mOnScrollListener);
+		mListView = (XListView) view.findViewById(R.id.listView);
+//		mListView.addFooterView(getFooterView());
+//		mListView.setOnScrollListener(mOnScrollListener);
+		mListView.setPullLoadEnable(true);
+		mListView.setPullRefreshEnable(false);
 		mListView.setDividerHeight(0);
 		mListView.setOnItemClickListener(mOnItemClickListener);
+		mListView.setXListViewListener(mIxListViewListener);
 
 		// 异常情况下点击刷新按钮处理
 		// setOnRefreshClickListener(mOnRefreshClickListener);
 	}
+	
+	
+	public IXListViewListener mIxListViewListener = new IXListViewListener() {
+		
+		@Override
+		public void onRefresh() {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		@Override
+		public void onLoadMore() {
+			// TODO Auto-generated method stub
+			if(!mIsRequesEnd){
+				return;
+			}
+			getMainHandler().postDelayed(new Runnable() {
+				
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					loadMore();
+				}
+			}, 200);
+			
+		}
+	};
+	/**
+	 * 请求下一页
+	 */
+	public void loadMore()
+	{
+		if (!mIsHasNext) { // 最后一页不做请求
+			setIsEnablePullLoad(false);// 隐藏footerView
+			return;
+		}
+		// 没有网络
+		if (!NetWorkUtils.isNetworkAvailable(getActivity().getApplicationContext())) {
+			Toast.makeText(getActivity(), R.string.not_network, Toast.LENGTH_SHORT).show();
+			setIsEnablePullLoad(false);// 隐藏footerView
+			return;
+		}
+		if(mListView != null && !mListView.getIsEnablePullLoad()){
+			// 显示footerView
+			setIsEnablePullLoad(true);
+		}
+		// 请求下一页数据
+		requestTopListData(mPageNumber, true);
+	}
 
+	
 	/**
 	 * 初始化内容
 	 * 
@@ -140,7 +191,7 @@ public class TopFragment extends ProgressFragment {
 				mAllDatas = new ArrayList<TopList>();
 			}
 			mAllDatas.addAll(datas);
-			mTopAdapter.setDatas(mAllDatas, maps);
+			mTopAdapter.setDatas(mAllDatas, mContactMaps);
 			mTopAdapter.notifyDataSetChanged();
 		} else {
 			// 没有网络
@@ -229,28 +280,38 @@ public class TopFragment extends ProgressFragment {
 
 					if (top.getData().getList().size() < 10) {
 						mIsHasNext = false;
-						setFooterViewVisibility(View.GONE);// 隐藏footerView
+						setIsEnablePullLoad(false);// 隐藏footerView
 					} else {
 						mPageNumber++;
 						mIsHasNext = true;
-						setFooterViewVisibility(View.VISIBLE);
 					}
 
 				} else {
 					mIsHasNext = false;
-					setFooterViewVisibility(View.GONE);// 隐藏footerView
+					mListView.setPullLoadEnable(false);// 隐藏footerView
 					if (!mIsLoadMore) {
 						// 没有数据
-						setContentError(true, "没有数据");
+						setContentError(true, getActivity().getString(R.string.not_data));
 					}
 				}
 				if (!mIsLoadMore) {
 					// 显示主内容
 					setContentShown(true);
+				}else{
+					if(mListView != null) 
+						mListView.stopLoadMore(); 
 				}
 			}
 		});
 
+	}
+	/**
+	 * 设置是否启动加载更多view
+	 */
+	public void setIsEnablePullLoad(boolean isEnable)
+	{
+		if(mListView != null)
+			mListView.setPullLoadEnable(isEnable);// 隐藏footerView
 	}
 
 	/**
@@ -272,7 +333,7 @@ public class TopFragment extends ProgressFragment {
 					setContentError(true, msg);
 				} else {
 					sendErrorMessage(msg);
-					setFooterViewVisibility(View.GONE);// 隐藏footerView
+					setIsEnablePullLoad(false);// 隐藏footerView
 				}
 				mIsHasNext = true;
 				mIsRequesEnd = false;
@@ -303,20 +364,7 @@ public class TopFragment extends ProgressFragment {
 
 			if (scrollState == OnScrollListener.SCROLL_STATE_IDLE) {
 				if (view.getLastVisiblePosition() == (view.getCount() - 1)) {
-					if (!mIsHasNext) { // 最后一页不做请求
-						setFooterViewVisibility(View.GONE);
-						return;
-					}
-					// 没有网络
-					if (!NetWorkUtils.isNetworkAvailable(getActivity().getApplicationContext())) {
-						Toast.makeText(getActivity(), R.string.not_network, Toast.LENGTH_SHORT).show();
-						setFooterViewVisibility(View.GONE);
-						return;
-					}
-					// 显示footerView
-					setFooterViewVisibility(View.VISIBLE);
-					// 请求下一页数据
-					requestTopListData(mPageNumber, true);
+					
 				}
 			}
 		}
@@ -385,7 +433,8 @@ public class TopFragment extends ProgressFragment {
 	};
 
 	public void download(final TopList topList, final int notificationId) {
-		new AlertDialog.Builder(getActivity()).setTitle("下载提示").setMessage("是否下载:" + topList.getPlay_game()).setPositiveButton("确定", new OnClickListener() {
+		new AlertDialog.Builder(getActivity()).setTitle(R.string.download_tips)
+		.setMessage(getString(R.string.isDownload).toString() + topList.getPlay_game()).setPositiveButton(R.string.confrim, new OnClickListener() {
 
 			@Override
 			public void onClick(DialogInterface arg0, int arg1) {
@@ -400,7 +449,7 @@ public class TopFragment extends ProgressFragment {
 
 				getActivity().sendBroadcast(intent);
 			}
-		}).setNegativeButton("取消", null).create().show();
+		}).setNegativeButton(R.string.cancel, null).create().show();
 	}
 
 	@Override

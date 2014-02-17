@@ -26,5 +26,44 @@
     <string name="redo">重试</string>
     <string name="install_msp">你尚未安装支付宝移动快捷支付服务，请立即安装</string>
     <string name="install_alipay">你尚未安装支付宝钱包，请立即安装</string>
+    
+    <string name="xlistview_header_hint_normal">下拉刷新</string>
+    <string name="xlistview_header_hint_ready">松开刷新数据</string>
+    <string name="xlistview_header_hint_loading">正在加载...</string>
+    <string name="xlistview_header_last_time">上次更新时间：</string>
+    <string name="xlistview_footer_hint_normal">查看更多</string>
+    <string name="xlistview_footer_hint_ready">松开载入更多</string>
+    <string name="toast_phone_error">您输出的手机号码不正确,请重新输入!</string>
+    <string name="toast_prepaidCard">充值卡充值</string>
+    <string name="pay_select_pay_price">请选择支付面额</string>
+    <string name="not_param">没有传参数</string>
+    <string name="input_pay_amount">请\'选择/输入\'需要充值的金额</string>
+    <string name="card_pwd_not_null">卡号，密码，价钱不能为空！</string>
+    <string name="waypay">微派支付</string>
+    <string name="alipay">支付宝</string>
+    <string name="unionpay">银联卡</string>
+    <string name="prepaidcard">充值卡</string>
+    <string name="help">充值帮助</string>
+    <string name="_100_">100元</string>
+    <string name="_200_">200元</string>
+    <string name="_500_">500元</string>
+    <string name="_1000_">1000元</string>
+    <string name="_50_">50元</string>
+    <string name="_30_">30元</string>
+    <string name="_20_">20元</string>
+    <string name="_10_">10元</string>
+    <string name="rest">其他金额</string>
+    <string name="input_price">在这里输入其他金额</string>
+    <string name="cardNumber">充值卡号:</string>
+    <string name="input_card_number">请输入充值卡号</string>
+    <string name="password">密　　码:</string>
+    <string name="inputPwd">请输入密码</string>
+    <string name="amount">金　　额:</string>
+    <string name="input_amount">输入充值金额</string>
+    <string name="not_data">没有数据</string>
+    <string name="download_tips">下载提示</string>
+    <string name="isDownload">是否下载:</string>
+    <string name="confrim">确定</string>
+    <string name="pwd_error">您输入的密码不能少于6位</string>
 
 </resources>
