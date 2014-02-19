@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import com.arzen.iFoxLib.R;
 import com.arzen.iFoxLib.bean.Top.TopList;
-import com.arzen.iFoxLib.fragment.TopFragment;
+import com.arzen.iFoxLib.dynamic.TopDynamic;
 import com.baidu.mobstat.StatService;
 
 public class TopAdapter extends BaseAdapter {
@@ -142,7 +142,7 @@ public class TopAdapter extends BaseAdapter {
 
 						Intent it = new Intent(Intent.ACTION_SENDTO, uri);
 
-						it.putExtra("sms_body", TopFragment.mInviteString);
+						it.putExtra("sms_body", TopDynamic.mInviteString);
 
 //						it.setType("vnd.android-dir/mms-sms");
 

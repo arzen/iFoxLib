@@ -1,15 +1,9 @@
 package com.arzen.iFoxLib.activity;
 
-import com.arzen.iFoxLib.fragment.PayFragment;
-
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 public class PayActivity extends Activity {
 	@Override
@@ -21,21 +15,21 @@ public class PayActivity extends Activity {
 		rootView.setId(android.R.id.primary);
 		setContentView(rootView);
 
-		try {
-			Fragment f = new PayFragment();
-			
-			Bundle mBundle = getIntent().getExtras();
-			if(mBundle != null){
-				f.setArguments(mBundle);
-			}
-			
-			FragmentManager fm = getFragmentManager();
-			FragmentTransaction ft = fm.beginTransaction();
-			ft.add(android.R.id.primary, f);
-			ft.commit();
-			fm.executePendingTransactions();
-		} catch (Exception e) {
-			Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-		}
+//		try {
+//			Fragment f = new PayFragment();
+//			
+//			Bundle mBundle = getIntent().getExtras();
+//			if(mBundle != null){
+//				f.setArguments(mBundle);
+//			}
+//			
+//			FragmentManager fm = getFragmentManager();
+//			FragmentTransaction ft = fm.beginTransaction();
+//			ft.add(android.R.id.primary, f);
+//			ft.commit();
+//			fm.executePendingTransactions();
+//		} catch (Exception e) {
+//			Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+//		}
 	}
 }

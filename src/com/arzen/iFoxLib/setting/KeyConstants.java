@@ -16,12 +16,12 @@ public class KeyConstants {
 	/**
 	 * 登录loading页
 	 */
-	public static final String PKG_LOGIN_LOADING_FRAGMENT = "com.arzen.iFoxLib.fragment.LoadingFragment";
+	public static final String PKG_LOGIN_LOADING_FRAGMENT = "com.arzen.iFoxLib.dynamic.LoadingDynamic";
 
 	/**
 	 * 注册页面
 	 */
-	public static final String PKG_REGISTER_FRAGMENT = "com.arzen.iFoxLib.fragment.RegisterFragment";
+	public static final String PKG_REGISTER_FRAGMENT = "com.arzen.iFoxLib.dynamic.RegisterDynamic";
 
 	/**
 	 * 帐号

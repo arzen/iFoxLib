@@ -49,40 +49,47 @@ public class UnionPay extends IFoxPay {
 		intent.putExtra(KeyConstants.INTENT_DATA_KEY_PAY_TN, tn);
 		mActivity.sendBroadcast(intent);
 	}
-
 	/**
-	 * 银联支付广播
+	 * 银联处理结果
+	 * @param intent
 	 */
-	public BroadcastReceiver mPayUnionResultBroadcastReceiver = new BroadcastReceiver() {
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			// TODO Auto-generated method stub
-			String result = intent.getStringExtra(KeyConstants.INTENT_KEY_RESULT);
-			if (result.equalsIgnoreCase("success")) {
-				StatService.onEvent(mActivity.getApplicationContext(), "PAY_UNION_SUCCESS", "");
-				Order order = getOrder();
-				if (order != null) {
-					int pid = getPid();
-					String orderId = order.getData().getOrderid();
-					float amount = getAmount();
-					sendPayResultReceiver(mActivity, orderId, pid, amount, KeyConstants.INTENT_KEY_SUCCESS, "支付成功");
-				}
-			} else if (result.equalsIgnoreCase("fail")) {
-				StatService.onEvent(mActivity.getApplicationContext(), "PAY_UNION_FAIL", "");
-
-				sendPayFailResultReceiver(mActivity, KeyConstants.INTENT_KEY_FAIL, "支付失败");
-			} else if (result.equalsIgnoreCase("cancel")) {
-
-				// Bundle bundle = new Bundle();
-				// bundle.putString(KeyConstants.INTENT_KEY_RESULT,
-				// KeyConstants.INTENT_KEY_CANCEL);
-				// // 回调取消
-				// sendResultBroadcast(getActivity(), bundle,
-				// KeyConstants.RECEIVER_ACTION_PAY);
+	public void disposeResult(Intent intent){
+		String result = intent.getStringExtra(KeyConstants.INTENT_KEY_RESULT);
+		if (result.equalsIgnoreCase("success")) {
+			StatService.onEvent(mActivity.getApplicationContext(), "PAY_UNION_SUCCESS", "");
+			Order order = getOrder();
+			if (order != null) {
+				int pid = getPid();
+				String orderId = order.getData().getOrderid();
+				float amount = getAmount();
+				sendPayResultReceiver(mActivity, orderId, pid, amount, KeyConstants.INTENT_KEY_SUCCESS, "支付成功");
 			}
-		}
+		} else if (result.equalsIgnoreCase("fail")) {
+			StatService.onEvent(mActivity.getApplicationContext(), "PAY_UNION_FAIL", "");
 
-	};
+			sendPayFailResultReceiver(mActivity, KeyConstants.INTENT_KEY_FAIL, "支付失败");
+		} else if (result.equalsIgnoreCase("cancel")) {
+
+			// Bundle bundle = new Bundle();
+			// bundle.putString(KeyConstants.INTENT_KEY_RESULT,
+			// KeyConstants.INTENT_KEY_CANCEL);
+			// // 回调取消
+			// sendResultBroadcast(getActivity(), bundle,
+			// KeyConstants.RECEIVER_ACTION_PAY);
+		}
+	}
+//	
+//	/**
+//	 * 银联支付广播
+//	 */
+//	public BroadcastReceiver mPayUnionResultBroadcastReceiver = new BroadcastReceiver() {
+//
+//		@Override
+//		public void onReceive(Context context, Intent intent) {
+//			// TODO Auto-generated method stub
+//			
+//		}
+//
+//	};
 
 }
