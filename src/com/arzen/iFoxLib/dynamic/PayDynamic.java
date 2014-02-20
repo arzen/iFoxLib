@@ -2,7 +2,7 @@ package com.arzen.iFoxLib.dynamic;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -11,6 +11,9 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -33,7 +36,7 @@ import com.encore.libs.utils.Log;
 import com.encore.libs.utils.NetWorkUtils;
 
 public class PayDynamic extends ProgressDynamic {
-	
+
 	public static final String TAG = "PayDynamic";
 	/**
 	 * 刷新数据
@@ -65,6 +68,10 @@ public class PayDynamic extends ProgressDynamic {
 	private TextView mCurrentSelectPrice;
 	// 充值卡view
 	private View mViewPrepaidCard;
+	// viewHelp
+	private View mViewPayHelp;
+	private WebView mWebViewHelp;
+
 	/**
 	 * 充值卡控件
 	 */
@@ -95,12 +102,12 @@ public class PayDynamic extends ProgressDynamic {
 	 * 支付列表缓存地址
 	 */
 	public static String PAYLISTCHACHEPATH = "";
-	
+
 	@Override
 	public void onCreate(Activity activity, Bundle bundle) {
 		super.onCreate(activity, bundle);
 	}
-	
+
 	@Override
 	public View onCreateView(Activity activity) {
 		// TODO Auto-generated method stub
@@ -110,20 +117,19 @@ public class PayDynamic extends ProgressDynamic {
 
 	@Override
 	public void onActivityCreate() {
-		//上传过来的参数
-		//缓存列表地址
+		// 上传过来的参数
+		// 缓存列表地址
 		PAYLISTCHACHEPATH = getActivity().getCacheDir().getAbsolutePath() + "/playList.cache";
-		//设置主内容
+		// 设置主内容
 		setContentView(mContentView);
-		//初始化ui
+		// 初始化ui
 		initUI(mContentView);
 		// 初始化内容
 		initData(mPayList);
 		// 检查是否传了金额进来,固定支付金额
 		checkIsImmobilizationAmount();
 	}
-	
-	
+
 	/**
 	 * 检查是否固定支付金额,禁止选择金额框的enabled
 	 */
@@ -135,7 +141,7 @@ public class PayDynamic extends ProgressDynamic {
 		if (price != null && price > 0) { // 固定支付金额关闭金钱选择项
 			mEtCusPrice.setText(String.valueOf(price));
 			mEtCusPrice.setEnabled(false);
-			
+
 			mEtPrice.setText(String.valueOf(price));
 			mEtPrice.setEnabled(false);
 
@@ -169,6 +175,9 @@ public class PayDynamic extends ProgressDynamic {
 		mEtPrice = (EditText) view.findViewById(R.id.etPrice);
 		mBtnPay = (Button) view.findViewById(R.id.btnPay);
 		mBtnPay.setVisibility(View.GONE);
+
+		mWebViewHelp = (WebView) view.findViewById(R.id.webView);
+		mViewPayHelp = view.findViewById(R.id.viewPayHelp);
 
 		mTvWayPay.setOnClickListener(mOnClickListener);
 		mTvAlipay.setOnClickListener(mOnClickListener);
@@ -217,6 +226,36 @@ public class PayDynamic extends ProgressDynamic {
 
 			}
 		});
+
+		mWebViewHelp.getSettings().setJavaScriptEnabled(true);
+		mWebViewHelp.setBackgroundColor(0); // 设置背景色  
+//		mWebViewHelp.getBackground().setAlpha(0); // 设置填充透明度 范围：0-255  
+		mWebViewHelp.loadUrl("http://wap.eeeeeec.com/payment/help.html");
+		if(NetWorkUtils.isNetworkAvailable(getActivity())){
+			mWebViewHelp.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+		}else{
+			mWebViewHelp.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+		}
+		mWebViewHelp.setWebViewClient(new WebViewClient() {
+			@Override
+			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+				// TODO Auto-generated method stub
+//				if(url.startsWith("")){
+//					String num = "";
+//					Intent intent=new Intent("android.intent.action.CALL",Uri.parse("tel:"+num));
+//					getActivity().startActivity(intent);
+//				}
+//				view.loadUrl(url);// 使用当前WebView处理跳转
+				return true;// true表示此事件在此处被处理，不需要再广播
+			}
+
+			@Override
+			// 转向错误时的处理
+			public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+			}
+		});
+		mWebViewHelp.cancelLongPress();
+		mWebViewHelp.setOnClickListener(null);
 	}
 
 	/**
@@ -239,9 +278,9 @@ public class PayDynamic extends ProgressDynamic {
 		public void onClick(View view) {
 			// TODO Auto-generated method stub
 			mEtCusPrice.setText("");
-			//初始化价钱选择项
+			// 初始化价钱选择项
 			initPriceSelected();
-			view.setSelected(true);//改变当前选择状态
+			view.setSelected(true);// 改变当前选择状态
 			mCurrentSelectPrice = (TextView) view;
 		}
 	};
@@ -358,6 +397,7 @@ public class PayDynamic extends ProgressDynamic {
 		mViewPrice.setVisibility(View.GONE);
 		mViewPrepaidCard.setVisibility(View.GONE);
 		mBtnPay.setVisibility(View.VISIBLE);
+		mViewPayHelp.setVisibility(View.GONE);
 		switch (id) {
 		case R.id.tvWayPay:
 			mTvSelectedText.setVisibility(View.VISIBLE);
@@ -376,6 +416,7 @@ public class PayDynamic extends ProgressDynamic {
 			break;
 		case R.id.tvHelp:
 			mBtnPay.setVisibility(View.GONE);
+			mViewPayHelp.setVisibility(View.VISIBLE);
 			break;
 		}
 		mCurrentTab = id;
@@ -387,15 +428,15 @@ public class PayDynamic extends ProgressDynamic {
 		// TODO Auto-generated method stub
 		super.onDestroy();
 
-//		try {
-//			if (mIFoxPay != null && mIFoxPay instanceof UnionPay) {
-//				UnionPay unionPay = (UnionPay) mIFoxPay;
-//				getActivity().unregisterReceiver(unionPay.mPayUnionResultBroadcastReceiver);
-//				unionPay.mPayUnionResultBroadcastReceiver = null;
-//			}
-//
-//		} catch (Exception e) {
-//		}
+		// try {
+		// if (mIFoxPay != null && mIFoxPay instanceof UnionPay) {
+		// UnionPay unionPay = (UnionPay) mIFoxPay;
+		// getActivity().unregisterReceiver(unionPay.mPayUnionResultBroadcastReceiver);
+		// unionPay.mPayUnionResultBroadcastReceiver = null;
+		// }
+		//
+		// } catch (Exception e) {
+		// }
 	}
 
 	/**
@@ -556,7 +597,6 @@ public class PayDynamic extends ProgressDynamic {
 		getActivity().sendBroadcast(intent);
 	}
 
-
 	/**
 	 * 充值卡请求
 	 * 
@@ -583,7 +623,8 @@ public class PayDynamic extends ProgressDynamic {
 		IFoxPay basePay = getPayInfo(IFoxPay.PAY_TYPE_UNIONPAY, amount);
 		if (basePay != null && basePay instanceof UnionPay) {
 			UnionPay unionPay = (UnionPay) basePay;
-//			getActivity().registerReceiver(unionPay.mPayUnionResultBroadcastReceiver, new IntentFilter(KeyConstants.ACTION_PAY_RESULT_RECEIVER));
+			// getActivity().registerReceiver(unionPay.mPayUnionResultBroadcastReceiver,
+			// new IntentFilter(KeyConstants.ACTION_PAY_RESULT_RECEIVER));
 			unionPay.pay(getActivity()); // 支付
 		}
 	}
@@ -603,12 +644,12 @@ public class PayDynamic extends ProgressDynamic {
 			aliPay.pay(getActivity()); // 支付
 		}
 	}
-	
+
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
 		super.onActivityResult(requestCode, resultCode, data);
-		
+
 		/*************************************************
 		 * 
 		 * 步骤3：处理银联手机支付控件返回的支付结果
@@ -624,8 +665,8 @@ public class PayDynamic extends ProgressDynamic {
 			String result = data.getExtras().getString("pay_result");
 			Intent intent = new Intent();
 			intent.putExtra(KeyConstants.INTENT_KEY_RESULT, result);
-//			getActivity().sendBroadcast(intent);
-			
+			// getActivity().sendBroadcast(intent);
+
 			if (mIFoxPay != null && mIFoxPay instanceof UnionPay) {
 				UnionPay unionPay = (UnionPay) mIFoxPay;
 				unionPay.disposeResult(intent);
@@ -637,6 +678,10 @@ public class PayDynamic extends ProgressDynamic {
 	public boolean onKeyDown(Activity activity, Integer keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			if (mCurrentTab == R.id.tvHelp && mWebViewHelp.canGoBack()) {
+				mWebViewHelp.goBack();
+				return false;
+			}
 			Bundle bundle = new Bundle();
 			bundle.putString(KeyConstants.INTENT_KEY_RESULT, KeyConstants.INTENT_KEY_CANCEL);
 			// 回调取消

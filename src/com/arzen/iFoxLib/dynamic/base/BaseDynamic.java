@@ -68,7 +68,7 @@ public abstract class BaseDynamic {
 	 * onResume
 	 */
 	public void onResume() {
-		StatService.onResume(this);
+//		StatService.onResume(mActivity);
 	};
 
 	/**
@@ -76,7 +76,7 @@ public abstract class BaseDynamic {
 	 * onPause
 	 */
 	public void onPause() {
-		StatService.onPause(this);
+//		StatService.onPause(mActivity);
 	};
 
 	/**

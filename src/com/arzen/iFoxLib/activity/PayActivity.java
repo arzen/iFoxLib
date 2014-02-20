@@ -2,8 +2,11 @@ package com.arzen.iFoxLib.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+
+import com.arzen.iFoxLib.dynamic.PayDynamic;
 
 public class PayActivity extends Activity {
 	@Override
@@ -13,8 +16,14 @@ public class PayActivity extends Activity {
 		FrameLayout rootView = new FrameLayout(this);
 		rootView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 		rootView.setId(android.R.id.primary);
-		setContentView(rootView);
+		
 
+		PayDynamic payDynamic = new PayDynamic();
+		Bundle mBundle = getIntent().getExtras();
+		View view = payDynamic.onCreateView(this);
+		payDynamic.onCreate(this, mBundle);
+		payDynamic.onActivityCreate();
+		setContentView(view);
 //		try {
 //			Fragment f = new PayFragment();
 //			
